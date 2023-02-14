@@ -1,0 +1,3 @@
+Ett interpreterat och objektorienterat språk.
+
+Liknande python?
