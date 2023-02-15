@@ -31,7 +31,8 @@ class TestLexer < Test::Unit::TestCase
             "operator: +, (1, 3)",
             "integer: 2, (1, 5)",
             "operator: *, (1, 7)",
-            "integer: 3, (1, 9)"])
+            "integer: 3, (1, 9)",
+            "EOF: , (1, 10)"])
       end
       
       def test_tokenize_input_with_parentheses
@@ -45,7 +46,8 @@ class TestLexer < Test::Unit::TestCase
             "integer: 2, (1, 6)",
             "operator: *, (1, 8)",
             "integer: 3, (1, 10)",
-            "rparen: ), (1, 11)"])
+            "rparen: ), (1, 11)",
+            "EOF: , (1, 12)"])
       end
       
       def test_tokenize_input_with_whitespace
@@ -57,7 +59,8 @@ class TestLexer < Test::Unit::TestCase
             "operator: +, (1, 4)",
             "integer: 2, (1, 6)",
             "operator: *, (1, 8)",
-            "integer: 3, (1, 10)"])
+            "integer: 3, (1, 10)",
+            "EOF: , (1, 11)"])
       end
       
       def test_tokenize_input_with_newlines
@@ -69,12 +72,13 @@ class TestLexer < Test::Unit::TestCase
             "operator: +, (1, 3)",
             "integer: 2, (2, 1)",
             "operator: *, (2, 3)",
-            "integer: 3, (3, 1)"])
+            "integer: 3, (3, 1)",
+            "EOF: , (3, 2)"])
       end
       
       def test_tokenize_input_with_invalid_character
         input = "1 + @ 2 * 3"
         lexer = Lexer.new(input)
-        assert_raise(MySyntaxError) { lexer.tokenize }
+        assert_raise(InvalidTokenError) { lexer.tokenize }
       end
 end
