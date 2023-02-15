@@ -1,6 +1,5 @@
-require_relative 'Token'
-require_relative 'BinaryOperations'
-require_relative 'Errors'
+require_relative 'Token.rb'
+require_relative '../Errors/Errors.rb'
 
 class Lexer
     TOKEN_TYPES = {
@@ -87,6 +86,6 @@ end
 # input = "1 + 2 * 3 - (4 / 2)
 # -45"
 
-# input = gets.chomp()
+# #input = gets.chomp()
 # lexer = Lexer.new(input)
 # puts lexer.tokenize.map(&:to_s).inspect

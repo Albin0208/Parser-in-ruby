@@ -1,5 +1,5 @@
 require 'test/unit'
-require_relative 'Lexer'
+require_relative '../Lexer/Lexer.rb'
 
 class TestLexer < Test::Unit::TestCase
     def test_tokens
