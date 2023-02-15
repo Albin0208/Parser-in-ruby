@@ -18,6 +18,6 @@ class Token
     end
      
     def to_s()
-        return "<#{self.type}: #{self.value}, (#{@line}, #{@column})"
+        return "#{self.type}: #{self.value}, (#{@line}, #{@column})"
     end
 end

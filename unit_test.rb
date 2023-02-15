@@ -22,46 +22,59 @@ class TestLexer < Test::Unit::TestCase
         assert_equal("rparen", lexer.tokenize[0].type, "The token was not correctly tokenized")
     end
 
-    def test_simple_expression
-        expression = "1 + 3"
-        lexer = Lexer.new(expression)
+    def test_tokenize_simple_input
+        input = "1 + 2 * 3"
+        lexer = Lexer.new(input)
         tokens = lexer.tokenize
-
-        assert_equal(3, tokens.length, "Assert that we get three tokens")
-        assert_equal("integer", tokens[0].type, "Assert that given a number a integer token is returned")
-        assert_equal("operator", tokens[1].type, "Assert that given a number a integer token is returned")
-        assert_equal("integer", tokens[2].type, "Assert that given a number a integer token is returned")
-    end
-
-    def test_bigger_expression
-        expression = "1 + 3 * 4 + 3"
-        lexer = Lexer.new(expression)
+        assert_equal(tokens.map(&:to_s), 
+            ["integer: 1, (1, 1)",
+            "operator: +, (1, 3)",
+            "integer: 2, (1, 5)",
+            "operator: *, (1, 7)",
+            "integer: 3, (1, 9)"])
+      end
+      
+      def test_tokenize_input_with_parentheses
+        input = "1 + (2 * 3)"
+        lexer = Lexer.new(input)
         tokens = lexer.tokenize
-
-        assert_equal(7, tokens.length, "Assert that we get 7 tokens")
-        assert_equal("integer", tokens[0].type)
-        assert_equal("operator", tokens[1].type)
-        assert_equal("integer", tokens[2].type)
-        assert_equal("operator", tokens[3].type)
-        assert_equal("integer", tokens[4].type)
-        assert_equal("operator", tokens[5].type)
-        assert_equal("integer", tokens[6].type)
-    end
-
-    def test_expresstion_with_parens
-        expression = "1 + 3 * (4 + 3)"
-        lexer = Lexer.new(expression)
+        assert_equal(tokens.map(&:to_s), 
+            ["integer: 1, (1, 1)",
+            "operator: +, (1, 3)",
+            "lparen: (, (1, 5)",
+            "integer: 2, (1, 6)",
+            "operator: *, (1, 8)",
+            "integer: 3, (1, 10)",
+            "rparen: ), (1, 11)"])
+      end
+      
+      def test_tokenize_input_with_whitespace
+        input = " 1 + 2 * 3 "
+        lexer = Lexer.new(input)
         tokens = lexer.tokenize
-
-        assert_equal(9, tokens.length, "Assert that we get 9 tokens")
-        assert_equal("integer", tokens[0].type)
-        assert_equal("operator", tokens[1].type)
-        assert_equal("integer", tokens[2].type)
-        assert_equal("operator", tokens[3].type)
-        assert_equal("lparen", tokens[4].type)
-        assert_equal("integer", tokens[5].type)
-        assert_equal("operator", tokens[6].type)
-        assert_equal("integer", tokens[7].type)
-        assert_equal("rparen", tokens[8].type)
-    end
+        assert_equal(tokens.map(&:to_s), 
+            ["integer: 1, (1, 2)",
+            "operator: +, (1, 4)",
+            "integer: 2, (1, 6)",
+            "operator: *, (1, 8)",
+            "integer: 3, (1, 10)"])
+      end
+      
+      def test_tokenize_input_with_newlines
+        input = "1 +\n2 *\n3"
+        lexer = Lexer.new(input)
+        tokens = lexer.tokenize
+        assert_equal(tokens.map(&:to_s), 
+            ["integer: 1, (1, 1)",
+            "operator: +, (1, 3)",
+            "integer: 2, (2, 1)",
+            "operator: *, (2, 3)",
+            "integer: 3, (3, 1)"])
+      end
+      
+      def test_tokenize_input_with_invalid_character
+        input = "1 + @ 2 * 3"
+        lexer = Lexer.new(input)
+        assert_raise(MySyntaxError) { lexer.tokenize }
+      end
 end

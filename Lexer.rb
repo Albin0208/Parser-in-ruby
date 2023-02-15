@@ -11,7 +11,7 @@ class Lexer
     }
 
     def initialize(string)
-        @string = string
+        @string = string.rstrip # Remove any trailing whitespace
         @sub_line = ""
         @position = 0
         @line = 1
