@@ -41,38 +41,7 @@ class Lexer
            @position += 1
         end
 
-        # case @string[@position]
-        # when TOKEN_TYPES[:integer]
-        #   # Parse integer
-        #   start_pos = @position
-        #   # Eat all the integers
-        #   while @position < @string.length && @string[@position] =~ TOKEN_TYPES[:integer]
-        #     @position += 1
-        #   end
-        #   token = Token.new(TokenType::INTEGER, @string[start_pos..@position-1].to_i, @line, @column)
-        #   @column += @position - start_pos # Step forward the column the length of the number
-        #   return token
-    
-        # when TOKEN_TYPES[:operators]
-        #   # Parse operator
-        #   token = Token.new("operator", @string[@position], @line, @column)
-        #   advance()
-        #   return token
-    
-        # when TOKEN_TYPES[:lparen]
-        #   # Create left paren token
-        #   token = Token.new(TokenType::LPAREN, @string[@position], @line, @column)
-        #   advance()
-        #   return token
-    
-        # when TOKEN_TYPES[:rparen]
-        #   # Create right paren token
-        #   token = Token.new(TokenType::RPAREN, @string[@position], @line, @column)
-        #   advance()
-        #   return token
-        #   else
-        #     raise MySyntaxError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
-        #   end   
+        # Attempt to match against each token type
         TOKEN_TYPES.each do |token_type, regex|
           # Match against the regex from the position to the end of the string
           if @string[@position..-1] =~ /#{regex}/
@@ -83,14 +52,10 @@ class Lexer
             return token
           end
         end
-        # If We get here we have got a invalid token
-        raise MySyntaxError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
+        
+        # If we get here, no token was matched, so we have an invalid character or token
+        raise InvalidTokenError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
     end
-
-    # def advance
-    #   @position += 1
-    #   @column += 1
-    # end
 
 	# Divides the string into tokens
     def tokenize
