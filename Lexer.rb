@@ -30,7 +30,7 @@ class Lexer
             # We find a new line update the line and column value
             if @string[@position] == "\n"
                 @line += 1
-                @column = 1
+                @column = 1 # Reset to first index on line
             else
                 @column += 1
             end
@@ -75,6 +75,7 @@ class Lexer
           end   
     end
 
+	# Divides the string into tokens
     def tokenize
         while (token = next_token)
             @tokens << token
