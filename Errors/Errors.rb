@@ -10,7 +10,7 @@ class EndOfInputError < StandardError
     end
 end
 
-class MissingParenthesisError < StandardError
+class UnmatchedParenthesisError < StandardError
     def initialize(message)
         super(message)
     end
