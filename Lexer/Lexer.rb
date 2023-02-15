@@ -2,12 +2,6 @@ require_relative 'Token.rb'
 require_relative '../Errors/Errors.rb'
 require_relative '../TokenType.rb'
 
-# TOKEN_TYPES = {
-#   integer: /\d/,
-#   operator: /[\+\-\*\/]/,
-#   lparen: /\(/,
-#   rparen:  /\)/,
-# }
 TOKEN_TYPES = {
   integer: /\A\d+/,
   operator: /\A[\+\-\*\/]/,
@@ -59,16 +53,35 @@ class Lexer
 
 	# Divides the string into tokens
     def tokenize
+      open_parans = 0
         while (token = next_token)
+          if token.type == "lparen"
+            open_parans += 1
+          elsif token.type == "rparen" 
+            if open_parans == 0
+              puts "Error"
+              # We have got a closing parenthesis without a opening one
+              raise MissingParenthesisError.new(
+                "Missing opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
+            else
+              open_parans -= 1
+            end
+          end
+
             @tokens << token
         end
+
+        if open_parans > 0
+          # We have more opening parentheses than closing ones
+          raise MissingParenthesisError.new("Missing closing parenthesis for opening parenthesis at line #{@line}, column #{@column} in #{@current_line}")
+        end
+
         @tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
         return @tokens
     end
 end
 
-input = "1 + 2 * 3 - (4 / 2)
--45"
+input = "1 + 2 * 3 - ((4 / 2) - 2"
 
 #input = gets.chomp()
 lexer = Lexer.new(input)

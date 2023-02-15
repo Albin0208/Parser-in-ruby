@@ -1,6 +1,6 @@
 # Class for keeping track of the different tokens
 class Token
-    attr_reader :type, :value
+    attr_reader :type, :value, :line, :column
 
     def initialize(type, value, line, column)
         @type = type
