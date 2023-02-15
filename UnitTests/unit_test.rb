@@ -15,11 +15,9 @@ class TestLexer < Test::Unit::TestCase
             assert_equal("operator", lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
         end
 
-        lexer = Lexer.new("(")
+        lexer = Lexer.new("()")
         assert_equal("lparen", lexer.tokenize[0].type, "The token was not correctly tokenized")
-
-        lexer = Lexer.new(")")
-        assert_equal("rparen", lexer.tokenize[0].type, "The token was not correctly tokenized")
+        assert_equal("rparen", lexer.tokenize[1].type, "The token was not correctly tokenized")
     end
 
     def test_tokenize_simple_input
@@ -80,5 +78,15 @@ class TestLexer < Test::Unit::TestCase
         input = "1 + @ 2 * 3"
         lexer = Lexer.new(input)
         assert_raise(InvalidTokenError) { lexer.tokenize }
+      end
+
+      def test_tokenize_input_with_invalid_parenthesis
+        input = "1 + (2 * 3"
+        lexer = Lexer.new(input)
+        assert_raise(MissingParenthesisError) { lexer.tokenize }
+
+        input = "1 + (2 * 3))"
+        lexer = Lexer.new(input)
+        assert_raise(MissingParenthesisError) { lexer.tokenize }
       end
 end

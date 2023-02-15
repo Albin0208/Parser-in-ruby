@@ -53,7 +53,7 @@ class Lexer
 
 	# Divides the string into tokens
     def tokenize
-      open_parans = 0
+      open_parans = 0 # Keep track of number of parans opened
         while (token = next_token)
           if token.type == "lparen"
             open_parans += 1
@@ -67,7 +67,6 @@ class Lexer
               open_parans -= 1
             end
           end
-
             @tokens << token
         end
 
@@ -81,8 +80,10 @@ class Lexer
     end
 end
 
-input = "1 + 2 * 3 - ((4 / 2) - 2"
+if __FILE__ == $0
+  input = "1 + 2 * 3 - ((4 / 2) - 2"
 
-#input = gets.chomp()
-lexer = Lexer.new(input)
-puts lexer.tokenize.map(&:to_s).inspect
+  #input = gets.chomp()
+  lexer = Lexer.new(input)
+  puts lexer.tokenize.map(&:to_s).inspect
+end
