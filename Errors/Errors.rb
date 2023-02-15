@@ -1,5 +1,5 @@
-class MySyntaxError < StandardError
+class InvalidTokenError < StandardError
     def initialize(message)
-        super("Syntax error: #{message}")
+        super(message)
     end
 end
