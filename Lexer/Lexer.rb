@@ -42,9 +42,9 @@ class Lexer
 		when TOKEN_TYPES[:integer]
 			if $~[0].include?(".")
 				token = Token.new(TokenType::FLOAT, $~[0].to_f, @line, @column)
-			  else
+			else
 				token = Token.new(TokenType::INTEGER, $~[0].to_i, @line, @column)
-			  end
+			end
 			advance($~[0].length)
 			return token
 		when TOKEN_TYPES[:operator]
@@ -65,6 +65,7 @@ class Lexer
         raise InvalidTokenError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
     end
 
+	# Advance were we are in the string
 	def advance(length = 1)
 		@position += length
 		@column += length
@@ -92,7 +93,7 @@ class Lexer
         if open_parens > 0
 			last_open_paren = @tokens.select {|t| t.type == TokenType::LPAREN}.last # Get the last opened parenthesis
 
-			line = @string.split("\n")[last_open_paren.line - 1]
+			line = @string.split("\n")[last_open_paren.line - 1] # Get the line where the error was
          	# We have more opening parentheses than closing ones
          	raise UnmatchedParenthesisError.new(
 				"Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
@@ -104,7 +105,7 @@ class Lexer
 end
 
 if __FILE__ == $0
-  input = "1 + 2.3 * 3 - \n(4 / 2) - 2"
+  input = "1 + 2.3 * 3( - \n(4 / 2) - 2"
 	# input = "1.3"
 
   #input = gets.chomp()

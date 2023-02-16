@@ -8,11 +8,15 @@ class TestLexer < Test::Unit::TestCase
         lexer = Lexer.new(input)
 
         assert_equal(TokenType::INTEGER, lexer.tokenize[0].type, "Assert that given a number a INTEGER token is returned")
+
+        input = "11.34"
+        lexer = Lexer.new(input)
+
+        assert_equal(TokenType::FLOAT, lexer.tokenize[0].type, "Assert that given a decimal number a FLOAT token is returned")
         
         # Test that all the operators are converted to operators
         for op in ["+", "-", "*", "/"]
             lexer = Lexer.new(op)
-
             assert_equal(TokenType::OPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
         end
 
