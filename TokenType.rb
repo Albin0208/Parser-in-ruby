@@ -8,8 +8,8 @@ class TokenType
 end
 
 class Operators
-	PLUS = :PLUS
-	MINUS = :MINUS
-	MULTIPLY = :MULTIPLY
-	DIVIDE = :DIVIDE
+	PLUS = :+
+	MINUS = :-
+	MULTIPLY = :*
+	DIVIDE = :/
 end
