@@ -80,11 +80,13 @@ class Lexer
 			  raise InvalidTokenError.new("Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}")
 			end
 
-			
-
 			if value.include?(".")
 				token = Token.new(TokenType::FLOAT, value.to_f, @line, @column)		
 			else
+				# TODO Add check for if number has trailing digits when starting with 0
+				if value.length > 1 && value[0].to_i == 0
+					raise InvalidTokenError.new("Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}")
+				end
 				token = Token.new(TokenType::INTEGER, value.to_i, @line, @column)
 			end
 			advance(value.length)
@@ -119,7 +121,7 @@ class Lexer
 end
 
 if __FILE__ == $0
-  input = "1 + 2.3 * 3 3 - \n(4 / 2) - 2"
+  input = "1 + 2.3 * 03 - \n(4 / 2) - 2"
 	# input = "1.3"
 
   #input = gets.chomp()
