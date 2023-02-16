@@ -75,9 +75,9 @@ class Lexer
       open_parens = 0 # Keep track of number of parens opened
         while (token = next_token)
 			case token.type
-			when "lparen"
+			when TokenType::LPAREN
 				open_parens += 1
-			when "rparen"
+			when TokenType::RPAREN
 				if open_parens == 0
 					# We have got a closing parenthesis without a opening one
 					raise UnmatchedParenthesisError.new(
@@ -90,7 +90,7 @@ class Lexer
         end
 
         if open_parens > 0
-			last_open_paren = @tokens.select {|t| t.type == "lparen"}.last # Get the last opened parenthesis
+			last_open_paren = @tokens.select {|t| t.type == TokenType::LPAREN}.last # Get the last opened parenthesis
 
 			line = @string.split("\n")[last_open_paren.line - 1]
          	# We have more opening parentheses than closing ones
