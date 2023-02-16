@@ -3,7 +3,7 @@ require_relative '../Errors/Errors.rb'
 require_relative '../TokenType.rb'
 
 TOKEN_TYPES = {
-  integer: /\A\d+/,
+  integer: /\A\d+(\.\d+)?/,
   operator: /\A[\+\-\*\/]/,
   lparen: /\A\(/,
   rparen: /\A\)/,
@@ -38,21 +38,37 @@ class Lexer
            @position += 1
         end
 
-        # Attempt to match against each token type
-        TOKEN_TYPES.each do |token_type, regex|
-          # Match against the regex from the position to the end of the string
-          if @string[@position..-1] =~ /#{regex}/
-            value = $~[0] # Get the value of the first match
-            token = Token.new(token_type.to_s, value, @line, @column) # Create a new token with the token type and value
-            @column += value.length
-            @position += value.length
-            return token
-          end
-        end
+		case @string[@position..-1]
+		when TOKEN_TYPES[:integer]
+			if $~[0].include?(".")
+				token = Token.new(TokenType::FLOAT, $~[0].to_f, @line, @column)
+			  else
+				token = Token.new(TokenType::INTEGER, $~[0].to_i, @line, @column)
+			  end
+			advance($~[0].length)
+			return token
+		when TOKEN_TYPES[:operator]
+			token = Token.new(TokenType::OPERATOR, $~[0], @line, @column)
+			advance()
+			return token
+		when TOKEN_TYPES[:lparen]
+			token = Token.new(TokenType::LPAREN, $~[0], @line, @column)
+			advance()
+			return token
+		when TOKEN_TYPES[:rparen]
+			token = Token.new(TokenType::RPAREN, $~[0], @line, @column)
+			advance()
+			return token
+		end
         
         # If we get here, no token was matched, so we have an invalid character or token
         raise InvalidTokenError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
     end
+
+	def advance(length = 1)
+		@position += length
+		@column += length
+	end
 
 	# Divides the string into tokens
     def tokenize
@@ -61,7 +77,7 @@ class Lexer
 			case token.type
 			when "lparen"
 				open_parens += 1
-			when "lparen"
+			when "rparen"
 				if open_parens == 0
 					# We have got a closing parenthesis without a opening one
 					raise UnmatchedParenthesisError.new(
@@ -74,8 +90,12 @@ class Lexer
         end
 
         if open_parens > 0
-          # We have more opening parentheses than closing ones
-          raise UnmatchedParenthesisError.new("Unmathced closing parenthesis for opening parenthesis at line #{@line}, column #{@column} in #{@current_line}")
+			last_open_paren = @tokens.select {|t| t.type == "lparen"}.last # Get the last opened parenthesis
+
+			line = @string.split("\n")[last_open_paren.line - 1]
+         	# We have more opening parentheses than closing ones
+         	raise UnmatchedParenthesisError.new(
+				"Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
         end
 
         @tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
@@ -84,7 +104,8 @@ class Lexer
 end
 
 if __FILE__ == $0
-  input = "1 + 2 * 3 - ((4 / 2) - 2"
+  input = "1 + 2.3 * 3 - \n(4 / 2) - 2"
+	# input = "1.3"
 
   #input = gets.chomp()
   lexer = Lexer.new(input)
