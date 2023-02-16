@@ -21,8 +21,11 @@ class Lexer
     end 
 
     def next_token()
-      return nil if @position >= @string.length
-      @current_line = @string[0..@string.length].match(/^\s*.*$/) 
+        return nil if @position >= @string.length
+        @current_line = @string[0..@string.length].match(/^\s*.*$/) 
+
+        # TODO Add check for comments
+
         # Skip whitespace
         while @string[@position] =~ /\s/
             # We find a new line update the line and column value
@@ -53,36 +56,26 @@ class Lexer
 
 	# Divides the string into tokens
     def tokenize
-      # open_parans = 0 # Keep track of number of parans opened
+      open_parens = 0 # Keep track of number of parens opened
         while (token = next_token)
-          # if token.type == "lparen"
-          #   open_parans += 1
-          # elsif token.type == "rparen" 
-          #   if open_parans == 0
-          #     puts "Error"
-          #     # We have got a closing parenthesis without a opening one
-          #     raise MissingParenthesisError.new(
-          #       "Missing opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
-          #   else
-          #     open_parans -= 1
-          #   end
-          # end
+			case token.type
+			when "lparen"
+				open_parens += 1
+			when "lparen"
+				if open_parens == 0
+					# We have got a closing parenthesis without a opening one
+					raise UnmatchedParenthesisError.new(
+					  "Unmatched opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
+				else
+					open_parens -= 1
+				end
+			end
             @tokens << token
         end
 
-        # if open_parans > 0
-        #   # We have more opening parentheses than closing ones
-        #   raise MissingParenthesisError.new("Missing closing parenthesis for opening parenthesis at line #{@line}, column #{@column} in #{@current_line}")
-        # end
-
-        # Check for unmatched parentheses
-        lparen_count = @tokens.count { |token| token.type == "lparen" }
-        rparen_count = @tokens.count { |token| token.type == "rparen" }
-
-        if lparen_count > rparen_count
-          raise UnmatchedParenthesisError.new("Unmatched left parenthesis at line #{@line}, column #{@column}")
-        elsif lparen_count < rparen_count
-          raise UnmatchedParenthesisError.new("Unmatched right parenthesis at line #{@line}, column #{@column}")
+        if open_parens > 0
+          # We have more opening parentheses than closing ones
+          raise UnmatchedParenthesisError.new("Unmathced closing parenthesis for opening parenthesis at line #{@line}, column #{@column} in #{@current_line}")
         end
 
         @tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
