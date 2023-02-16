@@ -20,6 +20,40 @@ class Lexer
         @tokens = []
     end 
 
+	# Divides the string into tokens
+	def tokenize
+		open_parens = 0 # Keep track of number of parens opened
+		while (token = next_token)
+			case token.type
+			when TokenType::LPAREN
+				open_parens += 1
+			when TokenType::RPAREN
+				if open_parens == 0
+					# We have got a closing parenthesis without a opening one
+					raise UnmatchedParenthesisError.new(
+					"Unmatched opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
+				else
+					open_parens -= 1
+				end
+			end
+			@tokens << token
+		end
+
+		if open_parens > 0
+			last_open_paren = @tokens.select {|t| t.type == TokenType::LPAREN}.last # Get the last opened parenthesis
+
+			line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
+			# We have more opening parentheses than closing ones
+			raise UnmatchedParenthesisError.new(
+				"Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
+		end
+
+		@tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
+		return @tokens
+	end
+
+	private
+
     def next_token()
         return nil if @position >= @string.length
         @current_line = @string[0..@string.length].match(/^\s*.*$/) 
@@ -41,7 +75,7 @@ class Lexer
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
 			if $~[0].include?(".")
-				token = Token.new(TokenType::FLOAT, $~[0].to_f, @line, @column)
+				token = Token.new(TokenType::FLOAT, $~[0].to_f, @line, @column)		
 			else
 				token = Token.new(TokenType::INTEGER, $~[0].to_i, @line, @column)
 			end
@@ -70,42 +104,10 @@ class Lexer
 		@position += length
 		@column += length
 	end
-
-	# Divides the string into tokens
-    def tokenize
-      open_parens = 0 # Keep track of number of parens opened
-        while (token = next_token)
-			case token.type
-			when TokenType::LPAREN
-				open_parens += 1
-			when TokenType::RPAREN
-				if open_parens == 0
-					# We have got a closing parenthesis without a opening one
-					raise UnmatchedParenthesisError.new(
-					  "Unmatched opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
-				else
-					open_parens -= 1
-				end
-			end
-            @tokens << token
-        end
-
-        if open_parens > 0
-			last_open_paren = @tokens.select {|t| t.type == TokenType::LPAREN}.last # Get the last opened parenthesis
-
-			line = @string.split("\n")[last_open_paren.line - 1] # Get the line where the error was
-         	# We have more opening parentheses than closing ones
-         	raise UnmatchedParenthesisError.new(
-				"Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
-        end
-
-        @tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
-        return @tokens
-    end
 end
 
 if __FILE__ == $0
-  input = "1 + 2.3 * 3( - \n(4 / 2) - 2"
+  input = "1 + 2.3 * 3 - \n(4 / 2) - 2"
 	# input = "1.3"
 
   #input = gets.chomp()
