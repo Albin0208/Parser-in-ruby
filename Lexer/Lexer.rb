@@ -107,7 +107,7 @@ class Lexer
 end
 
 if __FILE__ == $0
-  input = "1 + 2.3 * 3 - \n(4 / 2) - 2"
+  input = "1 + 2.3 */ 3 - \n(4 / 2) - 2"
 	# input = "1.3"
 
   #input = gets.chomp()

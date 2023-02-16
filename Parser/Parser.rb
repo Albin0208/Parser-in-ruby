@@ -36,10 +36,25 @@ class Parser
   def initialize(tokens)
     @tokens = tokens
     @current_index = 0
+    @current_token = @tokens[@current_index]
   end
 
   def parse
+    return expr()
   end
 
   private
+
+  def consume(token_type)
+    if @current_token.type = token_type
+      @current_index += 1
+      @current_token = @tokens[@current_index]
+    else
+      error()
+    end
+  end 
+
+  def expr()
+    return node
+  end
 end
