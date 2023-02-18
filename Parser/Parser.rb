@@ -28,6 +28,30 @@ class Parser
     end
 
 	def parse_stmt()
+        case at().type
+        when TokenType::LET, TokenType::CONST
+            return parse_var_declaration()
+        else
+            return parse_expr()
+        end
+    end
 
+	def at() 
+        return @tokens[0]
+    end
+
+    def eat()
+        prev = @tokens.shift()
+
+        return prev
+    end
+
+    def expect(token_type)
+        prev = eat()
+        if !prev or prev.type != token_type
+            raise "Parse error: Expected #{token_type} but got #{prev.type}"
+        end
+
+        return prev
     end
 end
