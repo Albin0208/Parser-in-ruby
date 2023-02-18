@@ -7,7 +7,8 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
-	comparetors: /(>=)|(<=)|(==)|(!=)|(<)|(>)/,
+	logical: /\A(&&)(||)/,
+	comparetors: /\A(>=)|(<=)|(==)|(!=)|(<)|(>)/, # TODO Maybe support not
 	lparen: /\A\(/,
 	rparen: /\A\)/,
 	assign: /\A\=/,
@@ -94,6 +95,11 @@ class Lexer
 			token = Token.new(TokenType::BINARYOPERATOR, $~[0].to_sym, @line, @column)
 			@logger.info("Found operator token: #{token.value}")
 			advance()
+			return token
+		when TOKEN_TYPES[:logical]
+			token = Token.new(TokenType::LOGICAL, $~[0].to_sym, @line, @column)
+			@logger.info("Found logical token: #{token.value}")
+			advance(token.value.length)
 			return token
 		when TOKEN_TYPES[:comparetors]
 			token = Token.new(TokenType::COMPARISON, $~[0].to_sym, @line, @column)

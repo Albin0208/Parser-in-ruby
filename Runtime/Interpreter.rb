@@ -16,6 +16,8 @@ class Interpreter
             return eval_identifier(astNode, env)
         when NODE_TYPES[:AssignmentExpr]
             return eval_assignment_expr(astNode, env)
+        when NODE_TYPES[:LogicalAnd]
+            return eval_logical_and_expr(astNode, env)
         when NODE_TYPES[:BinaryExpr]
             return eval_binary_expr(astNode, env)
         when NODE_TYPES[:Program]

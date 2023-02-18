@@ -4,6 +4,7 @@ class TokenType
 	LET = :LET
 	CONST = :CONST
 	ASSIGN = :ASSIGN
+	LOGICAL = :LOGICAL
 	COMPARISON = :COMPARISON
 	BINARYOPERATOR = :BINARYOPERATOR
 	IDENTIFIER = :IDENTIFIER
@@ -21,3 +22,5 @@ class Operators
 end
 
 LogicComparison = [:<, :>, :>=, :==, :!=]
+
+LogicExpression = ["&&".to_sym, "||".to_sym]

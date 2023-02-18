@@ -60,7 +60,7 @@ class Parser
     end
     
     # Orders of Prescidence (Lowests to highest)
-    # AssignmentExpt
+    # AssignmentExpr
     # MemberExpr
     # FunctionCall
     # Logical
@@ -71,7 +71,7 @@ class Parser
     # PrimaryExpr
 
     def parse_assignment_expr()
-        left = parse_comparison_expr()
+        left = parse_logical_expr()
 
         if at().type == TokenType::ASSIGN
             eat()
@@ -81,6 +81,18 @@ class Parser
         
         return left
     end
+
+	def parse_logical_expr()
+		left = parse_comparison_expr()
+
+		while LogicExpression.include?(at().value)
+			comparetor = eat().value
+			right = parse_comparison_expr()
+            left = LogicalAndExpr.new(left, right)
+		end
+
+		return left
+	end
 
 	def parse_comparison_expr()
 		left = parse_additive_expr()

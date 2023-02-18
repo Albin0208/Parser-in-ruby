@@ -4,6 +4,7 @@ NODE_TYPES = {
     VarDeclaration: :VarDeclaration,
     # Expressions
     AssignmentExpr: :AssignmentExpr,
+    LogicalAnd: :LogicalAnd,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral
@@ -108,5 +109,19 @@ class NumericLiteral < Expr
 
     def to_s
         @value.to_s
+    end
+end
+
+class LogicalAndExpr < Expr
+    attr_accessor :left, :right
+    def initialize(left, right)
+        super(NODE_TYPES[:LogicalAnd])
+        @left = left
+        @op = :"&&"
+        @right = right
+    end
+
+    def to_s
+        "(#{@left.to_s} && #{@right.to_s})"
     end
 end

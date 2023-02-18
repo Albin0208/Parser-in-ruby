@@ -6,6 +6,13 @@ def eval_identifier(astNode, env)
     return val
 end
 
+def eval_logical_and_expr(binop, env)
+    lhs = evaluate(binop.left, env)
+    rhs = evaluate(binop.right, env)
+
+    return lhs && rhs
+end
+
 def eval_binary_expr(binop, env)
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)

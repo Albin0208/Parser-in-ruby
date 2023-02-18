@@ -106,6 +106,14 @@ class BooleanVal < RunTimeVal
     def initialize(value = true)
         super(value, :boolean)
     end
+
+    # def &&(other)
+    #     return BooleanVal.new(@value && other.value)
+    # end
+
+    # def ||(other)
+    #     return BooleanVal.new(@value || other.value)
+    # end
 end
 
 class NullVal < RunTimeVal
