@@ -1,3 +1,5 @@
+require 'logger'
+
 require_relative 'Token.rb'
 require_relative '../Errors/Errors.rb'
 require_relative '../TokenType.rb'
@@ -7,7 +9,10 @@ TOKEN_TYPES = {
   operator: /\A[\+\-\*\/]/,
   lparen: /\A\(/,
   rparen: /\A\)/,
+  identifier: /\A([a-z]|_[a-z])\w*/i,
 }
+
+KEYWORDS = ["func"]
 
 class Lexer
     def initialize(string)
@@ -18,6 +23,9 @@ class Lexer
         @column = 1
 
         @tokens = []
+
+		@logger = Logger.new(STDOUT)
+		@logger.level = Logger::INFO
     end 
 
 	# Divides the string into tokens
@@ -58,6 +66,8 @@ class Lexer
         return nil if @position >= @string.length
         @current_line = @string[0..@string.length].match(/^\s*.*$/) 
 
+		@logger.info("Parsing token at line #{@line}, column #{@column}")
+
         # TODO Add check for comments
 
         # Skip whitespace
@@ -74,43 +84,72 @@ class Lexer
 
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
-			value = $~[0]
-			# Check for whitespace between two numbers
-			if @string[@position + value.length..-1] =~ /\A\s*\d+/
-			  raise InvalidTokenError.new("Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}")
-			end
-
-			if value.include?(".")
-				token = Token.new(TokenType::FLOAT, value.to_f, @line, @column)		
-			else
-				# TODO Add check for if number has trailing digits when starting with 0
-				if value.length > 1 && value[0].to_i == 0
-					raise InvalidTokenError.new("Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}")
-				end
-				token = Token.new(TokenType::INTEGER, value.to_i, @line, @column)
-			end
-			advance(value.length)
-			return token
+			return handle_number_match($~[0])
 		when TOKEN_TYPES[:operator]
-			token = Token.new(TokenType::OPERATOR, $~[0].to_sym, @line, @column)
+			token = Token.new(TokenType::BINARYOPERATOR, $~[0].to_sym, @line, @column)
+			@logger.info("Found operator token: #{token.value}")
 			advance()
 			return token
 		when TOKEN_TYPES[:lparen]
 			token = Token.new(TokenType::LPAREN, $~[0], @line, @column)
+			@logger.info("Found left paren token: #{token.value}")
 			advance()
 			return token
 		when TOKEN_TYPES[:rparen]
 			token = Token.new(TokenType::RPAREN, $~[0], @line, @column)
+			@logger.info("Found right paren token: #{token.value}")
 			advance()
 			return token
+		when TOKEN_TYPES[:identifier]
+			return handle_identifier_match($~[0])
 		end
         
         # If we get here, no token was matched, so we have an invalid character or token
         raise InvalidTokenError.new("Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}")
     end
 
-	def peek_next(length = 1)
-		return @string[@position + length]
+	##################################################
+	# 				Helper functions				 #
+	##################################################
+
+	# Handles when we have matched a number
+	def handle_number_match(match)
+		value = match
+		# Check for whitespace between two numbers
+		if @string[@position + value.length..-1] =~ /\A\s*\d+/
+			raise InvalidTokenError.new("Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}")
+		end
+
+		if value.include?(".")
+			@logger.info("Found float token: #{value}")
+			token = Token.new(TokenType::FLOAT, value.to_f, @line, @column)		
+		else
+			# Check for if number has trailing digits when starting with 0
+			if value.length > 1 && value[0].to_i == 0
+				raise InvalidTokenError.new("Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}")
+			end
+			@logger.info("Found integer token: #{value}")
+			token = Token.new(TokenType::INTEGER, value.to_i, @line, @column)
+		end
+		advance(value.length)
+		return token
+	end
+
+	# Handle when we have matched a identifier
+	def handle_identifier_match(match)
+		# Check if it is a keyword
+		if KEYWORDS.include?(match)
+			@logger.info("Found keyword token: #{match}")
+			# Create keyword token
+			token = Token.new(TokenType::RESERVED, match, @line, @column)
+		else
+			# If not it is a user defined keyword
+			@logger.info("Found identifier token: #{match}")
+			# Create keyword token
+			token = Token.new(TokenType::IDENTIFIER, match, @line, @column)
+		end
+		advance(token.value.length)
+		return token
 	end
 
 	# Advance were we are in the string
@@ -121,10 +160,10 @@ class Lexer
 end
 
 if __FILE__ == $0
-  input = "1 + 2.3 * 03 - \n(4 / 2) - 2"
+#   input = "1 + 2.3 * 03 - \n(4 / 2) - 2"
 	# input = "1.3"
 
-  #input = gets.chomp()
+  input = gets.chomp()
   lexer = Lexer.new(input)
   puts lexer.tokenize.map(&:to_s).inspect
 end

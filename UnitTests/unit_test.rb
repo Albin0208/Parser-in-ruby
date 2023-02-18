@@ -14,10 +14,10 @@ class TestLexer < Test::Unit::TestCase
 
         assert_equal(TokenType::FLOAT, lexer.tokenize[0].type, "Assert that given a decimal number a FLOAT token is returned")
         
-        # Test that all the operators are converted to operators
+        # Test that all the BINARYOPERATORs are converted to BINARYOPERATORs
         for op in ["+", "-", "*", "/"]
             lexer = Lexer.new(op)
-            assert_equal(TokenType::OPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
+            assert_equal(TokenType::BINARYOPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
         end
 
         lexer = Lexer.new("()")
@@ -31,9 +31,9 @@ class TestLexer < Test::Unit::TestCase
         tokens = lexer.tokenize
         assert_equal(tokens.map(&:to_s), 
             ["INTEGER: 1, (1, 1)",
-            "OPERATOR: +, (1, 3)",
+            "BINARYOPERATOR: +, (1, 3)",
             "INTEGER: 2, (1, 5)",
-            "OPERATOR: *, (1, 7)",
+            "BINARYOPERATOR: *, (1, 7)",
             "INTEGER: 3, (1, 9)",
             "EOF: , (1, 10)"])
       end
@@ -44,10 +44,10 @@ class TestLexer < Test::Unit::TestCase
         tokens = lexer.tokenize
         assert_equal(tokens.map(&:to_s), 
             ["INTEGER: 1, (1, 1)",
-            "OPERATOR: +, (1, 3)",
+            "BINARYOPERATOR: +, (1, 3)",
             "LPAREN: (, (1, 5)",
             "INTEGER: 2, (1, 6)",
-            "OPERATOR: *, (1, 8)",
+            "BINARYOPERATOR: *, (1, 8)",
             "INTEGER: 3, (1, 10)",
             "RPAREN: ), (1, 11)",
             "EOF: , (1, 12)"])
@@ -59,9 +59,9 @@ class TestLexer < Test::Unit::TestCase
         tokens = lexer.tokenize
         assert_equal(tokens.map(&:to_s), 
             ["INTEGER: 1, (1, 2)",
-            "OPERATOR: +, (1, 4)",
+            "BINARYOPERATOR: +, (1, 4)",
             "INTEGER: 2, (1, 6)",
-            "OPERATOR: *, (1, 8)",
+            "BINARYOPERATOR: *, (1, 8)",
             "INTEGER: 3, (1, 10)",
             "EOF: , (1, 11)"])
       end
@@ -72,9 +72,9 @@ class TestLexer < Test::Unit::TestCase
         tokens = lexer.tokenize
         assert_equal(tokens.map(&:to_s), 
             ["INTEGER: 1, (1, 1)",
-            "OPERATOR: +, (1, 3)",
+            "BINARYOPERATOR: +, (1, 3)",
             "INTEGER: 2, (2, 1)",
-            "OPERATOR: *, (2, 3)",
+            "BINARYOPERATOR: *, (2, 3)",
             "INTEGER: 3, (3, 1)",
             "EOF: , (3, 2)"])
       end
