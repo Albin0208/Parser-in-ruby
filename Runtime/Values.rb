@@ -107,13 +107,13 @@ class BooleanVal < RunTimeVal
         super(value, :boolean)
     end
 
-    # def &&(other)
-    #     return BooleanVal.new(@value && other.value)
-    # end
+    def !=(other)
+        return BooleanVal.new(@value != other.value)
+    end
 
-    # def ||(other)
-    #     return BooleanVal.new(@value || other.value)
-    # end
+    def ==(other)
+        return BooleanVal.new(@value == other.value)
+    end
 end
 
 class NullVal < RunTimeVal
@@ -121,15 +121,3 @@ class NullVal < RunTimeVal
         super(value, :null)
     end
 end
-
-# class RunTimeVal
-#     attr_accessor :value, :type
-#     def initialize(value, type)
-#         @value = value
-#         @type = type
-#     end
-
-#     def to_s
-#         return "Value: #{@value}, Type: #{@type}"
-#     end
-# end

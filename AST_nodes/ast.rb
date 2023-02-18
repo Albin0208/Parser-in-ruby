@@ -2,9 +2,11 @@ NODE_TYPES = {
     # Statements
     Program: :Program,
     VarDeclaration: :VarDeclaration,
+    
     # Expressions
     AssignmentExpr: :AssignmentExpr,
     LogicalAnd: :LogicalAnd,
+    LogicalOr: :LogicalOr,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral
@@ -123,5 +125,19 @@ class LogicalAndExpr < Expr
 
     def to_s
         "(#{@left.to_s} && #{@right.to_s})"
+    end
+end
+
+class LogicalOrExpr < Expr
+    attr_accessor :left, :right
+    def initialize(left, right)
+        super(NODE_TYPES[:LogicalOr])
+        @left = left
+        @op = :"||"
+        @right = right
+    end
+
+    def to_s
+        "(#{@left.to_s} || #{@right.to_s})"
     end
 end

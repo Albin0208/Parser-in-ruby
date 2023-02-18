@@ -85,10 +85,16 @@ class Parser
 	def parse_logical_expr()
 		left = parse_comparison_expr()
 
-		while LogicExpression.include?(at().value)
+		while at().value == :"&&"
 			comparetor = eat().value
 			right = parse_comparison_expr()
             left = LogicalAndExpr.new(left, right)
+		end
+
+		while at().value == :"||"
+			comparetor = eat().value
+			right = parse_comparison_expr()
+            left = LogicalOrExpr.new(left, right)
 		end
 
 		return left

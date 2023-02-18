@@ -18,6 +18,8 @@ class Interpreter
             return eval_assignment_expr(astNode, env)
         when NODE_TYPES[:LogicalAnd]
             return eval_logical_and_expr(astNode, env)
+        when NODE_TYPES[:LogicalOr]
+            return eval_logical_or_expr(astNode, env)
         when NODE_TYPES[:BinaryExpr]
             return eval_binary_expr(astNode, env)
         when NODE_TYPES[:Program]

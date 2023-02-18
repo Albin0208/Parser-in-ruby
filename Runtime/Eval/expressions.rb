@@ -8,9 +8,18 @@ end
 
 def eval_logical_and_expr(binop, env)
     lhs = evaluate(binop.left, env)
+    return BooleanVal.new(false) unless lhs.value == true # Don't eval right side if we are false
+
+    rhs = evaluate(binop.right, env)
+    # We have come here so we know the expr is true if the right side is true
+    return BooleanVal.new(rhs.value == true)
+end
+
+def eval_logical_or_expr(binop, env)
+    lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)
 
-    return lhs && rhs
+    return BooleanVal.new(lhs.value == true ||rhs.value == true)
 end
 
 def eval_binary_expr(binop, env)
@@ -18,12 +27,6 @@ def eval_binary_expr(binop, env)
     rhs = evaluate(binop.right, env)
 
     return lhs.send(binop.op, rhs)
-
-    # if lhs.type == "number" and rhs.type == "number"
-    #     return eval_numeric_binary_expr(lhs, binop.op, rhs)
-    # end
-
-    # return "nil"
 end
 
 def eval_assignment_expr(astNode, env)
@@ -33,7 +36,3 @@ def eval_assignment_expr(astNode, env)
 
     return env.assignVar(astNode.assigne.symbol, evaluate(astNode.value, env))
 end
-
-# def eval_numeric_binary_expr(lhs, operator, rhs)
-#     return NumberVal.new(lhs.value.send(operator, rhs.value))
-# end
