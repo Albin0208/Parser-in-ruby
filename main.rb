@@ -1,4 +1,4 @@
-require_relative 'AST_nodes/Parser.rb'
+require_relative 'Parser/Parser.rb'
 require_relative 'RunTime/Interpreter.rb'
 require_relative 'RunTime/Enviroment.rb'
 
