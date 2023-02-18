@@ -5,14 +5,21 @@ require_relative '../Errors/Errors.rb'
 require_relative '../TokenType.rb'
 
 TOKEN_TYPES = {
-  integer: /\A\d+(\.\d+)?/,
-  operator: /\A[\+\-\*\/]/,
-  lparen: /\A\(/,
-  rparen: /\A\)/,
-  identifier: /\A([a-z]|_[a-z])\w*/i,
+	integer: /\A\d+(\.\d+)?/,
+	operator: /\A[\+\-\*\/\%]/,
+	comparetors: /(>=)|(<=)|(==)|(!=)|(<)|(>)/,
+	lparen: /\A\(/,
+	rparen: /\A\)/,
+	assign: /\A\=/,
+	identifier: /\A([a-z]|_[a-z])\w*/i,
 }
 
-KEYWORDS = ["func"]
+KEYWORDS = {
+	"let" => TokenType::LET,
+	"const" => TokenType::CONST
+}
+
+# KEYWORDS = ["func", "let", "const"]
 
 class Lexer
     def initialize(string)
@@ -90,6 +97,16 @@ class Lexer
 			@logger.info("Found operator token: #{token.value}")
 			advance()
 			return token
+		when TOKEN_TYPES[:comparetors]
+			token = Token.new(TokenType::COMPARISON, $~[0].to_sym, @line, @column)
+			@logger.info("Found Comparison token: #{token.value}")
+			advance()
+			return token
+		when TOKEN_TYPES[:assign]
+			token = Token.new(TokenType::ASSIGN, $~[0], @line, @column)
+			@logger.info("Found equal token: #{token.value}")
+			advance()
+			return token
 		when TOKEN_TYPES[:lparen]
 			token = Token.new(TokenType::LPAREN, $~[0], @line, @column)
 			@logger.info("Found left paren token: #{token.value}")
@@ -138,10 +155,10 @@ class Lexer
 	# Handle when we have matched a identifier
 	def handle_identifier_match(match)
 		# Check if it is a keyword
-		if KEYWORDS.include?(match)
+		if KEYWORDS.has_key?(match)
 			@logger.info("Found keyword token: #{match}")
 			# Create keyword token
-			token = Token.new(TokenType::RESERVED, match, @line, @column)
+			token = Token.new(KEYWORDS[match], match, @line, @column)
 		else
 			# If not it is a user defined keyword
 			@logger.info("Found identifier token: #{match}")
@@ -152,7 +169,7 @@ class Lexer
 		return token
 	end
 
-	# Advance were we are in the string
+	# Advance where we are in the string
 	def advance(length = 1)
 		@position += length
 		@column += length
