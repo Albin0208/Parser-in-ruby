@@ -125,7 +125,7 @@ class Parser
     end
 
     def parse_multiplication_expr()
-        left = parse_primary_expr()
+        left = parse_unary_expr()
 
         while at().value == :* || at().value == :/ || at().value == :%
             operator = eat().value
@@ -137,7 +137,13 @@ class Parser
     end
 
     def parse_unary_expr()
-        
+		while at().value == :-
+            operator = eat().value
+            right = parse_primary_expr()
+            return UnaryExpr.new(right, operator)
+        end
+
+		return parse_primary_expr()
     end
 
     def parse_primary_expr()

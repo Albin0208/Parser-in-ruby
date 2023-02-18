@@ -22,6 +22,16 @@ def eval_logical_or_expr(binop, env)
     return BooleanVal.new(lhs.value == true ||rhs.value == true)
 end
 
+def eval_unary_expr(binop, env)
+    lhs = evaluate(binop.left, env)
+    case binop.op
+    when :-
+        return NumberVal.new(-lhs.value)
+    when :+
+        return NumberVal.new(+lhs.value)
+    end
+end
+
 def eval_binary_expr(binop, env)
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)

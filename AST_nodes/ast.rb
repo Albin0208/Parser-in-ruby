@@ -2,11 +2,12 @@ NODE_TYPES = {
     # Statements
     Program: :Program,
     VarDeclaration: :VarDeclaration,
-    
+
     # Expressions
     AssignmentExpr: :AssignmentExpr,
     LogicalAnd: :LogicalAnd,
     LogicalOr: :LogicalOr,
+    UnaryOperator: :UnaryOperator,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral
@@ -73,6 +74,19 @@ class AssignmentExpr < Expr
 
     def to_s
         return "Value: #{@value}, Assigne: #{@assigne}"
+    end
+end
+
+class UnaryExpr < Expr
+    attr_accessor :left, :op
+    def initialize(left, op)
+        super(NODE_TYPES[:UnaryOperator])
+        @left = left
+        @op = op
+    end
+
+    def to_s
+        "(#{@op}#{@left.to_s})"
     end
 end
 

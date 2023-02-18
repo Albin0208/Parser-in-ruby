@@ -7,6 +7,7 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
+	unaryOperator: /\A-(?=\d+(\.\d+)?)/,
 	logical: /\A((&&)|(\|\|))/,
 	comparetors: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
@@ -91,6 +92,11 @@ class Lexer
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
 			return handle_number_match($~[0])
+		when TOKEN_TYPES[:unaryOperator]
+			token = Token.new(TokenType::UNARYOPERATOR, $~[0].to_sym, @line, @column)
+			@logger.info("Found unary operator token: #{token.value}")
+			advance()
+			return token
 		when TOKEN_TYPES[:operator]
 			token = Token.new(TokenType::BINARYOPERATOR, $~[0].to_sym, @line, @column)
 			@logger.info("Found operator token: #{token.value}")

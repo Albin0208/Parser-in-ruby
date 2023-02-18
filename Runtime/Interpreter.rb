@@ -20,6 +20,8 @@ class Interpreter
             return eval_logical_and_expr(astNode, env)
         when NODE_TYPES[:LogicalOr]
             return eval_logical_or_expr(astNode, env)
+        when NODE_TYPES[:UnaryOperator]
+            return eval_unary_expr(astNode, env)
         when NODE_TYPES[:BinaryExpr]
             return eval_binary_expr(astNode, env)
         when NODE_TYPES[:Program]
@@ -27,7 +29,7 @@ class Interpreter
         when NODE_TYPES[:VarDeclaration]
             return eval_var_declaration(astNode, env)
         else
-            raise "This AST Node has not yet been setup #{astNode}"
+            raise "This AST Node has not yet been setup for #{astNode.type} #{astNode}"
         end
     end
 
