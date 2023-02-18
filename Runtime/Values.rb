@@ -26,7 +26,32 @@ class RunTimeVal
       raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
     end
 
+    def <(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
+    def >(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
+    def >=(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
+    def <=(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
+    def !=(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
+    def ==(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+    
     def to_s
+        return @value
         return "Value: #{@value}, Type: #{@type}"
     end
 end
@@ -50,6 +75,30 @@ class NumberVal < RunTimeVal
 
     def /(other)
         return NumberVal.new(@value / other.value)
+    end
+
+    def <(other)
+        return BooleanVal.new(@value < other.value)
+    end
+
+    def >(other)
+        return BooleanVal.new(@value > other.value)
+    end
+
+    def >=(other)
+        return BooleanVal.new(@value >= other.value)
+    end
+
+    def <=(other)
+        return BooleanVal.new(@value <= other.value)
+    end
+
+    def !=(other)
+        return BooleanVal.new(@value != other.value)
+    end
+
+    def ==(other)
+        return BooleanVal.new(@value == other.value)
     end
 end
 

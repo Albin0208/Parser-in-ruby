@@ -19,8 +19,6 @@ KEYWORDS = {
 	"const" => TokenType::CONST
 }
 
-# KEYWORDS = ["func", "let", "const"]
-
 class Lexer
     def initialize(string)
         @string = string.rstrip # Remove any trailing whitespace
@@ -100,7 +98,7 @@ class Lexer
 		when TOKEN_TYPES[:comparetors]
 			token = Token.new(TokenType::COMPARISON, $~[0].to_sym, @line, @column)
 			@logger.info("Found Comparison token: #{token.value}")
-			advance()
+			advance(token.value.length)
 			return token
 		when TOKEN_TYPES[:assign]
 			token = Token.new(TokenType::ASSIGN, $~[0], @line, @column)

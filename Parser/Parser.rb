@@ -71,7 +71,7 @@ class Parser
     # PrimaryExpr
 
     def parse_assignment_expr()
-        left = parse_additive_expr()
+        left = parse_comparison_expr()
 
         if at().type == TokenType::ASSIGN
             eat()
@@ -81,6 +81,18 @@ class Parser
         
         return left
     end
+
+	def parse_comparison_expr()
+		left = parse_additive_expr()
+
+		while LogicComparison.include?(at().value)
+			comparetor = eat().value
+			right = parse_additive_expr()
+            left = BinaryExpr.new(left, comparetor, right)
+		end
+
+		return left
+	end
 
     def parse_additive_expr()
         left = parse_multiplication_expr()

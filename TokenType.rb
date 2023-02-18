@@ -19,3 +19,5 @@ class Operators
 	MULTIPLY = :*
 	DIVIDE = :/
 end
+
+LogicComparison = [:<, :>, :>=, :==, :!=]
