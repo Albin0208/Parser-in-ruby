@@ -1,14 +1,15 @@
+require_relative '../AST_nodes/ast.rb'
 require_relative '../Lexer/Lexer.rb'
 require_relative '../TokenType.rb'
 require_relative '../Errors/Errors.rb'
 
 class Parser
-	def initialize
-		@tokens = []
-	end
+    def initialize()
+        @tokens = []
+    end
 
-	def produceAST(input)
-		@tokens = Lexer.new(sourceCode).tokenize()
+    def produceAST(sourceCode)
+        @tokens = Lexer.new(sourceCode).tokenize()
         puts @tokens.map(&:to_s).inspect # Display the tokens list
         program = Program.new([])
 
@@ -18,16 +19,16 @@ class Parser
         end
 
         return program
-	end
+    end
 
-	private
+    private
 
     # Check if we are not at the end of file
     def not_eof()
         return @tokens[0].type != TokenType::EOF 
     end
 
-	def parse_stmt()
+    def parse_stmt()
         case at().type
         when TokenType::LET, TokenType::CONST
             return parse_var_declaration()
@@ -36,7 +37,99 @@ class Parser
         end
     end
 
-	def at() 
+    def parse_var_declaration()
+        is_constant = eat().type == TokenType::CONST
+        identifier = expect(TokenType::IDENTIFIER).value
+
+        if at().type != TokenType::ASSIGN 
+            if is_constant
+            raise "Must assign value to constat. No value provided"
+            else
+                return VarDeclaration.new(is_constant, identifier, nil)
+            end
+        end
+
+        expect(TokenType::ASSIGN)
+        declaration = VarDeclaration.new(is_constant, identifier, parse_expr())
+
+        return declaration
+    end
+
+    def parse_expr()
+        return parse_assignment_expr()
+    end
+    
+    # Orders of Prescidence (Lowests to highest)
+    # AssignmentExpt
+    # MemberExpr
+    # FunctionCall
+    # Logical
+    # Comparison
+    # AdditiveExpr
+    # MultiplyExpr
+    # UnaryExpr
+    # PrimaryExpr
+
+    def parse_assignment_expr()
+        left = parse_additive_expr()
+
+        if at().type == TokenType::ASSIGN
+            eat()
+            value = parse_assignment_expr()
+            return AssignmentExpr.new(value, left)
+        end
+        
+        return left
+    end
+
+    def parse_additive_expr()
+        left = parse_multiplication_expr()
+
+        while at().value == :+ || at().value == :-
+            operator = eat().value
+            right = parse_multiplication_expr()
+            left = BinaryExpr.new(left, operator, right)
+        end
+
+        return left
+    end
+
+    def parse_multiplication_expr()
+        left = parse_primary_expr()
+
+        while at().value == :* || at().value == :/ || at().value == :%
+            operator = eat().value
+            right = parse_primary_expr()
+            left = BinaryExpr.new(left, operator, right)
+        end
+
+        return left
+    end
+
+    def parse_unary_expr()
+        
+    end
+
+    def parse_primary_expr()
+        tok = at().type
+        case tok
+        when TokenType::IDENTIFIER
+            ident = Identifier.new(eat().value)
+            return ident
+        when TokenType::INTEGER, TokenType::FLOAT
+            numLit = NumericLiteral.new(eat().value)
+            return numLit
+        when TokenType::LPAREN
+            eat() # Eat opening paren
+            value = parse_expr()
+            eat() # Eat closing paren
+            return value
+        else
+            raise InvalidTokenError.new("Unexpected token found: #{at().to_s}")
+        end
+    end
+
+    def at() 
         return @tokens[0]
     end
 
