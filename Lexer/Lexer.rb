@@ -7,7 +7,7 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
-	unaryOperator: /\A-(?=\d+(\.\d+)?)/,
+	unaryOperator: /\A[-\+](?=\d+(\.\d+)?)/,
 	logical: /\A((&&)|(\|\|))/,
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
@@ -38,7 +38,7 @@ class Lexer
 
 	# Divides the string into tokens
 	# @return Array - Return a Array of the tokens found
-	def tokenize
+	def tokenize()
 		open_parens = 0 # Keep track of number of parens opened
 		while (token = next_token)
 			case token.type
@@ -75,7 +75,7 @@ class Lexer
 	# @return Token | nil - Return the new token or nil if we have reached the end of the input string
     def next_token()
         return nil if at_eof()
-        @current_line = @string[0..@string.length].match(/^\s*.*$/) 		
+        @current_line = @string[0..@string.length].match(/^\s*.*$/) 	
 
         # Skip whitespace
         while @string[@position] =~ /\A\s/
