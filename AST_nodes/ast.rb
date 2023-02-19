@@ -36,8 +36,13 @@ class Program < Stmt
     end
 
     def to_s
-        @body.each {|e| e.to_s}
+        return @body.map(&:to_s)
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "Program"
+        @body.each { |stmt| stmt.display_info(indent + 2) }
+      end
 end
 
 class VarDeclaration < Stmt
@@ -52,6 +57,11 @@ class VarDeclaration < Stmt
     def to_s
         return "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}"
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "VarDeclaration: #{@constant} #{@identifier}"
+        @value.display_info(indent + 2) if @value
+      end
 end
 
 #####################################
@@ -75,6 +85,11 @@ class AssignmentExpr < Expr
     def to_s
         return "Value: #{@value}, Assigne: #{@assigne}"
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "AssignmentExpr: #{@assigne}"
+        @value.display_info(indent + 2)
+      end
 end
 
 class UnaryExpr < Expr
@@ -88,6 +103,11 @@ class UnaryExpr < Expr
     def to_s
         "(#{@op}#{@left.to_s})"
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "UnaryExpr: #{@op}"
+        @left.display_info(indent + 2)
+      end
 end
 
 class BinaryExpr < Expr
@@ -102,6 +122,12 @@ class BinaryExpr < Expr
     def to_s
         "(#{@left.to_s} #{@op} #{@right.to_s})"
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "BinaryExpr: #{@op}"
+        @left.display_info(indent + 2)
+        @right.display_info(indent + 2)
+      end
 end
 
 class Identifier < Expr
@@ -114,6 +140,10 @@ class Identifier < Expr
     def to_s
         return @symbol
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "Identifier: #{@symbol}"
+      end
 end
 
 class NumericLiteral < Expr
@@ -126,6 +156,10 @@ class NumericLiteral < Expr
     def to_s
         @value.to_s
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "NumericLiteral: #{@value}"
+      end
 end
 
 class LogicalAndExpr < Expr
@@ -140,6 +174,12 @@ class LogicalAndExpr < Expr
     def to_s
         "(#{@left.to_s} && #{@right.to_s})"
     end
+
+    def display_info(indent = 0)
+        puts " " * indent + "LogicalAndExpr"
+        @left.display_info(indent + 2)
+        @right.display_info(indent + 2)
+      end
 end
 
 class LogicalOrExpr < Expr
@@ -154,4 +194,11 @@ class LogicalOrExpr < Expr
     def to_s
         "(#{@left.to_s} || #{@right.to_s})"
     end
+
+    
+  def display_info(indent = 0)
+    puts " " * indent + "LogicalOrExpr"
+    @left.display_info(indent + 2)
+    @right.display_info(indent + 2)
+  end
 end

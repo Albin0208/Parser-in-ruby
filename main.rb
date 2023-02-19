@@ -15,10 +15,12 @@ def main
         input = gets.chomp()
 
         program = parser.produceAST(input)
-        p program
+        # p program
         puts program.to_s
 
         result = interpreter.evaluate(program, env)
+
+        program.display_info()
         p result.to_s
     end
 end
