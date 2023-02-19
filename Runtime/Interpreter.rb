@@ -29,11 +29,7 @@ class Interpreter
         when NODE_TYPES[:VarDeclaration]
             return eval_var_declaration(astNode, env)
         else
-            raise "This AST Node has not yet been setup for #{astNode.type} #{astNode}"
+            raise NotImplementedError.new("This AST Node has not yet been setup for #{astNode.type} #{astNode}")
         end
     end
-
-    private
-
-
 end
