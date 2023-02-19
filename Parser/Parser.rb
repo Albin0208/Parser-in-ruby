@@ -4,8 +4,9 @@ require_relative '../TokenType.rb'
 require_relative '../Errors/Errors.rb'
 
 class Parser
-    def initialize()
+    def initialize(logging = false)
         @tokens = []
+        @logging = logging
     end
 
     # Produce a AST from the sourceCode
@@ -13,7 +14,7 @@ class Parser
     # @return Program - Return the top node in the AST
     def produceAST(sourceCode)
         @tokens = Lexer.new(sourceCode).tokenize()
-        #puts @tokens.map(&:to_s).inspect # Display the tokens list
+        puts @tokens.map(&:to_s).inspect unless not @logging # Display the tokens list
         program = Program.new([])
 
         # Parse until end of file

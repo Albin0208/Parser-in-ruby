@@ -8,7 +8,7 @@ def main
     env.declareVar("false", BooleanVal.new(false), true)
     env.declareVar("null", NullVal.new(), true)
     
-    parser = Parser.new()
+    parser = Parser.new(true)
     interpreter = Interpreter.new()
     input = ""
     while input != "exit"
