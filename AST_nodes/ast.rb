@@ -1,16 +1,16 @@
 NODE_TYPES = {
     # Statements
-    :Program => :Program,
-    :VarDeclaration => :VarDeclaration,
-
+    Program: :Program,
+    VarDeclaration: :VarDeclaration,
+  
     # Expressions
-    :AssignmentExpr => :AssignmentExpr,
-    :LogicalAnd => :LogicalAnd,
-    :LogicalOr => :LogicalOr,
-    :UnaryOperator => :UnaryOperator,
-    :BinaryExpr => :BinaryExpr,
-    :Identifier => :Identifier,
-    :NumericLiteral => :NumericLiteral
+    AssignmentExpr: :AssignmentExpr,
+    LogicalAnd: :LogicalAnd,
+    LogicalOr: :LogicalOr,
+    UnaryOperator: :UnaryOperator,
+    BinaryExpr: :BinaryExpr,
+    Identifier: :Identifier,
+    NumericLiteral: :NumericLiteral
 }
 
 #####################################
