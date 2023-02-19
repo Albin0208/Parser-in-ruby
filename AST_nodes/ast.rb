@@ -28,7 +28,7 @@ class Stmt
     end
 
     def display_info(indent = 0)
-        raise NotImplementedError, "display_info method is not implemented for #{self.class}"
+        raise NotImplementedError.new("display_info method is not implemented for #{self.class}")
     end
 end
 
@@ -44,7 +44,7 @@ class Program < Stmt
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}"
+        puts "#{" " * indent} #{self.class.name}"
         @body.each { |stmt| stmt.display_info(indent + 2) }
     end
 end
@@ -63,7 +63,7 @@ class VarDeclaration < Stmt
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@constant} #{@identifier}"
+        puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier}"
         @value.display_info(indent + 2) if @value
     end
 end
@@ -91,7 +91,7 @@ class AssignmentExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@assigne}"
+        puts "#{" " * indent} #{self.class.name}: #{@assigne}"
         @value.display_info(indent + 2)
     end
 end
@@ -109,7 +109,7 @@ class UnaryExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@op}"
+        puts "#{" " * indent} #{self.class.name}: #{@op}"
         @left.display_info(indent + 2)
     end
 end
@@ -128,7 +128,7 @@ class BinaryExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@op}"
+        puts "#{" " * indent} #{self.class.name}: #{@op}"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
@@ -146,7 +146,7 @@ class Identifier < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@symbol}"
+        puts "#{" " * indent} #{self.class.name}: #{@symbol}"
     end
 end
 
@@ -162,7 +162,7 @@ class NumericLiteral < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "#{self.class.name}: #{@value}"
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
     end
 end
 
@@ -180,7 +180,7 @@ class LogicalAndExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + self.class.name
+        puts "#{" " * indent} #{self.class.name}"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
@@ -200,7 +200,7 @@ class LogicalOrExpr < Expr
     end
     
     def display_info(indent = 0)
-        puts " " * indent + self.class.name
+        puts "#{" " * indent} #{self.class.name}"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
