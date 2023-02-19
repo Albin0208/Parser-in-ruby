@@ -1,3 +1,4 @@
+# All the different token types available
 class TokenType
 	INTEGER = :INTEGER
 	FLOAT = :FLOAT
