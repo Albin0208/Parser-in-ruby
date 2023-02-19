@@ -8,6 +8,9 @@ class Parser
         @tokens = []
     end
 
+    # Produce a AST from the sourceCode
+    # @param sourceCode - The string of code
+    # @return Program - Return the top node in the AST
     def produceAST(sourceCode)
         @tokens = Lexer.new(sourceCode).tokenize()
         puts @tokens.map(&:to_s).inspect # Display the tokens list
@@ -79,8 +82,9 @@ class Parser
     def parse_logical_expr()
         left = parse_logical_and_expr()
 
+        # Check for logical or
         while at().value == :"||"
-            operator = eat().value
+            operator = eat().value # Eat the operator
             right = parse_logical_and_expr()
             left = LogicalOrExpr.new(left, right)
           end
@@ -90,9 +94,10 @@ class Parser
 
     def parse_logical_and_expr()
         left = parse_comparison_expr()
-      
+        
+        # Check for logical and
         while at().value == :"&&"
-          operator = eat().value
+          operator = eat().value # Eat the operator
           right = parse_comparison_expr()
           left = LogicalAndExpr.new(left, right)
         end
@@ -103,8 +108,8 @@ class Parser
 	def parse_comparison_expr()
 		left = parse_additive_expr()
 
-		while LogicComparison.include?(at().value)
-			comparetor = eat().value
+		while LOGICCOMPARISON.include?(at().value)
+			comparetor = eat().value # Eat the comparetor
 			right = parse_additive_expr()
             left = BinaryExpr.new(left, comparetor, right)
 		end
@@ -116,7 +121,7 @@ class Parser
         left = parse_multiplication_expr()
 
         while ADD_OPS.include?(at().value)
-            operator = eat().value
+            operator = eat().value # Eat the operator
             right = parse_multiplication_expr()
             left = BinaryExpr.new(left, operator, right)
         end
@@ -128,7 +133,7 @@ class Parser
         left = parse_unary_expr()
 
         while MULT_OPS.include?(at().value)
-            operator = eat().value
+            operator = eat().value # Eat the operator
             right = parse_primary_expr()
             left = BinaryExpr.new(left, operator, right)
         end
@@ -138,7 +143,7 @@ class Parser
 
     def parse_unary_expr()
 		while at().value == :-
-            operator = eat().value
+            operator = eat().value # Eat the operator
             right = parse_primary_expr()
             return UnaryExpr.new(right, operator)
         end

@@ -23,6 +23,6 @@ class Operators
 	DIVIDE = :/
 end
 
-LogicComparison = [:<, :>, :>=, :==, :!=].freeze
+LOGICCOMPARISON = [:<, :>, :>=, :==, :!=].freeze
 ADD_OPS =  [:+, :-].freeze
 MULT_OPS = [:*, :/, :%].freeze
