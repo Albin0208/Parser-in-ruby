@@ -18,18 +18,22 @@ NODE_TYPES = {
 #####################################
 
 class Stmt
-    attr_accessor :type
+    attr_reader :type
     def initialize(type)
         @type = type
     end
 
     def to_s
-        raise "Error implement this"
+        raise NotImplementedError.new("to_s method is not implemented for #{self.class}")
+    end
+
+    def display_info(indent = 0)
+        raise NotImplementedError, "display_info method is not implemented for #{self.class}"
     end
 end
 
 class Program < Stmt
-    attr_accessor :body
+    attr_reader :body
     def initialize(body)
         super(NODE_TYPES[:Program])
         @body = body # A list of all statements
@@ -40,13 +44,13 @@ class Program < Stmt
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "Program"
+        puts " " * indent + "#{self.class.name}"
         @body.each { |stmt| stmt.display_info(indent + 2) }
     end
 end
 
 class VarDeclaration < Stmt
-    attr_accessor :value, :identifier, :constant
+    attr_reader :value, :identifier, :constant
     def initialize(constant, identifier, value)
         super(NODE_TYPES[:VarDeclaration])
         @constant = constant
@@ -59,7 +63,7 @@ class VarDeclaration < Stmt
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "VarDeclaration: #{@constant} #{@identifier}"
+        puts " " * indent + "#{self.class.name}: #{@constant} #{@identifier}"
         @value.display_info(indent + 2) if @value
     end
 end
@@ -75,7 +79,7 @@ class Expr < Stmt
 end
 
 class AssignmentExpr < Expr
-    attr_accessor :value, :assigne
+    attr_reader :value, :assigne
     def initialize(value, assigne)
         super(NODE_TYPES[:AssignmentExpr])
         @value = value
@@ -87,13 +91,13 @@ class AssignmentExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "AssignmentExpr: #{@assigne}"
+        puts " " * indent + "#{self.class.name}: #{@assigne}"
         @value.display_info(indent + 2)
     end
 end
 
 class UnaryExpr < Expr
-    attr_accessor :left, :op
+    attr_reader :left, :op
     def initialize(left, op)
         super(NODE_TYPES[:UnaryOperator])
         @left = left
@@ -105,13 +109,13 @@ class UnaryExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "UnaryExpr: #{@op}"
+        puts " " * indent + "#{self.class.name}: #{@op}"
         @left.display_info(indent + 2)
     end
 end
 
 class BinaryExpr < Expr
-    attr_accessor :left, :op, :right
+    attr_reader :left, :op, :right
     def initialize(left, op, right)
         super(NODE_TYPES[:BinaryExpr])
         @left = left
@@ -124,14 +128,14 @@ class BinaryExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "BinaryExpr: #{@op}"
+        puts " " * indent + "#{self.class.name}: #{@op}"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
 end
 
 class Identifier < Expr
-    attr_accessor :symbol
+    attr_reader :symbol
     def initialize(symbol)
         super(NODE_TYPES[:Identifier])
         @symbol = symbol
@@ -142,12 +146,12 @@ class Identifier < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "Identifier: #{@symbol}"
+        puts " " * indent + "#{self.class.name}: #{@symbol}"
     end
 end
 
 class NumericLiteral < Expr
-    attr_accessor :value
+    attr_reader :value
     def initialize(value)
         super(NODE_TYPES[:NumericLiteral])
         @value = value
@@ -158,12 +162,12 @@ class NumericLiteral < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "NumericLiteral: #{@value}"
+        puts " " * indent + "#{self.class.name}: #{@value}"
     end
 end
 
 class LogicalAndExpr < Expr
-    attr_accessor :left, :right
+    attr_reader :left, :right
     def initialize(left, right)
         super(NODE_TYPES[:LogicalAnd])
         @left = left
@@ -176,14 +180,14 @@ class LogicalAndExpr < Expr
     end
 
     def display_info(indent = 0)
-        puts " " * indent + "LogicalAndExpr"
+        puts " " * indent + self.class.name
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
 end
 
 class LogicalOrExpr < Expr
-    attr_accessor :left, :right
+    attr_reader :left, :right
     def initialize(left, right)
         super(NODE_TYPES[:LogicalOr])
         @left = left
@@ -194,10 +198,9 @@ class LogicalOrExpr < Expr
     def to_s
         "(#{@left.to_s} || #{@right.to_s})"
     end
-
     
     def display_info(indent = 0)
-        puts " " * indent + "LogicalOrExpr"
+        puts " " * indent + self.class.name
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
     end
