@@ -42,7 +42,7 @@ class Parser
 
         if at().type != TokenType::ASSIGN 
             if is_constant
-            raise "Must assign value to constat. No value provided"
+                raise NameError.new("Uninitialized Constant. Constants must be initialize upon creation")
             else
                 return VarDeclaration.new(is_constant, identifier, nil)
             end
