@@ -9,7 +9,7 @@ TOKEN_TYPES = {
 	operator: /\A[\+\-\*\/\%]/,
 	unaryOperator: /\A-(?=\d+(\.\d+)?)/,
 	logical: /\A((&&)|(\|\|))/,
-	comparetors: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
+	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
 	rparen: /\A\)/,
 	assign: /\A\=/,
@@ -21,6 +21,7 @@ KEYWORDS = {
 	"const" => TokenType::CONST
 }
 
+# The lexer class
 class Lexer
     def initialize(string)
         @string = string.rstrip # Remove any trailing whitespace
@@ -28,7 +29,6 @@ class Lexer
         @position = 0
         @line = 1
         @column = 1
-		@found_comment = false
 
         @tokens = []
 
@@ -37,6 +37,7 @@ class Lexer
     end 
 
 	# Divides the string into tokens
+	# @return Array - Return a Array of the tokens found
 	def tokenize
 		open_parens = 0 # Keep track of number of parens opened
 		while (token = next_token)
@@ -70,6 +71,8 @@ class Lexer
 
 	private
 
+	# Get the next token
+	# @return Token | nil - Return the new token or nil if we have reached the end of the input string
     def next_token()
         return nil if at_eof()
         @current_line = @string[0..@string.length].match(/^\s*.*$/) 		
@@ -104,40 +107,19 @@ class Lexer
 		when TOKEN_TYPES[:integer]
 			return handle_number_match($~[0])
 		when TOKEN_TYPES[:unaryOperator]
-			token = Token.new(TokenType::UNARYOPERATOR, $~[0].to_sym, @line, @column)
-			@logger.info("Found unary operator token: #{token.value}")
-			advance()
-			return token
+			return create_token($~[0], TokenType::UNARYOPERATOR, "Found unary operator token", true)
 		when TOKEN_TYPES[:operator]
-			token = Token.new(TokenType::BINARYOPERATOR, $~[0].to_sym, @line, @column)
-			@logger.info("Found operator token: #{token.value}")
-			advance()
-			return token
+			return create_token($~[0], TokenType::BINARYOPERATOR, "Found binary operator token", true)
 		when TOKEN_TYPES[:logical]
-			token = Token.new(TokenType::LOGICAL, $~[0].to_sym, @line, @column)
-			@logger.info("Found logical token: #{token.value}")
-			advance(token.value.length)
-			return token
-		when TOKEN_TYPES[:comparetors]
-			token = Token.new(TokenType::COMPARISON, $~[0].to_sym, @line, @column)
-			@logger.info("Found Comparison token: #{token.value}")
-			advance(token.value.length)
-			return token
+			return create_token($~[0], TokenType::LOGICAL, "Found logical token", true)
+		when TOKEN_TYPES[:comparators]
+			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:assign]
-			token = Token.new(TokenType::ASSIGN, $~[0], @line, @column)
-			@logger.info("Found equal token: #{token.value}")
-			advance()
-			return token
+			return create_token($~[0], TokenType::ASSIGN, "Found assign token", true)
 		when TOKEN_TYPES[:lparen]
-			token = Token.new(TokenType::LPAREN, $~[0], @line, @column)
-			@logger.info("Found left paren token: #{token.value}")
-			advance()
-			return token
+			return create_token($~[0], TokenType::LPAREN, "Found left paren token", true)
 		when TOKEN_TYPES[:rparen]
-			token = Token.new(TokenType::RPAREN, $~[0], @line, @column)
-			@logger.info("Found right paren token: #{token.value}")
-			advance()
-			return token
+			return create_token($~[0], TokenType::RPAREN, "Found right paren token", true)
 		when TOKEN_TYPES[:identifier]
 			return handle_identifier_match($~[0])
 		end
@@ -150,53 +132,65 @@ class Lexer
 	# 				Helper functions				 #
 	##################################################
 
+	# Create the token
+	# @param match - The value of the token we have matched
+	# @param type - What type of token we want to create
+	# @param message - The message we want to log
+	# @param to_symbol - If we want to convert the match to a symbol, Default: false
+	# @return Token - A new Token if type @type
+	def create_token(match, type, message, to_symbol = false)
+		match = to_symbol ? match.to_sym : match
+		token = Token.new(type, match, @line, @column)
+		@logger.info("#{message}: #{token.value}")
+		advance(token.value.to_s.length)
+		return token
+	end
+
 	# Handles when we have matched a number
+	# @param match - The value of the token we have matched
+	# @return Token - A new number token
 	def handle_number_match(match)
-		value = match
 		# Check for whitespace between two numbers
-		if @string[@position + value.length..-1] =~ /\A\s*\d+/
+		if @string[@position + match.length..-1] =~ /\A\s*\d+/
 			raise InvalidTokenError.new("Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}")
 		end
 
-		if value.include?(".")
-			@logger.info("Found float token: #{value}")
-			token = Token.new(TokenType::FLOAT, value.to_f, @line, @column)		
+		# Check if we have a float
+		if match.include?(".")
+			return create_token(match.to_f, TokenType::FLOAT, "Found float token")
 		else
 			# Check for if number has trailing digits when starting with 0
-			if value.length > 1 && value[0].to_i == 0
+			if match.length > 1 && match[0].to_i == 0
 				raise InvalidTokenError.new("Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}")
 			end
-			@logger.info("Found integer token: #{value}")
-			token = Token.new(TokenType::INTEGER, value.to_i, @line, @column)
+			return create_token(match.to_i, TokenType::INTEGER, "Found integer token")
 		end
-		advance(value.length)
-		return token
 	end
 
 	# Handle when we have matched a identifier
+	# @param match - The value of the token we have matched
+	# @return Token - A new identifier token
 	def handle_identifier_match(match)
 		# Check if it is a keyword
 		if KEYWORDS.has_key?(match)
-			@logger.info("Found keyword token: #{match}")
-			# Create keyword token
-			token = Token.new(KEYWORDS[match], match, @line, @column)
+			# # Create keyword token
+			return create_token(match, KEYWORDS[match], "Found keyword token")
 		else
 			# If not it is a user defined keyword
-			@logger.info("Found identifier token: #{match}")
-			# Create keyword token
-			token = Token.new(TokenType::IDENTIFIER, match, @line, @column)
+			# # Create keyword token
+			return create_token(match, TokenType::IDENTIFIER, "Found identifier token")
 		end
-		advance(token.value.length)
-		return token
 	end
 
 	# Advance where we are in the string
+	# @param length - How far we should advance, Default: 1
 	def advance(length = 1)
 		@position += length
 		@column += length
 	end
 
 	# Check if we have reached the end of the input string
+	# @return Boolean - If we have reach the end of the input string
 	def at_eof
 		return @position >= @string.length
 	end
