@@ -50,9 +50,8 @@ class Parser
         end
 
         expect(TokenType::ASSIGN)
-        declaration = VarDeclaration.new(is_constant, identifier, parse_expr())
-
-        return declaration
+        expression = parse_expr()
+        return VarDeclaration.new(is_constant, identifier, expression)
     end
 
     def parse_expr()

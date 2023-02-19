@@ -28,6 +28,7 @@ class Lexer
         @position = 0
         @line = 1
         @column = 1
+		@found_comment = false
 
         @tokens = []
 
@@ -70,15 +71,11 @@ class Lexer
 	private
 
     def next_token()
-        return nil if @position >= @string.length
-        @current_line = @string[0..@string.length].match(/^\s*.*$/) 
-
-		@logger.info("Parsing token at line #{@line}, column #{@column}")
-
-        # TODO Add check for comments
+        return nil if at_eof()
+        @current_line = @string[0..@string.length].match(/^\s*.*$/) 		
 
         # Skip whitespace
-        while @string[@position] =~ /\s/
+        while @string[@position] =~ /\A\s/
             # We find a new line update the line and column value
             if @string[@position] == "\n"
                 @line += 1
@@ -88,6 +85,20 @@ class Lexer
             end
            @position += 1
         end
+
+		@logger.info("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
+
+		# Add check for comments
+		if @string[@position] =~ /\A#/
+			@logger.info("Found comment token")
+			while @string[@position] != /\n/
+				@position += 1
+				return nil if at_eof() # We have reached the end of file
+			end
+			@line += 1
+			@column = 1 # Reset to first index on line
+			return next_token() # Call next_token to get the next token after the comment
+		end
 
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
@@ -183,6 +194,11 @@ class Lexer
 	def advance(length = 1)
 		@position += length
 		@column += length
+	end
+
+	# Check if we have reached the end of the input string
+	def at_eof
+		return @position >= @string.length
 	end
 end
 
