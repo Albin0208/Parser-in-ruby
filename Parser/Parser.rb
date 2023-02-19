@@ -23,11 +23,6 @@ class Parser
 
     private
 
-    # Check if we are not at the end of file
-    def not_eof()
-        return @tokens[0].type != TokenType::EOF 
-    end
-
     def parse_stmt()
         case at().type
         when TokenType::LET, TokenType::CONST
@@ -164,22 +159,36 @@ class Parser
         end
     end
 
+    ##################################################
+	# 				Helper functions				 #
+	##################################################
+
+    # Check if we are not at the end of file
+    # @return Boolean - Return of we are at the end of file or not
+    def not_eof()
+        return at().type != TokenType::EOF 
+    end
+
+    # Get what token we are at
+    # @return Token - What token we have right now
     def at() 
         return @tokens[0]
     end
 
+    # Eat the next token
+    # @return Token - The token eaten
     def eat()
-        prev = @tokens.shift()
-
-        return prev
+        return @tokens.shift()
     end
 
+    # Eat the next token and make sure we have eaten the correct type
+    # @param token_type - What type of token we are expecting
+    # @return Token - Returns the expected token
     def expect(token_type)
         prev = eat()
         if !prev or prev.type != token_type
             raise "Parse error: Expected #{token_type} but got #{prev.type}"
         end
-
         return prev
     end
 end
