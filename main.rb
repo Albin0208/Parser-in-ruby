@@ -8,21 +8,22 @@ def main
     env.declareVar("false", BooleanVal.new(false), true)
     env.declareVar("null", NullVal.new(), true)
     
-    parser = Parser.new(true)
+    debugging = ARGV[0] == "-debug"
+
+    parser = Parser.new(debugging)
     interpreter = Interpreter.new()
     input = ""
-    while input != "exit"
-        input = gets.chomp()
 
+    while (input = STDIN.gets.chomp()) != "exit"
         program = parser.produceAST(input)
-        # p program
-        puts program.to_s
+        puts program.to_s unless not debugging
 
         result = interpreter.evaluate(program, env)
 
-        program.display_info()
+        program.display_info() unless not debugging
         p result.to_s
     end
+    puts "Bye!"
 end
 
 if __FILE__ == $0
