@@ -76,23 +76,29 @@ class Parser
         return left
     end
 
-	def parse_logical_expr()
-		left = parse_comparison_expr()
+    def parse_logical_expr()
+        left = parse_logical_and_expr()
 
-		while at().value == :"&&"
-			comparetor = eat().value
-			right = parse_comparison_expr()
-            left = LogicalAndExpr.new(left, right)
-		end
-
-		while at().value == :"||"
-			comparetor = eat().value
-			right = parse_comparison_expr()
+        while at().value == :"||"
+            operator = eat().value
+            right = parse_logical_and_expr()
             left = LogicalOrExpr.new(left, right)
-		end
+          end
+        
+          return left
+    end
 
-		return left
-	end
+    def parse_logical_and_expr()
+        left = parse_comparison_expr()
+      
+        while at().value == :"&&"
+          operator = eat().value
+          right = parse_comparison_expr()
+          left = LogicalAndExpr.new(left, right)
+        end
+      
+        return left
+    end
 
 	def parse_comparison_expr()
 		left = parse_additive_expr()
@@ -109,7 +115,7 @@ class Parser
     def parse_additive_expr()
         left = parse_multiplication_expr()
 
-        while at().value == :+ || at().value == :-
+        while ADD_OPS.include?(at().value)
             operator = eat().value
             right = parse_multiplication_expr()
             left = BinaryExpr.new(left, operator, right)
@@ -121,7 +127,7 @@ class Parser
     def parse_multiplication_expr()
         left = parse_unary_expr()
 
-        while at().value == :* || at().value == :/ || at().value == :%
+        while MULT_OPS.include?(at().value)
             operator = eat().value
             right = parse_primary_expr()
             left = BinaryExpr.new(left, operator, right)
