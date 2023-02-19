@@ -23,7 +23,7 @@ KEYWORDS = {
 
 # The lexer class
 class Lexer
-    def initialize(string)
+    def initialize(string, should_log = false)
         @string = string.rstrip # Remove any trailing whitespace
         @current_line = ""
         @position = 0
@@ -33,7 +33,7 @@ class Lexer
         @tokens = []
 
 		@logger = Logger.new(STDOUT)
-		@logger.level = Logger::INFO
+		@logger.level = should_log ? Logger::DEBUG : Logger::FATAL
     end 
 
 	# Divides the string into tokens
@@ -89,11 +89,11 @@ class Lexer
            @position += 1
         end
 
-		@logger.info("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
+		@logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
 
 		# Add check for comments
 		if @string[@position] =~ /\A#/
-			@logger.info("Found comment token")
+			@logger.debug("Found comment token")
 			while @string[@position] != /\n/
 				@position += 1
 				return nil if at_eof() # We have reached the end of file
@@ -141,7 +141,7 @@ class Lexer
 	def create_token(match, type, message, to_symbol = false)
 		match = to_symbol ? match.to_sym : match
 		token = Token.new(type, match, @line, @column)
-		@logger.info("#{message}: #{token.value}")
+		@logger.debug("#{message}: #{token.value}")
 		advance(token.value.to_s.length)
 		return token
 	end

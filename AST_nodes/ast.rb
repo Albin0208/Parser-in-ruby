@@ -42,7 +42,7 @@ class Program < Stmt
     def display_info(indent = 0)
         puts " " * indent + "Program"
         @body.each { |stmt| stmt.display_info(indent + 2) }
-      end
+    end
 end
 
 class VarDeclaration < Stmt
@@ -61,7 +61,7 @@ class VarDeclaration < Stmt
     def display_info(indent = 0)
         puts " " * indent + "VarDeclaration: #{@constant} #{@identifier}"
         @value.display_info(indent + 2) if @value
-      end
+    end
 end
 
 #####################################
@@ -89,7 +89,7 @@ class AssignmentExpr < Expr
     def display_info(indent = 0)
         puts " " * indent + "AssignmentExpr: #{@assigne}"
         @value.display_info(indent + 2)
-      end
+    end
 end
 
 class UnaryExpr < Expr
@@ -107,7 +107,7 @@ class UnaryExpr < Expr
     def display_info(indent = 0)
         puts " " * indent + "UnaryExpr: #{@op}"
         @left.display_info(indent + 2)
-      end
+    end
 end
 
 class BinaryExpr < Expr
@@ -127,7 +127,7 @@ class BinaryExpr < Expr
         puts " " * indent + "BinaryExpr: #{@op}"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
-      end
+    end
 end
 
 class Identifier < Expr
@@ -143,7 +143,7 @@ class Identifier < Expr
 
     def display_info(indent = 0)
         puts " " * indent + "Identifier: #{@symbol}"
-      end
+    end
 end
 
 class NumericLiteral < Expr
@@ -159,7 +159,7 @@ class NumericLiteral < Expr
 
     def display_info(indent = 0)
         puts " " * indent + "NumericLiteral: #{@value}"
-      end
+    end
 end
 
 class LogicalAndExpr < Expr
@@ -179,7 +179,7 @@ class LogicalAndExpr < Expr
         puts " " * indent + "LogicalAndExpr"
         @left.display_info(indent + 2)
         @right.display_info(indent + 2)
-      end
+    end
 end
 
 class LogicalOrExpr < Expr
@@ -196,9 +196,9 @@ class LogicalOrExpr < Expr
     end
 
     
-  def display_info(indent = 0)
-    puts " " * indent + "LogicalOrExpr"
-    @left.display_info(indent + 2)
-    @right.display_info(indent + 2)
-  end
+    def display_info(indent = 0)
+        puts " " * indent + "LogicalOrExpr"
+        @left.display_info(indent + 2)
+        @right.display_info(indent + 2)
+    end
 end

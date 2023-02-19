@@ -41,7 +41,7 @@ class TestLexer < Test::Unit::TestCase
         assert_equal(TokenType::RPAREN, lexer.tokenize[1].type, "The token was not correctly tokenized")
     end
 
-    def test_tokenize_simple_input
+	def test_tokenize_simple_input
 		input = "1 + 2 * 3"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
@@ -119,7 +119,7 @@ class TestLexer < Test::Unit::TestCase
 		input = "1 + 2. * 3"
 		lexer = Lexer.new(input)
 		assert_raise(InvalidTokenError) { lexer.tokenize }
-		end
+	end
 	
 	def test_tokenize_input_with_invalid_integer
 		input = "1 + 012 * 3"

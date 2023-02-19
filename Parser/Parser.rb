@@ -13,7 +13,7 @@ class Parser
     # @return Program - Return the top node in the AST
     def produceAST(sourceCode)
         @tokens = Lexer.new(sourceCode).tokenize()
-        puts @tokens.map(&:to_s).inspect # Display the tokens list
+        #puts @tokens.map(&:to_s).inspect # Display the tokens list
         program = Program.new([])
 
         # Parse until end of file
@@ -84,12 +84,12 @@ class Parser
 
         # Check for logical or
         while at().value == :"||"
-            operator = eat().value # Eat the operator
+            eat().value # Eat the operator
             right = parse_logical_and_expr()
             left = LogicalOrExpr.new(left, right)
-          end
+        end
         
-          return left
+        return left
     end
 
     def parse_logical_and_expr()
@@ -97,7 +97,7 @@ class Parser
         
         # Check for logical and
         while at().value == :"&&"
-          operator = eat().value # Eat the operator
+          eat().value # Eat the operator
           right = parse_comparison_expr()
           left = LogicalAndExpr.new(left, right)
         end
@@ -142,7 +142,7 @@ class Parser
     end
 
     def parse_unary_expr()
-		while at().value == :-
+        while at().value == :-
             operator = eat().value # Eat the operator
             right = parse_primary_expr()
             return UnaryExpr.new(right, operator)
