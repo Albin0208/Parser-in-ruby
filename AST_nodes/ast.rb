@@ -1,16 +1,16 @@
 NODE_TYPES = {
     # Statements
-    Program: :Program,
-    VarDeclaration: :VarDeclaration,
+    :Program => :Program,
+    :VarDeclaration => :VarDeclaration,
 
     # Expressions
-    AssignmentExpr: :AssignmentExpr,
-    LogicalAnd: :LogicalAnd,
-    LogicalOr: :LogicalOr,
-    UnaryOperator: :UnaryOperator,
-    BinaryExpr: :BinaryExpr,
-    Identifier: :Identifier,
-    NumericLiteral: :NumericLiteral
+    :AssignmentExpr => :AssignmentExpr,
+    :LogicalAnd => :LogicalAnd,
+    :LogicalOr => :LogicalOr,
+    :UnaryOperator => :UnaryOperator,
+    :BinaryExpr => :BinaryExpr,
+    :Identifier => :Identifier,
+    :NumericLiteral => :NumericLiteral
 }
 
 #####################################
@@ -51,7 +51,7 @@ end
 
 class VarDeclaration < Stmt
     attr_reader :value, :identifier, :constant
-    def initialize(constant, identifier, value)
+    def initialize(constant, identifier, value = nil)
         super(NODE_TYPES[:VarDeclaration])
         @constant = constant
         @identifier = identifier
