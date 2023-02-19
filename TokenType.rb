@@ -24,5 +24,3 @@ class Operators
 end
 
 LogicComparison = [:<, :>, :>=, :==, :!=]
-
-LogicExpression = ["&&".to_sym, "||".to_sym]
