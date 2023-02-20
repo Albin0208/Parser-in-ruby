@@ -83,13 +83,21 @@ class Parser
     def parse_if_stmt()
         if at().type == TokenType::IF
             eat() # Eat the if token
-            conditions = parse_logical_expr()
-            expect(TokenType::THEN)
+            
+            # TODO Add support for comma separeted conditions
+            # TODO Write test for if
+
+            conditions = Array.new()
+            while at().type != TokenType::THEN # Parse the content of teh if statment
+                conditions.append(parse_logical_expr())
+            end
+            eat() # Eat the then token
+
             body = Array.new()
             while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
                 body.append(parse_stmt())
             end
-            eat() # Eat the end statment
+            eat() # Eat the end token
             # expect(TokenType::ENDSTMT)
             return IfStatement.new(body, conditions)
         end

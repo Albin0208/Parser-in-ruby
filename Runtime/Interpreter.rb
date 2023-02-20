@@ -28,6 +28,8 @@ class Interpreter
             return eval_program(astNode, env)
         when NODE_TYPES[:VarDeclaration]
             return eval_var_declaration(astNode, env)
+        when NODE_TYPES[:IF]
+            return eval_if_statement(astNode, env)
         else
             raise NotImplementedError.new("This AST Node has not yet been setup for #{astNode.type} #{astNode}")
         end

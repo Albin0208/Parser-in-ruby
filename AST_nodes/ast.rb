@@ -70,7 +70,7 @@ class VarDeclaration < Stmt
 end
 
 class IfStatement < Stmt
-    attr_reader :body
+    attr_reader :body, :conditions
     def initialize(body, conditions)
         super(NODE_TYPES[:IF])
         @body = body # A list of all statements
@@ -83,6 +83,8 @@ class IfStatement < Stmt
 
     def display_info(indent = 0)
         puts "#{" " * indent} #{self.class.name}"
+        puts "#{" " * indent} Conditions:"
+        @conditions.each { |stmt| stmt.display_info(indent + 2) }
         @body.each { |stmt| stmt.display_info(indent + 2) }
     end
 end
