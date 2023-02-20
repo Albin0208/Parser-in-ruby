@@ -17,7 +17,7 @@ TOKEN_TYPES = {
 }
 
 KEYWORDS = {
-	"let" => TokenType::LET,
+	"var" => TokenType::VAR,
 	"const" => TokenType::CONST
 }
 

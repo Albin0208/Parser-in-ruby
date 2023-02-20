@@ -7,14 +7,14 @@ class TestParser < Test::Unit::TestCase
     end
     
     def test_parse_variable_declaration
-        ast = @parser.produceAST("let x = 1")
+        ast = @parser.produceAST("var x = 1")
         assert_equal(ast.body[0].identifier, "x")
         assert_equal(ast.body[0].value.value, 1)
         assert_equal(ast.body[0].constant, false)
     end
 
     def test_parse_variable_declaration_without_assign
-        ast = @parser.produceAST("let y")
+        ast = @parser.produceAST("var y")
         assert_equal(ast.body[0].identifier, "y")
         assert_equal(ast.body[0].value, nil)
         assert_equal(ast.body[0].constant, false)
@@ -48,7 +48,7 @@ class TestParser < Test::Unit::TestCase
     end
 
     def test_parse_missing_identifier
-        assert_raise(RuntimeError) { @parser.produceAST("let = 1") }
+        assert_raise(RuntimeError) { @parser.produceAST("var = 1") }
     end
 
     def test_parse_missing_value_on_constant
@@ -56,10 +56,10 @@ class TestParser < Test::Unit::TestCase
     end
     
     def test_parse_missing_value
-        assert_raise(InvalidTokenError) { @parser.produceAST("let x = ") }
+        assert_raise(InvalidTokenError) { @parser.produceAST("var x = ") }
     end
     
     def test_parse_unknown_token
-        assert_raise(InvalidTokenError) { @parser.produceAST("let x @ 1") }
+        assert_raise(InvalidTokenError) { @parser.produceAST("var x @ 1") }
     end
 end

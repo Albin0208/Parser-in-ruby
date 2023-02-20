@@ -154,10 +154,10 @@ class TestLexer < Test::Unit::TestCase
 	end
 
 	def test_tokenize_input_with_var_decleration
-		input = "let a = 5"
+		input = "var a = 5"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["LET: let, (1, 1)",
+		assert_equal(["VAR: var, (1, 1)",
 			"IDENTIFIER: a, (1, 5)",
 			"ASSIGN: =, (1, 7)",
 			"INTEGER: 5, (1, 9)",
@@ -186,10 +186,10 @@ class TestLexer < Test::Unit::TestCase
 	end
 
 	def test_tokenize_input_with_var_decleration_with_expr
-		input = "let a = 10 / 5 + 4"
+		input = "var a = 10 / 5 + 4"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["LET: let, (1, 1)",
+		assert_equal(["VAR: var, (1, 1)",
 			"IDENTIFIER: a, (1, 5)",
 			"ASSIGN: =, (1, 7)",
 			"INTEGER: 10, (1, 9)",

@@ -29,7 +29,7 @@ class Parser
 
     def parse_stmt()
         case at().type
-        when TokenType::LET, TokenType::CONST
+        when TokenType::VAR, TokenType::CONST
             return parse_var_declaration()
         else
             return parse_expr()
