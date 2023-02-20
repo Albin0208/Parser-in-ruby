@@ -57,7 +57,7 @@ class Parser
         return parse_assignment_expr()
     end
     
-    # Orders of Prescidence (Lowests to highest)
+    # Orders of Precedence (Lowests to highest)
     # AssignmentExpr
     # MemberExpr
     # FunctionCall
@@ -69,7 +69,7 @@ class Parser
     # PrimaryExpr
 
     def parse_assignment_expr()
-        left = parse_logical_expr()
+        left = parse_if_stmt()
 
         if at().type == TokenType::ASSIGN
             eat()
@@ -78,6 +78,23 @@ class Parser
         end
         
         return left
+    end
+
+    def parse_if_stmt()
+        if at().type == TokenType::IF
+            eat() # Eat the if token
+            conditions = parse_logical_expr()
+            expect(TokenType::THEN)
+            body = Array.new()
+            while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
+                body.append(parse_stmt())
+            end
+            eat() # Eat the end statment
+            # expect(TokenType::ENDSTMT)
+            return IfStatement.new(body, conditions)
+        end
+
+        return parse_logical_expr()
     end
 
     def parse_logical_expr()

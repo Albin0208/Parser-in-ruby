@@ -18,7 +18,11 @@ TOKEN_TYPES = {
 
 KEYWORDS = {
 	"var" => TokenType::VAR,
-	"const" => TokenType::CONST
+	"const" => TokenType::CONST,
+	"func" => TokenType::FUNC,
+	"if" => TokenType::IF,
+	"then" => TokenType::THEN,
+	"end" => TokenType::ENDSTMT
 }
 
 # The lexer class

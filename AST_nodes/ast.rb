@@ -2,6 +2,7 @@ NODE_TYPES = {
     # Statements
     Program: :Program,
     VarDeclaration: :VarDeclaration,
+    IF: :IF,
   
     # Expressions
     AssignmentExpr: :AssignmentExpr,
@@ -65,6 +66,24 @@ class VarDeclaration < Stmt
     def display_info(indent = 0)
         puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier}"
         @value.display_info(indent + 2) if @value
+    end
+end
+
+class IfStatement < Stmt
+    attr_reader :body
+    def initialize(body, conditions)
+        super(NODE_TYPES[:IF])
+        @body = body # A list of all statements
+        @conditions = conditions # A list of all the conditions
+    end
+
+    def to_s
+        return @body.map(&:to_s)
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}"
+        @body.each { |stmt| stmt.display_info(indent + 2) }
     end
 end
 

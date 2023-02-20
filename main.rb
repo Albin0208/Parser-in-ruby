@@ -1,6 +1,6 @@
 require_relative 'Parser/Parser.rb'
-require_relative 'RunTime/Interpreter.rb'
-require_relative 'RunTime/Enviroment.rb'
+require_relative 'Runtime/Interpreter.rb'
+require_relative 'Runtime/Enviroment.rb'
 
 def main
     env = Enviroment.new()
