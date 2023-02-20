@@ -34,12 +34,38 @@ class TestLexer < Test::Unit::TestCase
         lexer = Lexer.new(input)
 
         assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type, "Assert that given a negative number a unary operator is returned")
-        
 
         lexer = Lexer.new("()")
         assert_equal(TokenType::LPAREN, lexer.tokenize[0].type, "The token was not correctly tokenized")
         assert_equal(TokenType::RPAREN, lexer.tokenize[1].type, "The token was not correctly tokenized")
     end
+
+	def test_tokenize_keywords
+		input = "var"
+		lexer = Lexer.new(input)
+
+		assert_equal(TokenType::VAR, lexer.tokenize[0].type, "The token was not correctly tokenized")
+
+		input = "const"
+		lexer = Lexer.new(input)
+
+		assert_equal(TokenType::CONST, lexer.tokenize[0].type, "The token was not correctly tokenized")
+
+		input = "if"
+		lexer = Lexer.new(input)
+
+		assert_equal(TokenType::IF, lexer.tokenize[0].type, "The token was not correctly tokenized")
+
+		input = "then"
+		lexer = Lexer.new(input)
+
+		assert_equal(TokenType::THEN, lexer.tokenize[0].type, "The token was not correctly tokenized")
+
+		input = "end"
+		lexer = Lexer.new(input)
+
+		assert_equal(TokenType::ENDSTMT, lexer.tokenize[0].type, "The token was not correctly tokenized")
+	end
 
 	def test_tokenize_simple_input
 		input = "1 + 2 * 3"
