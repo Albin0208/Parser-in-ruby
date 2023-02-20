@@ -84,21 +84,24 @@ class Parser
         if at().type == TokenType::IF
             eat() # Eat the if token
             
-            # TODO Add support for comma separeted conditions
             # TODO Write test for if
 
             conditions = Array.new()
-            while at().type != TokenType::THEN # Parse the content of teh if statment
-                conditions.append(parse_logical_expr())
+            while at().type != TokenType::THEN # Parse the conditions of the if statment
+                conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
             end
             eat() # Eat the then token
+
+            # Parse else if
+
+
+            # Parse else
 
             body = Array.new()
             while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
                 body.append(parse_stmt())
             end
             eat() # Eat the end token
-            # expect(TokenType::ENDSTMT)
             return IfStatement.new(body, conditions)
         end
 

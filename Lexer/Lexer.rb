@@ -14,6 +14,7 @@ TOKEN_TYPES = {
 	rparen: /\A\)/,
 	assign: /\A\=/,
 	identifier: /\A([a-z]|_[a-z])\w*/i,
+	separators: /\A,/,
 }
 
 KEYWORDS = {
@@ -124,6 +125,8 @@ class Lexer
 			return create_token($~[0], TokenType::LPAREN, "Found left paren token", true)
 		when TOKEN_TYPES[:rparen]
 			return create_token($~[0], TokenType::RPAREN, "Found right paren token", true)
+		when TOKEN_TYPES[:separators]
+			return create_token($~[0], TokenType::COMMA, "Found comma token", true)
 		when TOKEN_TYPES[:identifier]
 			return handle_identifier_match($~[0])
 		end
