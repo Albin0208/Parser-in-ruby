@@ -5,12 +5,18 @@
          | <func_declaration>
          | <loop>
          | <expr>
+         | "return" <expr>
 
 <var_declaration> ::= ("const")? <type_specifier> <identifier> (= <expr>)?
+                    | "const")? <array_type_specifier> <identifier> ("=" <array_literal>)?
+
+<array_type_specifier> ::= <type_specifier> "[]"
+
+<array_literal> ::= "[" (<expr> ("," <expr>)*)? "]"
 
 <func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt>* "}"
 
-<func_params> ::= (<type_specifier> <identifier> ("," <type_specifier> <identifier>)*)?
+<func_params> ::= (<type_specifier> <identifier> ("," <type_specifier> <identifier>)*)? 
 
 <func_specifier> ::= "void" | <type_specifier>
 
@@ -47,8 +53,11 @@
 <unary_expr> ::= ("+" | "-") <primary_expr>
 
 <primary_expr> ::= <identifier> 
+                 | <array_access>
                  | <numeric_literal> 
                  | "(" <expr> ")"
+
+<array_access> ::= <identifier> "[" <expr> "]"
 
 <identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
 
