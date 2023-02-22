@@ -30,7 +30,7 @@ pdf:
   image: thomasweise/texlive
   script:
     - cd Doc
-    - xelatex TDP003-mall.tex
+    - latexmk -xelatex -pvc TDP003-mall.tex
   artifacts:
     paths:
     - Doc/Specs.pdf
