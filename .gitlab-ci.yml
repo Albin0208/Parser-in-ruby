@@ -19,7 +19,6 @@
 stages:          # List of stages for jobs, and their order of execution
   - build
   - test
-  - deploy
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -47,3 +46,11 @@ deploy-job:      # This job runs in the deploy stage.
   script:
     - echo "Deploying application..."
     - echo "Application successfully deployed."
+
+compile_pdf:
+  stage: build
+  image: timnn/texlive  # use a Docker image for LaTeX from https://hub.docker.com/
+  script: xelatex main.tex  # build the pdf just as you would on your computer
+  artifacts:
+    paths: 
+      - main.pdf  # instruct GitLab to keep the main.pdf file
