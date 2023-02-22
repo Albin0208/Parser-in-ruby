@@ -28,6 +28,20 @@ class Parser
     private
 
     def parse_stmt()
+        # case at().type
+        # when TokenType::TYPE_SPECIFIER, TokenType::CONST
+        #     return parse_var_declaration()
+        # when TokenType::IF
+        #     return parse_conditional()
+        # when TokenType::FUNC
+        #     return parse_func_declaration()
+        # when TokenType::loop do
+        #     return parse_loop()
+        # when TokenType::RETURN
+        #     return parse_return()
+        # else 
+        #     parse_expr
+        # end
         case at().type
         when TokenType::VAR, TokenType::CONST # Parsing of a variable declaration
             return parse_var_declaration()
