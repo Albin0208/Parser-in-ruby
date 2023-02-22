@@ -23,7 +23,7 @@ class Enviroment
         env = resolve(varname)
         if env.constants.include?(varname)
             # TODO Create better error
-            raise "Cannot reasing constant variable \"#{varname}\""
+            raise "Cannot reassign constant variable \"#{varname}\""
         end
         env.variables[varname] = value
 
