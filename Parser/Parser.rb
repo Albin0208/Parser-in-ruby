@@ -163,7 +163,7 @@ class Parser
 
         while MULT_OPS.include?(at().value)
             operator = eat().value # Eat the operator
-            right = parse_primary_expr()
+            right = parse_unary_expr()
             left = BinaryExpr.new(left, operator, right)
         end
 
