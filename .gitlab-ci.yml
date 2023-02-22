@@ -29,7 +29,7 @@ stages:          # List of stages for jobs, and their order of execution
 compile_pdf:
   stage: build
   image: timnn/texlive  # use a Docker image for LaTeX from https://hub.docker.com/
-  script: latekmk -xelatex -pvc TDP003-mall.tex  # build the pdf just as you would on your computer
+  script: latexmk -xelatex -pvc Doc/TDP003-mall.tex  # build the pdf just as you would on your computer
   artifacts:
     paths: 
       - main.pdf  # instruct GitLab to keep the main.pdf file
