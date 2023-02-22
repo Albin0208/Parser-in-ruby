@@ -1,3 +1,35 @@
 Ett interpreterat och objektorienterat språk.
 
 Liknande python?
+
+loop
+-for
+-foreach
+-while
+
+variabler
+- type name
+- tilldelning
+   - type name = value
+
+funktioner
+- func name(type param, ...)
+- params som referenser default, (går att sätta till kopior?)
+- (sätta default värden till params?)
+
+exempel
+func add(int param1, int param2) {
+   return param1 + param2
+}
+
+if sats
+- and,or,not
+-elsif
+-else
+
+scope
+- variabler dör med sitt scope
+
+array
+
+Felmeddelanden

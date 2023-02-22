@@ -1,0 +1,190 @@
+\documentclass{TDP003mall}
+
+\newcommand{\version}{Version 1.1}
+\author{Albin Dahlén, \url{albda746@student.liu.se}}
+\title{Reflektionsdokument}
+\date{2022-10-27}
+\rhead{Albin Dahlén}
+
+\begin{document}
+
+    \projectpage
+
+    \tableofcontents
+
+    \section*{Revisionshistorik}
+    \begin{table}[!h]
+        \begin{tabularx}{\linewidth}{|l|X|l|}
+            \hline
+            Ver. & Revisionsbeskrivning      & Datum    \\\hline
+            1.0  & Skapad för inlämning      & 22-10-20 \\\hline
+            1.1  & Korrigerad efter feedback & 22-10-27 \\\hline
+        \end{tabularx}
+    \end{table}
+
+    \newpage
+
+
+    \section{Introduktion}
+    Jag arbetade tillsammans med Filip Ingvarsson (filin764).
+
+    Vi arbetade mycket individuellt och stämde av ganska ofta.
+    Detta tillvägagångssätt kändes som mer effektiv då det gick att arbeta parallellt, vilket vi märkte under projektets gång genom att vi ofta var klara före våra utsatta deadlines på uppgifterna.
+
+    För att hålla reda på vad som skulle göras och vem som gjorde vad använde vi oss av issues i Gitlab som en att göra lista där vi skapade en milstolpe för varje större delmoment i kursen.
+    Sedan bröt vi ner problemet i mindre delar och skapade ett issue för varje delproblem.
+    När vi började arbete med ett moment, exempelvis en funktion i datalagret, tilldelade man det ärendet till sig själv vilket gjorde att den andra personen fick en överblick om vilka uppgifter som fanns kvar.
+
+    Fördelen med att arbeta på detta sätt var att vi inte behövde stämma av varje gång en ny funktion skulle påbörjas utan vi såg vad som fanns kvar att göra och kunde då välja en funktion att arbeta med.
+    Nackdelen var att arbetsfördelningen blev ojämn, det slutade med att jag gjorde fler uppgifter än Filip eftersom jag tidigare arbetet liknande uppgift och kunde förhållandevis snabbt färdigställa mina uppgifter.
+
+    Vi arbetade även lite med parprogrammering då vi körde fast på uppgifter.
+    Genom att diskutera problemet med någon blev det lättare att lösa de svårare problemen.
+    Dock tog det längre tid att skriva koden då båda var tvungna att förstå hur koden fungerade.
+    Detta gjorde att det inte kändes som ett lämpligt tillvägagångssätt för hela projektet eftersom det tog längre tid att färdigställa funktionerna vid parprogrammering.
+
+
+    \section{Erfarenheter}
+    Under arbetet har vi haft många positiva erfarenheter och få negativa.
+    Det negativa var oftast bara småsaker som kunde gjort arbetet bekvämare, exempelvis hur vi använde git och gitlab samt formatering av kod.
+
+    \subsection{Planerings erfarenheter}
+    Första steget i projektet var att skapa en tidsplan för när de olika momenten skulle vara färdiga.
+    Vi valde att sätta våra deadlines några dagar före kursens deadlines för samma uppgifter.
+    Anledningen till att sätta dem några dagar innan är att skulle någon av oss vara sjuk eller inte kan arbeta har vi några dagar extra innan uppgiften skulle vara klar.
+
+    När vi började arbeta med ett moment delade vi upp det i mindre delar, vi valde att göra detta med issues i gitlab för att få en översikt av vad som ska göras.
+    Exempelvis för datalagret skapade vi ett issue för varje funktion som skulle vara med.
+    Detta gjorde att det var lätt att se hur mycket som var kvar, samt genom att tilldela ärendet till sig själv kunde vi se vad den andra personen arbetade på.
+
+    Steve McConnell (2004, s. 23-55) anser att om utvecklarna i ett projekt lägger sitt fokus på kvalitet redan från början kommer det resultera i ett bra utfört projekt med färre fel och problem.
+    McConnell betonar för att leverera en bra produkt måste produkten vara bra planerad från början.
+    Detta håller vi med om eftersom under projektets gång stötte vi inte på några större problem, vilket berodde på att vi lagt tid på att planera projektet.
+    De enda problemen vi stötte på var programmeringsproblem och genom att vi hade gjort en bra planering kunde vi lägga mycket tid på dessa problem och lösa dem innan deadline.
+    Vid vissa moment valde vi bort att planera arbetet eftersom det kändes som ett onödigt steg.
+    Exempelvis funktionerna ``get\_project\_count'' och ``get\_project'' i datalagret.
+    För dessa funktioner skedde planeringen och utvecklingen av funktionen samtidigt.
+    Det största exemplet på när vi inte tillämpade någon större planering var presentationslagret.
+    Vid utvecklingsstarten av presentationslagret hade vi en enkel bild av vad som skulle finnas på varje sida.
+    Istället för att planera hur en sida skulle se ut och hur de olika sidorna skulle fungera tillsammans valde vi istället att utveckla sidan allt eftersom vi märkte vad som krävdes på just den sidan.
+    Enligt McConnell är detta inte det bästa tillvägagångssättet, exempelvis kan oväntade fel dyka upp.
+    Detta tillvägagångssätt fungerade för våra behov denna gången eftersom varje sida inte var jätte komplex.
+    Detta tillvägagångssätt lämpar sig dock inte för större problem eftersom det blir komplex väldigt snabbt och problemet kan vara svårt att lösa.
+    Det är istället bättre att dela upp det stora problemet i mindre delar, men för ett mindre problem kan det vara lämpligt att börja arbeta utan någon större planering.
+    Anledningen till detta är för att snabbare komma igång med arbetet samt eftersom problemet är litet går det oftast att lösa samtidigt som koden skrivs.
+
+    \subsubsection{Arbeta med ett problem}
+    När jag började arbeta på ett nytt problem delade jag upp problemet i mindre delproblem för att lösa problemet i sin helhet.
+    Vid lösning av ett delproblem skapade jag någon form av pseudokod beroende på hur stort problemet var.
+    Genom att göra detta fick jag tänka igenom hela problemet och hela lösningen och kunde identifiera eventuella brister och fel innan jag ens börjat skriva kod.
+
+    Exempelvis när jag skapar pseudokoden först får jag en överblick av hur koden sedan ska fungera och kan redan då identifiera bristerna.
+    Genom att upptäcka dessa brister innan koden är skriven slipper jag korrigera större kodstycken som inte fungerar som förväntat.
+
+    Tekniken att dela upp större problem i mindre delar rekommenderar Steve McConnell (2004, s. 111).
+    McConnell skriver att ingen huvud är stort nog att innehålla alla detaljer för ett komplext program.
+    Han tycker då att programmet ska delas in i mindre problem för att sedan lösa de mindre problemen för sig för att undvika att problemet blir för komplext.
+    Detta märkte vi särskilt på sökfunktionen då vi först valde att tänka den som ett problem.
+    Vi märkte snabbt att detta inte skulle fungera då det blev för komplext att hålla hela problemet i huvudet.
+    Vi valde då att dela upp funktionen i mindre delar och lösa varje del för sig för att sedan sammanfoga dessa lösningar och skapa en lösning på problemet.
+    Vad som då hade tagit någon dag att försöka lösa kunde vi lösa på en eftermiddag.
+    Detta tog vi med oss till senare uppgifter i projektet och slapp göra samma misstag ännu en gång.
+
+    \subsection{Tekniska erfarenheter}
+
+    \subsubsection{Pycharm och Emacs}
+    I början av projektet använde jag Emacs som jag upplevde var en bra texteditor då alla möjliga filer går att öppna med den.
+    När HTML skulle skrivas kände jag att Emacs inte var det bästa valet av editor längre.
+    Anledningen till detta var att jag tyckte den saknade funktioner som jag föredrar att använda när jag skriver HTML.
+    Dock fanns vissa av dessa funktionerna i Emacs men var inte intuitiva att använda.
+    Exempel på sådana funktioner är autocomplete av taggar och kodformatering.
+    Dessa två funktioner är enligt mig essentiella för att skriva HTML kod.
+    Med hjälp av dessa funktioner behöver utvecklaren inte tänka på att skriva korrekt syntax utan dessa funktioner hjälper till med att formatera koden.
+    Detta gör att fokuset kan läggas på att utveckla produkten och inte korrekt syntax.
+
+    Fördelen med Emacs är att den kan öppna många olika filer och det går snabbt att justera kod.
+    Nackdelen är att Emacs inte är konfigurerad med alla hjälpfunktioner för att skriva HTML.
+    Dessa funktioner är dock inte nödvändiga för att producera bra HTML kod, dock föredrar jag att använda dem när jag skriver HTML.
+
+    Eftersom Emacs saknade den funktionalitet jag ville använda valde jag att använda Pycharm istället.
+    Anledningen till att jag valde Pycharm är att den är utvecklad för att skriva Python samt att den har stöd för HTML.
+    Då vi använder Flask och Jinja2 tillsammans med HTML var det effektivt att använda en IDE som stödjer alla språken och ramverken som skulle användas.
+    Detta gjorde att utveckling av projektet gick snabbare för min del då jag kunde fokusera på vad jag skulle skriva och inte hur det skulle skrivas med korrekt syntax.
+
+    \subsubsection{Bootstrap}
+    Vid styling av HTML-element använde vi CSS biblioteket Bootstrap.
+    Anledningen till att vi valde att använda ett CSS bibliotek var eftersom med hjälp av biblioteket kunde vi fokusera på att bygga och designa webbsidan istället för att skriva styling för varje element som skulle placeras på sidan.
+    Genom att använda bootstrap fick vi även en webbsida som är relativt mobilvänlig eftersom den funktionaliteten är inbyggd i Bootstrap.
+    Nackdelen med att använda bootstrap var att det kunde bli väldigt många nästlade div element för att klasserna skulle fungera som tänkt i bootstrap, vilket kunde göra koden svår att läsa.
+    Överlag upplevde jag att Bootstrap var ett bra val att använda istället för att skriva CSS förhand eftersom vi kunde skifta vårt fokus till funktionaliteten av webbsidan istället för designen.
+
+    \subsubsection{Terminalen}
+    Terminalen var ett väldigt bra verktyg för att navigera i filsystemet, använda git och skapa filer.
+    Med terminalen gick det att använda git vilket gör att versionshanteringen kan utföras på samma ställe som navigeringen samt där kataloger och filer skapas.
+    Genom att använda terminalen gick det snabbt att komma till projektkatalogen och sedan köra kommandot ``git pull'' för att hämta den senaste versionen av projektet.
+    Terminalen gjorde det även smidigt att öppna de relevanta filer i den valda editorn då det bara var att välja filen som skulle öppnas och köra kommandot för vald editor på den filen.
+    När nya filer skulle skapas kunde detta göras från terminalen och många funktioner kan då hanteras på ett ställe.
+
+    \subsubsection{Git och Gitlab}
+    Git var den viktigaste tekniken vi använde oss av eftersom den underlättade samarbetet väldigt.
+    Vid användning av git arbetade vi mycket med att commita och på så sätt bygga en historik om hur projektet utvecklats, på detta sätt var det lätt att gå tillbaka om en senare ändring gjorde att systemet inte fungerar som det ska.
+    Med historiken gick det även att se vem som gjort vad, men den viktigaste delen är att med hjälp av gitlab i detta fallet gick det väldigt smidigt att samarbeta på projektet.
+    På gitlab finns projektet och utvecklaren hämtar hem en lokal version av projektet och gör sina ändringar och pushar sedan upp dem till gitlab.
+    Detta gör att den senaste versionen av projektet alltid finns tillgänglig på gitlab för alla utvecklarna.
+
+    Nackdelen med git och gitlab för oss var att då vi inte hade arbetat med det mycket tidigare var det svårt att veta när en commit skulle göras.
+    Detta slutade med att en commit kunde innehålla väldigt mycket förändringar vilket gjorde det svårt att se vad som förändrats från commit till commit.
+    En annan nackdel var att vi inte använde oss av branches vid utvecklingen vilket ofta resulterade i merge-conflicts om båda arbetat på funktioner samtidigt.
+
+    \subsection{Datalagret och presentationslagret}
+    Vid utveckling av datalagret och presentationslagret använde vi oss av samma tillvägagångssätt.
+    Vi började med att skapa en grundstruktur för att sedan gå tillbaka och utveckla grundstrukturen.
+    Detta gjorde att den andra personen kunde arbeta vidare med funktionalitet som var beroende av en funktion även om den funktionen inte var klar ännu.
+    Exempelvis saknade datalagret felhantering från början vilket skapades senare.
+    Detta gjorde att presentationslagret gick att påbörja innan datalagret var helt färdigställt.
+
+    \subsection{Samarbetserfarenheter}
+    Jag har tidigare arbetat i programmerings-projekt med andra men då var personerna inte på samma kunskapsnivå vilket gjorde att det blev svårare att fördela arbetet.
+    I detta projektet hade vi ungefär samma kunskapsnivå vilket underlättade då det gick att lita på att gruppmedlemmen producerade fungerande kod.
+    I och med att kunskapsnivån var ungefär samma gick det bra att bolla idéer så vi kunde samarbeta för att lösa komplicerade problem.
+
+    Vi arbetade både med parprogrammering och att arbeta individuellt.
+    Enligt Steve McConnell (2004, s. 484) tenderar parprogrammering att producera mer kvalitativ kod eftersom koden tenderar att stiga till nivån för den bästa programmeraren i paret.
+    Detta märkte vi genom koden vi producerade när vi parprogrammerade var tydlig och genomtänkt eftersom båda var tvungna att förstå den.
+    Detta gjorde även att problemet blev mer genomtänkt eftersom för att förklara hur vi tänkte för den andra behövde vi förstå både problemet och vår egna lösning.
+    Dock programmerade vi majoriteten av projektet individuellt trots att vi märkte att parprogrammeringen gav bättre resultat.
+    Anledningen till detta var att enklare problem tog dubbelt så lång tid att lösa eftersom vi hela tiden diskuterade lösningen och båda var tvungna att förstå varje rad kod innan vi gick vidare.
+    Hade vi utfört hela projektet med parprogrammering hade det tagit längre tid eftersom när vi arbetade individuellt kunde vi lösa var sitt problem vilket gjorde att det gick dubbelt så snabbt.
+
+    Steve McConnell (2004, s. 73-121) rekommenderar att utvecklarna borde syna varandras kod noggrannare för att den ska fungera på bästa sätt samt att minimera fel som en utvecklare kan ha missat.
+    Detta tillvägagångssätt använde vi oss inte av utan istället såg vi över varandras kod och såg till att det såg ut som att det skulle fungera som tänkt.
+    Testet av koden sköttes av enhetstester samt en systemdemonstration där den färdiga produkten testades.
+    Vi litade på att testerna räckte för att säkerställa kodens funktionsduglighet samt att utvecklaren testade sin kod medan den utvecklades.
+    Detta tillvägagångssätt fungerade för oss eftersom vi litade på att den andra personen var noggrann när koden skrevs och testade den löpandes.
+
+    Samarbetet fungerade bra men då vi hade olika mycket kunskaper sedan tidigare och olika sätt att skriva kod på ledde det ibland till att vi hade svårt att läsa den andra personens kod.
+    I efterhand borde vi ha kommit överens om någon form av kodstandard och formatering för att få lättläslig kod för båda.
+
+
+    \section{Framtida projekt}
+    För framtida projekt kommer jag att ta med mig att det är viktigt att planera noggrant innan projektet påbörjas.
+    Detta leder till att slutprodukten blir bra samt att utvecklingen av projektet blir bättre.
+    En annan sak jag tar med mig att det är viktigt att försöka bryta ner större problem i mindre delar för att underlätta för sig själv när ett problem ska lösas.
+    Slutligen så är det viktigt att förstå vad och hur din eller dina arbetskamrater gör saker.
+    Det är bra att som grupp sätta någon form av standard på hur koden ska se ut och vara formaterad.
+
+
+    \section{Sammanfattning}
+    Sammanfattningsvis har de viktigaste lärdomarna av detta projekt varit att det är viktigt att planera projektet så mycket som möjligt för att underlätta för sig själv.
+    Det är även viktigt att alla parter skriver liknande kod, alltså att gruppen kommer överens om någon form av kodstandard och formatting för att koden ska vara lättläst för alla.
+
+    En annan viktig lärdom är att använda en texteditor eller IDE som du är bekväm med och har den funktionalitet du vill använda när du skriver kod.
+
+    Slutligen är den viktigaste lärdomen att dela upp projektet i så små delar som möjligt.
+    När ett problem sedan ska lösas bör det tänkas igenom ordentlig och eventuellt skapa någon form av pseudokod.
+    Genom att göra detta kan vi som utvecklare spara tid när koden ska skrivas då eventuella brister kan identifieras så tidigt som möjligt.
+
+
+    \section{Referenslista}
+    McConnell, Steve. 2004. \emph{Code Complete, Second Edition}. Microsoft Press.
+\end{document}

@@ -1,0 +1,15 @@
+\babel@toc {swedish}{}\relax 
+\contentsline {section}{\numberline {1}Introduktion}{2}{section.1}%
+\contentsline {section}{\numberline {2}Grammatik}{2}{section.2}%
+\contentsline {section}{\numberline {3}Typning}{2}{section.3}%
+\contentsline {section}{\numberline {4}Styrstrukturer}{2}{section.4}%
+\contentsline {section}{\numberline {5}Iteratorer}{3}{section.5}%
+\contentsline {subsection}{\numberline {5.1}For-loop}{3}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}While-loop}{3}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Foreach-loop}{3}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Funktioner}{3}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Parameteröverföring}{3}{subsection.6.1}%
+\contentsline {section}{\numberline {7}Objektorienterat}{3}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Klasser}{4}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Scope}{4}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Variablers livslängd}{4}{subsection.8.1}%

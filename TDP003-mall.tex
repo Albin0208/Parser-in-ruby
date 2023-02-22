@@ -1,0 +1,159 @@
+\documentclass{TDP003mall}
+
+\newcommand{\version}{Version 1.1}
+\author{Albin Dahlén, \url{albda746@student.liu.se}\\
+Filip Ingvarsson, \url{filin764@student.liu.se}}
+\title{Språkspecifikation}
+\date{2023-02-22}
+\rhead{Albin Dahlén \\
+Filip Ingvarsson}
+
+\begin{document}
+
+    \projectpage
+
+    \tableofcontents
+
+    \section*{Revisionshistorik}
+    \begin{table}[!h]
+        \begin{tabularx}{\linewidth}{|l|X|l|}
+            \hline
+            Ver. & Revisionsbeskrivning      & Datum    \\\hline
+            1.1  & Språkspecification 2     & 23-02-22 \\\hline
+        \end{tabularx}
+    \end{table}
+
+    \newpage
+
+
+    \section{Introduktion}
+
+    \section{Grammatik}
+    \begin{verbatim}
+    program ::= stmt
+
+    stmt ::= | var_declaration
+             | expr
+
+    var_declaration ::= | var, const
+                         | expr         
+             
+    expr ::= | assign_expr
+             | logical_expr
+             | 
+    
+
+
+
+    
+    \end{verbatim}
+
+    \section{Typning}
+    Typningen ska vara statisk, där variabler deklareras genom att specificera vilken typ det är.
+
+    Exempel: \\
+    int a = 2 \\
+    float b = 2 \\
+    string c = ``Hej''
+
+    \section{Styrstrukturer}
+\begin{verbatim}
+    Exempel if-sats:
+    if (cond) {
+      
+    }
+
+    Exempel if-else-sats:
+    if (cond) {
+      
+    } else {
+
+    }
+
+    Exempel if-elsif-elsesats:
+    if (cond) {
+      
+    } elseif cond {
+
+    } else {
+
+    }
+\end{verbatim}
+
+\section{Iteratorer}
+
+\subsection{For-loop}
+
+\subsection{While-loop}
+
+\subsection{Foreach-loop}
+
+    \section{Funktioner}
+    Funktioner defineras genom att skriva nyckelordet \emph{func} följt av vilket returtyp funktionen ska ha. Efter returtypen följer funktionsnamnet och en komma separerad parameterlista omgiven av paranteser där varje parameters typ anges innan parameterns namn. Funktionskroppen omslutes av en start- och slutmåsvinge. I slutet av funktionskroppen måste ett nyckelordet \emph{return} finnas om det inte är en void funktion där nyckelordet \emph{void} har skrivit i funktions deklarationen.
+
+    \begin{verbatim}
+    Exempel publik funktion:
+    func string name(string param1, int param2...) {
+        statements
+        return "This is a string"
+    }  
+\end{verbatim}
+    
+    \subsection{Parameteröverföring}
+    Alla parametrar skickas alltid som referenser och vill man ha en kopia får man anropa funktionen \emph{copy} på objektet.
+
+\begin{verbatim}
+    Exempel funktionsanrop med parameteröverföring:
+    func_name(param1, param2)
+
+    Exempel funktionsanrop med parameteröverföring som kopior:
+    object.func_name(param1.copy(), param2.copy())
+\end{verbatim}
+
+    \section{Objektorienterat}
+    Språket ska vara objektorienterat med arv där funktioner kan specifieceras som public, protected och private.
+
+    \begin{verbatim}
+    Exempel publik funktion:
+    func string name(string param1, int param2...) {
+        statements
+        return "This is a string"
+    } 
+
+    Exempel publik funktion: 
+    public func int name(int param1, int param2...) { 
+        statements
+        return 45 
+    } 
+
+    Exempel protected funktion: 
+    protected func string name(string param1, int param2...) { 
+        statements
+        return "This is a string"
+    } 
+
+    Exempel privat funktion: 
+    private func string name(string param1, int param2...) { 
+        statements
+        return "This is a string"
+    } 
+\end{verbatim}
+    \subsection{Klasser}
+        \begin{verbatim}
+    Exempel klass deklaration:
+    Class Name {
+      
+    }
+
+    Exempel klass deklaration med arv:
+    Class Name -> Parent {
+      
+    }
+\end{verbatim}
+
+    \section{Scope}
+
+    \subsection{Variablers livslängd}
+    En variabel där i samband med sitt scope.
+ 
+\end{document}
