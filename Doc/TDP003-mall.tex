@@ -30,21 +30,72 @@ Filip Ingvarsson}
 
     \section{Grammatik}
     \begin{verbatim}
-    program ::= stmt
+    <program> ::= <stmt>+
 
-    stmt ::= | var_declaration
-             | expr
+    <stmt> ::= <var_declaration> 
+            | <conditional>
+            | <func_declaration>
+            | <loop>
+            | <expr>
+            | "return" <expr>
 
-    var_declaration ::= | var, const
-                         | expr         
-             
-    expr ::= | assign_expr
-             | logical_expr
-             | 
-    
+    <var_declaration> ::= ("const")? <type_specifier> <identifier> (= <expr>)?
+                        | "const")? <array_type_specifier> <identifier> ("=" <array_literal>)?
 
+    <array_type_specifier> ::= <type_specifier> "[]"
 
+    <array_literal> ::= "[" (<expr> ("," <expr>)*)? "]"
 
+    <func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt>* "}"
+
+    <func_params> ::= (<type_specifier> <identifier> ("," <type_specifier> <identifier>)*)? 
+
+    <func_specifier> ::= "void" | <type_specifier>
+
+    <type_specifier> ::= "int" | "float" | "bool" | "string"
+
+    <conditional> ::= "if" <expr> "{" <stmt>+ "}"
+                    ("elsif" <expr> "{" <stmt>+ "}" )*
+                    ("else" "{" <stmt>+ "}")?
+
+    <loop> ::= "while" <expr> "{" <stmt>* "}"
+
+    <assign_expr> ::= <identifier> "=" <expr>
+
+    <func_call> ::= <identifier> "(" (<expr> ("," <expr>)*)? ")"
+
+    <expr> ::= <logical_expr> 
+            | <arithmetic_expr> 
+            | <assign_expr>
+            | <func_call>
+            | <primary_expr>
+
+    <logical_expr> ::= <logical_and_expr> | <logical_or_expr>
+
+    <logical_and_expr> ::= <comparison_expr> ("&&" <comparison_expr>)+
+
+    <logical_or_expr> ::= <logical_and_expr> ("||" <logical_and_expr>)+
+
+    <comparison_expr> ::= <additive_expr> { <logical_comparator> <additive_expr> }
+
+    <additive_expr> ::= <multiplication_expr> { ("+" | "-") <multiplication_expr> }
+
+    <multiplication_expr> ::= <unary_expr> { ("*" | "/") <unary_expr> }
+
+    <unary_expr> ::= ("+" | "-") <primary_expr>
+
+    <primary_expr> ::= <identifier> 
+                    | <array_access>
+                    | <numeric_literal> 
+                    | "(" <expr> ")"
+
+    <array_access> ::= <identifier> "[" <expr> "]"
+
+    <identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
+
+    <numeric_literal> ::= [0-9]+ ( "." [0-9]+ )?
+
+    <logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="
     
     \end{verbatim}
 
