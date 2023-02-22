@@ -29,8 +29,10 @@ class Parser
 
     def parse_stmt()
         case at().type
-        when TokenType::VAR, TokenType::CONST
+        when TokenType::VAR, TokenType::CONST # Parsing of a variable declaration
             return parse_var_declaration()
+        when TokenType::IF # Parse a if statment
+            return parse_if_stmt()
         else
             return parse_expr()
         end
