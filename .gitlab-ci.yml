@@ -26,15 +26,6 @@ stages:          # List of stages for jobs, and their order of execution
 #     - echo "Compiling the code..."
 #     - echo "Compile complete."
 
-pdf:
-  image: thomasweise/texlive
-  script:
-    - cd Doc
-    - xelatex -pvc TDP003-mall.tex
-  artifacts:
-    paths:
-    - Doc/Specs.pdf
-
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
