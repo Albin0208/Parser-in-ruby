@@ -54,9 +54,9 @@ Filip Ingvarsson}
 
     <type_specifier> ::= "int" | "float" | "bool" | "string"
 
-    <conditional> ::= "if" <expr> "{" <stmt>+ "}"
-                    ("elsif" <expr> "{" <stmt>+ "}" )*
-                    ("else" "{" <stmt>+ "}")?
+    <conditional> ::= "if" <expr> "{" <stmt>* "}"
+                    ("elsif" <expr> "{" <stmt>* "}" )*
+                    ("else" "{" <stmt>* "}")?
 
     <loop> ::= "while" <expr> "{" <stmt>* "}"
 
@@ -134,11 +134,42 @@ Filip Ingvarsson}
 \section{Iteratorer}
 
 \subsection{For-loop}
+For-loopar börjar med nyckelorder for. Därefter kan en variabel initieras men det är inte nödvändigt. Därefter kommer ett sanningssats/sanningvärde som måste finnas med. Slutligen kan det finnas en inkremering som läggs på den initierade variabeln ifall den finns. Kodblocket som sedan körs i loopen insluts med {}.
 
+Exempel:
+\begin{verbatim}
+for (variabel initiering, true/false-statement, inkremering){
+  statements
+}
+begin{verbatim}
+for int i=1, i < 10, i++{
+  statements
+}
+\end{verbatim}
 \subsection{While-loop}
+while-loopar börjar med nyckelordet 'while' följt av ett true/false-statement. Kodblocket som sedan körs i loopen insluts med {}.
+Exempel:
+\begin{verbatim}
+while true/false-statement {
+  statement
+}
 
+while working == true {
+      take_break
+}
+\end{verbatim}
 \subsection{Foreach-loop}
+foreach-loopar börjar med nyckelordet 'foreach' följt av en identifierare som används senare i kodblocket för varje objekt i behållare.
+Därefter kommer nyckelordet in och sedan behållaren som ska loopas igenom. 
+\begin{verbatim}
+foreach identifier in container{
+  "identifier used in statement"
+}
 
+foreach apple in tree{
+  apple.check_size()
+}
+\end{verbatim}
     \section{Funktioner}
     Funktioner defineras genom att skriva nyckelordet \emph{func} följt av vilket returtyp funktionen ska ha. Efter returtypen följer funktionsnamnet och en komma separerad parameterlista omgiven av paranteser där varje parameters typ anges innan parameterns namn. Funktionskroppen omslutes av en start- och slutmåsvinge. I slutet av funktionskroppen måste ett nyckelordet \emph{return} finnas om det inte är en void funktion där nyckelordet \emph{void} har skrivit i funktions deklarationen.
 
