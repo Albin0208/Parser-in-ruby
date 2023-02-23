@@ -94,7 +94,7 @@ class Parser
             # conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
             condition = parse_logical_expr() # Add the condition expr to the conditions array
         end
-        eat() # Eat the then token
+        eat() # Eat the lbrace token
 
         # Parse else if
 
@@ -105,7 +105,7 @@ class Parser
         while at().type != TokenType::RBRACE # Parse the content of teh if statment
             body.append(parse_stmt())
         end
-        eat() # Eat the end token
+        eat() # Eat the rbrace token
         return IfStatement.new(body, condition)
     end
 
