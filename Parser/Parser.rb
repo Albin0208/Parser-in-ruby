@@ -45,7 +45,7 @@ class Parser
     end
 
     def parse_var_declaration()
-        is_const = at().type == TokenType::CONST
+        is_const = at().type == TokenType::CONST # Get if const keyword is present
 
         # eat() if is_const # Eat the const keyword if we have a const
         eat() # Eat the const or the var keyword
@@ -103,27 +103,31 @@ class Parser
         end
     end
     
-    # # Orders of Precedence (Lowests to highest)
-    # # AssignmentExpr
-    # # MemberExpr
-    # # FunctionCall
-    # # Logical
-    # # Comparison
-    # # AdditiveExpr
-    # # MultiplyExpr
-    # # UnaryExpr
-    # # PrimaryExpr
+    # Orders of Precedence (Lowests to highest)
+    # AssignmentExpr
+    # MemberExpr
+    # FunctionCall
+    # Logical
+    # Comparison
+    # AdditiveExpr
+    # MultiplyExpr
+    # UnaryExpr
+    # PrimaryExpr
 
     def parse_assignment_expr()
-        left = parse_primary_expr() # Get the identifier
+        @logger.debug("Parsing assing expression")
+        # left = parse_primary_expr() # Get the identifier
+        identifier = parse_identifier()
 
+        # Check if we have a assignment token
         if at().type == TokenType::ASSIGN
             eat()
             value = parse_expr() # Parse the right side
-            return AssignmentExpr.new(value, left)
+            return AssignmentExpr.new(value, identifier)
         end
         
-        return left
+        # Assignment not found so just return the identifier
+        return identifier
     end
 
 
@@ -203,8 +207,7 @@ class Parser
         tok = at().type
         case tok
         when TokenType::IDENTIFIER
-            ident = Identifier.new(eat().value)
-            return ident
+            return parse_identifier()
         when TokenType::INTEGER, TokenType::FLOAT
             numLit = NumericLiteral.new(eat().value)
             return numLit
@@ -216,6 +219,13 @@ class Parser
         else
             raise InvalidTokenError.new("Unexpected token found: #{at().to_s}")
         end
+    end
+
+    # Parse a identifier and create a new identifier node
+    # @return Identifier - The identifier node created
+    def parse_identifier()
+        id = expect(TokenType::IDENTIFIER) # Make sure we have a identifer
+        return Identifier.new(id.value)
     end
 
     ##################################################
@@ -237,6 +247,7 @@ class Parser
     # Eat the next token
     # @return Token - The token eaten
     def eat()
+        @logger.debug("Eating token: #{at()}")
         return @tokens.shift()
     end
 
