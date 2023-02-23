@@ -59,6 +59,8 @@ Filip Ingvarsson}
                     ("else" "{" <stmt>* "}")?
 
     <loop> ::= "while" <expr> "{" <stmt>* "}"
+             | "for" (<type_specifier> <identifier> = <expr>)?, <logical_expr>, <expr>? "{" <stmt>*"}"
+             | "foreach" <identifier> in <identifier> "{" <stmt>* "}"
 
     <assign_expr> ::= <identifier> "=" <expr>
 
