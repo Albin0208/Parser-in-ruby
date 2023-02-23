@@ -38,7 +38,11 @@ class TestLexer < Test::Unit::TestCase
         lexer = Lexer.new("()")
         assert_equal(TokenType::LPAREN, lexer.tokenize[0].type, "The token was not correctly tokenized")
         assert_equal(TokenType::RPAREN, lexer.tokenize[1].type, "The token was not correctly tokenized")
-    end
+		
+		lexer = Lexer.new("{}")
+        assert_equal(TokenType::LBRACE, lexer.tokenize[0].type, "The token was not correctly tokenized")
+        assert_equal(TokenType::RBRACE, lexer.tokenize[1].type, "The token was not correctly tokenized")
+	end
 
 	def test_tokenize_keywords
 		input = "var"
@@ -56,15 +60,15 @@ class TestLexer < Test::Unit::TestCase
 
 		assert_equal(TokenType::IF, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
-		input = "then"
-		lexer = Lexer.new(input)
+		# input = "then"
+		# lexer = Lexer.new(input)
 
-		assert_equal(TokenType::THEN, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		# assert_equal(TokenType::THEN, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
-		input = "end"
-		lexer = Lexer.new(input)
+		# input = "end"
+		# lexer = Lexer.new(input)
 
-		assert_equal(TokenType::ENDSTMT, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		# assert_equal(TokenType::ENDSTMT, lexer.tokenize[0].type, "The token was not correctly tokenized")
 	end
 
 	def test_tokenize_simple_input

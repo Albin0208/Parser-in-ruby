@@ -12,6 +12,8 @@ TOKEN_TYPES = {
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
 	rparen: /\A\)/,
+	lbrace: /\A\{/,
+	rbrace: /\A\}/,
 	assign: /\A\=/,
 	identifier: /\A([a-z]|_[a-z])\w*/i,
 	separators: /\A,/,
@@ -22,8 +24,8 @@ KEYWORDS = {
 	"const" => TokenType::CONST,
 	"func" => TokenType::FUNC,
 	"if" => TokenType::IF,
-	"then" => TokenType::THEN,
-	"end" => TokenType::ENDSTMT,
+	# "then" => TokenType::THEN,
+	# "end" => TokenType::ENDSTMT,
 	"int" => TokenType::TYPE_SPECIFIER,
 	"float" => TokenType::TYPE_SPECIFIER,
 	"bool" => TokenType::TYPE_SPECIFIER
@@ -128,6 +130,10 @@ class Lexer
 			return create_token($~[0], TokenType::LPAREN, "Found left paren token", true)
 		when TOKEN_TYPES[:rparen]
 			return create_token($~[0], TokenType::RPAREN, "Found right paren token", true)
+		when TOKEN_TYPES[:lbrace]
+			return create_token($~[0], TokenType::LBRACE, "Found left brace token", true)
+		when TOKEN_TYPES[:rbrace]
+			return create_token($~[0], TokenType::RBRACE, "Found right brace token", true)
 		when TOKEN_TYPES[:separators]
 			return create_token($~[0], TokenType::COMMA, "Found comma token", true)
 		when TOKEN_TYPES[:identifier]

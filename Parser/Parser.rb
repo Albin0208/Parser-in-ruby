@@ -53,7 +53,7 @@ class Parser
         type_specifier = eat().value # Get what type the var should be
 
         identifier = expect(TokenType::IDENTIFIER).value
-        @logger.debug("Found indentifier: #{identifier}")
+        @logger.debug("Found indentifier from var declaration: #{identifier}")
 
         if at().type != TokenType::ASSIGN 
             if is_const
@@ -89,7 +89,7 @@ class Parser
         # TODO Write test for if
 
         conditions = Array.new()
-        while at().type != TokenType::THEN # Parse the conditions of the if statment
+        while at().type != TokenType::LBRACE # Parse the conditions of the if statment
             conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
         end
         eat() # Eat the then token
@@ -100,15 +100,27 @@ class Parser
         # Parse else
 
         body = Array.new()
-        while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
+        while at().type != TokenType::RBRACE # Parse the content of teh if statment
             body.append(parse_stmt())
         end
         eat() # Eat the end token
         return IfStatement.new(body, conditions)
     end
 
+    def parse_assignment_stmt()
+        @logger.debug("Parsing assing expression")
+        identifier = parse_identifier()
 
-
+        # Check if we have an assignment token
+        if at().type == TokenType::ASSIGN
+            eat()
+            value = parse_expr() # Parse the right side
+            return AssignmentExpr.new(value, identifier)
+        end
+        
+        # Assignment not found so just return the identifier
+        return identifier
+    end
 
     def parse_expr()
         # case at().type
@@ -127,21 +139,6 @@ class Parser
     # MultiplyExpr
     # UnaryExpr
     # PrimaryExpr
-
-    def parse_assignment_stmt()
-        @logger.debug("Parsing assing expression")
-        identifier = parse_identifier()
-
-        # Check if we have an assignment token
-        if at().type == TokenType::ASSIGN
-            eat()
-            value = parse_expr() # Parse the right side
-            return AssignmentExpr.new(value, identifier)
-        end
-        
-        # Assignment not found so just return the identifier
-        return identifier
-    end
 
 
     def parse_logical_expr()
@@ -238,6 +235,7 @@ class Parser
     # @return Identifier - The identifier node created
     def parse_identifier()
         id = expect(TokenType::IDENTIFIER) # Make sure we have a identifer
+        @logger.debug("Found identifer: #{id.value}")
         return Identifier.new(id.value)
     end
 
