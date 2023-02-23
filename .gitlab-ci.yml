@@ -33,7 +33,7 @@ unit-test-job:   # This job runs in the test stage.
     - apt-get update -y && apt-get install -y bundler
   script:
     # - gem install bundler -v 2.1.4
-    - bundle install
+    - bundler install
     - echo "Running unit tests..."
     - bundle exec rake test
 
