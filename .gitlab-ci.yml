@@ -29,6 +29,8 @@ stages:          # List of stages for jobs, and their order of execution
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
+    - gem install bundler -v 2.1.4
+    - bundle installssssssssssssssssssssssssssssssss
     - echo "Running unit tests..."
     - bundle exec rake test
 
