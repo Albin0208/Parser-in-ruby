@@ -88,9 +88,11 @@ class Parser
 
         # TODO Write test for if
 
-        conditions = Array.new()
+        # conditions = Array.new()
+        condition = nil
         while at().type != TokenType::LBRACE # Parse the conditions of the if statment
-            conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
+            # conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
+            condition = parse_logical_expr() # Add the condition expr to the conditions array
         end
         eat() # Eat the then token
 
@@ -104,7 +106,7 @@ class Parser
             body.append(parse_stmt())
         end
         eat() # Eat the end token
-        return IfStatement.new(body, conditions)
+        return IfStatement.new(body, condition)
     end
 
     def parse_assignment_stmt()

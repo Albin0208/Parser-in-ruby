@@ -59,6 +59,36 @@ class TestParser < Test::Unit::TestCase
         assert_equal(ast.body[0].right.right.value, 3)
     end
 
+    def test_parse_if_statment
+        ast = @parser.produceAST("if 3 < 4 { int a = 4}")
+        p ast.body
+        assert_equal(NODE_TYPES[:IF], ast.body[0].type)
+        body = ast.body[0].body
+        assert_equal(NODE_TYPES[:VarDeclaration], body[0].type)
+        assert_equal("a", body[0].identifier)
+        assert_equal(4, body[0].value.value)
+        conditions = ast.body[0].conditions
+        assert_equal(NODE_TYPES[:BinaryExpr], conditions.type)
+
+        # Test with multiple statements in body
+        ast = @parser.produceAST("if 3 < 4 { int a = 4 a = 4 - 3}")
+        assert_equal(2, ast.body[0].body.length) # Make sure we got two stmts in the body
+        assert_equal(NODE_TYPES[:IF], ast.body[0].type)
+        body = ast.body[0].body
+        assert_equal(NODE_TYPES[:VarDeclaration], body[0].type)
+        assert_equal("a", body[0].identifier)
+        assert_equal(4, body[0].value.value)
+        conditions = ast.body[0].conditions
+        assert_equal(NODE_TYPES[:BinaryExpr], conditions.type)
+
+        # Test with multiple statements in condition
+        ast = @parser.produceAST("if 3 < 4 && 4 > 3 { int a = 4 a = 4 - 3}")
+        conditions = ast.body[0].conditions
+        assert_equal(NODE_TYPES[:LogicalAnd], conditions.type)
+        assert_equal(NODE_TYPES[:BinaryExpr], conditions.left.type)
+        assert_equal(NODE_TYPES[:BinaryExpr], conditions.right.type)
+    end
+
     def test_parse_missing_identifier
         assert_raise(RuntimeError) { @parser.produceAST("int = 1") }
     end
