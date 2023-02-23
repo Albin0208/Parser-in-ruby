@@ -11,6 +11,12 @@ class TestParser < Test::Unit::TestCase
         assert_equal(ast.body[0].identifier, "x")
         assert_equal(ast.body[0].value.value, 1)
         assert_equal(ast.body[0].constant, false)
+
+        # Test for declaration of var to valu of another var
+        ast = @parser.produceAST("var a = x")
+        assert_equal(ast.body[0].identifier, "a")
+        assert_equal(ast.body[0].value.symbol, "x")
+        assert_equal(ast.body[0].constant, false)
     end
 
     def test_parse_variable_declaration_without_assign
@@ -36,6 +42,13 @@ class TestParser < Test::Unit::TestCase
         ast = @parser.produceAST("y = x")
         assert_equal(ast.body[0].assigne.symbol, "y")
         assert_equal(ast.body[0].value.symbol, "x")
+
+        # Try assign of assign changing
+        ast = @parser.produceAST("y = x = a = 45")
+        assert_equal(ast.body[0].assigne.symbol, "y")
+        assert_equal(ast.body[0].value.assigne.symbol, "x")
+        assert_equal(ast.body[0].value.value.assigne.symbol, "a")
+        assert_equal(ast.body[0].value.value.value.value, 45)
     end
 
     def test_parse_binary_expression
