@@ -3,10 +3,15 @@ require_relative '../Lexer/Lexer.rb'
 require_relative '../TokenType.rb'
 require_relative '../Errors/Errors.rb'
 
+require 'logger'
+
 class Parser
     def initialize(logging = false)
         @tokens = []
         @logging = logging
+
+        @logger = Logger.new(STDOUT)
+		@logger.level = Logger::DEBUG
     end
 
     # Produce a AST from the sourceCode
@@ -28,101 +33,99 @@ class Parser
     private
 
     def parse_stmt()
-        # case at().type
-        # when TokenType::TYPE_SPECIFIER, TokenType::CONST
-        #     return parse_var_declaration()
-        # when TokenType::IF
-        #     return parse_conditional()
-        # when TokenType::FUNC
-        #     return parse_func_declaration()
-        # when TokenType::loop do
-        #     return parse_loop()
-        # when TokenType::RETURN
-        #     return parse_return()
-        # else 
-        #     parse_expr
-        # end
         case at().type
-        when TokenType::VAR, TokenType::CONST # Parsing of a variable declaration
+        when TokenType::CONST, TokenType::VAR # TODO Change second to TYPE_SPECIFIER
+            @logger.debug("(#{at().value}) matched var declaration")
             return parse_var_declaration()
-        when TokenType::IF # Parse a if statment
-            return parse_if_stmt()
+        when TokenType::IF
+            return parse_conditional()
         else
             return parse_expr()
         end
     end
 
     def parse_var_declaration()
-        is_constant = eat().type == TokenType::CONST
+        is_const = at().type == TokenType::CONST
+
+        # eat() if is_const # Eat the const keyword if we have a const
+        eat() # Eat the const or the var keyword
+
         identifier = expect(TokenType::IDENTIFIER).value
+        @logger.debug("Found indentifier: #{identifier}")
 
         if at().type != TokenType::ASSIGN 
-            if is_constant
+            if is_const
+                @logger.error("Found Uninitialized constant")
                 raise NameError.new("Uninitialized Constant. Constants must be initialize upon creation")
             else
-                return VarDeclaration.new(is_constant, identifier, nil)
+                return VarDeclaration.new(is_const, identifier, nil)
             end
         end
 
         expect(TokenType::ASSIGN)
         expression = parse_expr()
-        return VarDeclaration.new(is_constant, identifier, expression)
+        return VarDeclaration.new(is_const, identifier, expression)
     end
+
+    def parse_conditional()
+        eat() # Eat the if token
+
+        # TODO Write test for if
+
+        conditions = Array.new()
+        while at().type != TokenType::THEN # Parse the conditions of the if statment
+            conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
+        end
+        eat() # Eat the then token
+
+        # Parse else if
+
+
+        # Parse else
+
+        body = Array.new()
+        while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
+            body.append(parse_stmt())
+        end
+        eat() # Eat the end token
+        return IfStatement.new(body, conditions)
+    end
+
+
+
 
     def parse_expr()
-        return parse_assignment_expr()
+        case at().type
+        when TokenType::IDENTIFIER
+            return parse_assignment_expr()
+        else
+            return parse_logical_expr()
+        end
     end
     
-    # Orders of Precedence (Lowests to highest)
-    # AssignmentExpr
-    # MemberExpr
-    # FunctionCall
-    # Logical
-    # Comparison
-    # AdditiveExpr
-    # MultiplyExpr
-    # UnaryExpr
-    # PrimaryExpr
+    # # Orders of Precedence (Lowests to highest)
+    # # AssignmentExpr
+    # # MemberExpr
+    # # FunctionCall
+    # # Logical
+    # # Comparison
+    # # AdditiveExpr
+    # # MultiplyExpr
+    # # UnaryExpr
+    # # PrimaryExpr
 
     def parse_assignment_expr()
-        left = parse_if_stmt()
+        left = parse_primary_expr() # Get the identifier
 
         if at().type == TokenType::ASSIGN
             eat()
-            value = parse_assignment_expr()
+            value = parse_expr() # Parse the right side
             return AssignmentExpr.new(value, left)
         end
         
         return left
     end
 
-    def parse_if_stmt()
-        if at().type == TokenType::IF
-            eat() # Eat the if token
-            
-            # TODO Write test for if
-
-            conditions = Array.new()
-            while at().type != TokenType::THEN # Parse the conditions of the if statment
-                conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
-            end
-            eat() # Eat the then token
-
-            # Parse else if
-
-
-            # Parse else
-
-            body = Array.new()
-            while at().type != TokenType::ENDSTMT # Parse the content of teh if statment
-                body.append(parse_stmt())
-            end
-            eat() # Eat the end token
-            return IfStatement.new(body, conditions)
-        end
-
-        return parse_logical_expr()
-    end
 
     def parse_logical_expr()
         left = parse_logical_and_expr()

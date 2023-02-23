@@ -1,5 +1,6 @@
 require_relative '../Enviroment.rb'
 require_relative '../Interpreter.rb'
+require_relative '../../AST_nodes/ast.rb'
 
 def eval_identifier(astNode, env)
     val = env.lookupVar(astNode.symbol)
@@ -40,7 +41,7 @@ def eval_binary_expr(binop, env)
 end
 
 def eval_assignment_expr(astNode, env)
-    if astNode.assigne.type == TokenType::IDENTIFIER
+    if astNode.assigne.type != NODE_TYPES[:Identifier]
         raise "Cannot assign to none Identifier type"
     end
 
