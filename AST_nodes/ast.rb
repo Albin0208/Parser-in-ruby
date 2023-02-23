@@ -11,7 +11,8 @@ NODE_TYPES = {
     UnaryOperator: :UnaryOperator,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
-    NumericLiteral: :NumericLiteral
+    NumericLiteral: :NumericLiteral,
+    Boolean: :Boolean
 }
 
 #####################################
@@ -51,12 +52,13 @@ class Program < Stmt
 end
 
 class VarDeclaration < Stmt
-    attr_reader :value, :identifier, :constant
-    def initialize(constant, identifier, value = nil)
+    attr_reader :value, :identifier, :constant, :value_type
+    def initialize(constant, identifier, value = nil, value_type)
         super(NODE_TYPES[:VarDeclaration])
         @constant = constant
         @identifier = identifier
         @value = value
+        @value_type = value_type 
     end
 
     def to_s
@@ -175,6 +177,22 @@ class NumericLiteral < Expr
     attr_reader :value
     def initialize(value)
         super(NODE_TYPES[:NumericLiteral])
+        @value = value
+    end
+
+    def to_s
+        @value.to_s
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
+class BooleanLiteral < Expr
+    attr_reader :value
+    def initialize(value)
+        super(NODE_TYPES[:Boolean])
         @value = value
     end
 

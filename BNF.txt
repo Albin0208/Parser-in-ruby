@@ -3,6 +3,7 @@
 <stmt> ::= <var_declaration> 
          | <conditional>
          | <func_declaration>
+         | <assign_stmt>
          | <loop>
          | <expr>
          | "return" <expr>
@@ -28,13 +29,11 @@
 
 <loop> ::= "while" <expr> "{" <stmt>* "}"
 
-<assign_expr> ::= <identifier> "=" <expr>
+<assign_stmt> ::= <identifier> "=" <expr>
 
 <func_call> ::= <identifier> "(" (<expr> ("," <expr>)*)? ")"
 
 <expr> ::= <logical_expr> 
-         | <arithmetic_expr> 
-         | <assign_expr>
          | <func_call>
          | <primary_expr>
 
@@ -55,6 +54,7 @@
 <primary_expr> ::= <identifier> 
                  | <array_access>
                  | <numeric_literal> 
+                 | <boolean_literal>
                  | "(" <expr> ")"
 
 <array_access> ::= <identifier> "[" <expr> "]"
@@ -62,5 +62,7 @@
 <identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
 
 <numeric_literal> ::= [0-9]+ ( "." [0-9]+ )?
+
+<boolean_literal> ::= 
 
 <logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="

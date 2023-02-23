@@ -34,11 +34,13 @@ class Parser
 
     def parse_stmt()
         case at().type
-        when TokenType::CONST, TokenType::VAR # TODO Change second to TYPE_SPECIFIER
+        when TokenType::CONST, TokenType::TYPE_SPECIFIER # TODO Change second to TYPE_SPECIFIER
             @logger.debug("(#{at().value}) matched var declaration")
             return parse_var_declaration()
         when TokenType::IF
             return parse_conditional()
+        when TokenType::IDENTIFIER
+            return parse_assignment_stmt()
         else
             return parse_expr()
         end
@@ -47,8 +49,8 @@ class Parser
     def parse_var_declaration()
         is_const = at().type == TokenType::CONST # Get if const keyword is present
 
-        # eat() if is_const # Eat the const keyword if we have a const
-        eat() # Eat the const or the var keyword
+        eat() if is_const # Eat the const keyword if we have a const
+        type_specifier = eat().value # Get what type the var should be
 
         identifier = expect(TokenType::IDENTIFIER).value
         @logger.debug("Found indentifier: #{identifier}")
@@ -58,13 +60,27 @@ class Parser
                 @logger.error("Found Uninitialized constant")
                 raise NameError.new("Uninitialized Constant. Constants must be initialize upon creation")
             else
-                return VarDeclaration.new(is_const, identifier, nil)
+                return VarDeclaration.new(is_const, identifier, nil, type_specifier)
             end
         end
 
         expect(TokenType::ASSIGN)
         expression = parse_expr()
-        return VarDeclaration.new(is_const, identifier, expression)
+        
+        case type_specifier
+        when "int", "float"
+            # Make sure we either are assigning a number or a variabel to the number var
+            if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
+            end
+        when "bool"
+            # Make sure we either are assigning a bool or a variabel to the bool var
+            if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
+            end
+        end
+
+        return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
 
     def parse_conditional()
@@ -95,12 +111,10 @@ class Parser
 
 
     def parse_expr()
-        case at().type
-        when TokenType::IDENTIFIER
-            return parse_assignment_expr()
-        else
-            return parse_logical_expr()
-        end
+        # case at().type
+        # else
+        return parse_logical_expr()
+        # end
     end
     
     # Orders of Precedence (Lowests to highest)
@@ -114,12 +128,11 @@ class Parser
     # UnaryExpr
     # PrimaryExpr
 
-    def parse_assignment_expr()
+    def parse_assignment_stmt()
         @logger.debug("Parsing assing expression")
-        # left = parse_primary_expr() # Get the identifier
         identifier = parse_identifier()
 
-        # Check if we have a assignment token
+        # Check if we have an assignment token
         if at().type == TokenType::ASSIGN
             eat()
             value = parse_expr() # Parse the right side

@@ -19,6 +19,7 @@ class TokenType
 	LPAREN = :LPAREN
 	RPAREN = :RPAREN
 	EOF = :EOF
+	TYPE_SPECIFIER = :TYPE_SPECIFIER
 end
 
 class Operators

@@ -7,27 +7,33 @@ class TestParser < Test::Unit::TestCase
     end
     
     def test_parse_variable_declaration
-        ast = @parser.produceAST("var x = 1")
+        ast = @parser.produceAST("int x = 1")
         assert_equal(ast.body[0].identifier, "x")
         assert_equal(ast.body[0].value.value, 1)
         assert_equal(ast.body[0].constant, false)
 
         # Test for declaration of var to valu of another var
-        ast = @parser.produceAST("var a = x")
+        ast = @parser.produceAST("int a = x")
         assert_equal(ast.body[0].identifier, "a")
         assert_equal(ast.body[0].value.symbol, "x")
         assert_equal(ast.body[0].constant, false)
     end
 
     def test_parse_variable_declaration_without_assign
-        ast = @parser.produceAST("var y")
+        ast = @parser.produceAST("int y")
         assert_equal(ast.body[0].identifier, "y")
         assert_equal(ast.body[0].value, nil)
         assert_equal(ast.body[0].constant, false)
+
+        ast = @parser.produceAST("float v")
+        assert_equal(ast.body[0].identifier, "v")
+        assert_equal(ast.body[0].value, nil)
+        assert_equal(ast.body[0].constant, false)
+        assert_equal(ast.body[0].value_type, "float")
     end
 
     def test_parse_constant_declaration
-        ast = @parser.produceAST("const x = 1")
+        ast = @parser.produceAST("const int x = 1")
         assert_equal(ast.body[0].identifier, "x")
         assert_equal(ast.body[0].value.value, 1)
         assert_equal(ast.body[0].constant, true)
@@ -42,13 +48,6 @@ class TestParser < Test::Unit::TestCase
         ast = @parser.produceAST("y = x")
         assert_equal(ast.body[0].assigne.symbol, "y")
         assert_equal(ast.body[0].value.symbol, "x")
-
-        # Try assign of assign changing
-        ast = @parser.produceAST("y = x = a = 45")
-        assert_equal(ast.body[0].assigne.symbol, "y")
-        assert_equal(ast.body[0].value.assigne.symbol, "x")
-        assert_equal(ast.body[0].value.value.assigne.symbol, "a")
-        assert_equal(ast.body[0].value.value.value.value, 45)
     end
 
     def test_parse_binary_expression
@@ -61,18 +60,22 @@ class TestParser < Test::Unit::TestCase
     end
 
     def test_parse_missing_identifier
-        assert_raise(RuntimeError) { @parser.produceAST("var = 1") }
+        assert_raise(RuntimeError) { @parser.produceAST("int = 1") }
+    end
+
+    def test_parse_missing_type_specifier_on_constant
+        assert_raise(RuntimeError) { @parser.produceAST("const a = 1") }
     end
 
     def test_parse_missing_value_on_constant
-        assert_raise(NameError) { @parser.produceAST("const x ") }
+        assert_raise(NameError) { @parser.produceAST("const float x ") }
     end
     
     def test_parse_missing_value
-        assert_raise(InvalidTokenError) { @parser.produceAST("var x = ") }
+        assert_raise(InvalidTokenError) { @parser.produceAST("float x = ") }
     end
     
     def test_parse_unknown_token
-        assert_raise(InvalidTokenError) { @parser.produceAST("var x @ 1") }
+        assert_raise(InvalidTokenError) { @parser.produceAST("int x @ 1") }
     end
 end

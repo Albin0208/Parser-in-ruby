@@ -23,7 +23,10 @@ KEYWORDS = {
 	"func" => TokenType::FUNC,
 	"if" => TokenType::IF,
 	"then" => TokenType::THEN,
-	"end" => TokenType::ENDSTMT
+	"end" => TokenType::ENDSTMT,
+	"int" => TokenType::TYPE_SPECIFIER,
+	"float" => TokenType::TYPE_SPECIFIER,
+	"bool" => TokenType::TYPE_SPECIFIER
 }
 
 # The lexer class
