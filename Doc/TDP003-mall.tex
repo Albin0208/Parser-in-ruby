@@ -29,77 +29,107 @@ Filip Ingvarsson}
     \section{Introduktion}
 
     \section{Grammatik}
-    \begin{verbatim}
-    <program> ::= <stmt>+
+\begin{verbatim}
+<program> ::= <stmt_list>
 
-    <stmt> ::= <var_declaration> 
-            | <conditional>
-            | <func_declaration>
-            | <loop>
-            | <expr>
-            | "return" <expr>
+<stmt_list> ::= <stmt><stmt_list>
+              | <stmt>
 
-    <var_declaration> ::= ("const")? <type_specifier> <identifier> (= <expr>)?
-                        | "const")? <array_type_specifier> <identifier> ("=" <array_literal>)?
+<stmt> ::= <var_declaration> 
+         | <conditional>
+         | <func_declaration>
+         | <assign_stmt>
+         | <loop>
+         | <expr>
+         | "return" <expr>
 
-    <array_type_specifier> ::= <type_specifier> "[]"
+<var_declaration> ::= "const" <type_specifier> <identifier> <var_declaration_tail>
+                    | <type_specifier> <identifier> <var_declaration_tail>
+                    | "const" <array_type_specifier> <identifier> <array_declaration_tail>
+                    | <array_type_specifier> <identifier> <array_declaration_tail>
 
-    <array_literal> ::= "[" (<expr> ("," <expr>)*)? "]"
+<var_declaration_tail> ::= "=" <expr>
+                         | empty
 
-    <func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt>* "}"
+<array_declaration_tail> ::= "=" <array_literal>
+                           | empty
 
-    <func_params> ::= (<type_specifier> <identifier> ("," <type_specifier> <identifier>)*)? 
+<array_literal> ::= "[" <expr> <array_literal_tail> "]"
+                  | "[" "]"
 
-    <func_specifier> ::= "void" | <type_specifier>
+<array_literal_tail> ::= "," <expr>
+                       | empty
 
-    <type_specifier> ::= "int" | "float" | "bool" | "string"
+<func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt_list> "}"
 
-    <conditional> ::= "if" <expr> "{" <stmt>* "}"
-                    ("elsif" <expr> "{" <stmt>* "}" )*
-                    ("else" "{" <stmt>* "}")?
+<func_params> ::= <type_specifier> <identifier> <opt_func_params>
+                | empty
 
-    <loop> ::= "while" <expr> "{" <stmt>* "}"
-             | "for" (<type_specifier> <identifier> = <expr>)?, <logical_expr>, <expr>? "{" <stmt>*"}"
-             | "foreach" <identifier> in <identifier> "{" <stmt>* "}"
+<opt_func_params> ::= "," <type_specifier> <identifier> <opt_func_params>
+                    | empty
 
-    <assign_expr> ::= <identifier> "=" <expr>
+<func_specifier> ::= "void" | <type_specifier>
 
-    <func_call> ::= <identifier> "(" (<expr> ("," <expr>)*)? ")"
+<type_specifier> ::= "int" | "float" | "bool" | "string" | <array_type_specifier>
 
-    <expr> ::= <logical_expr> 
-            | <arithmetic_expr> 
-            | <assign_expr>
-            | <func_call>
-            | <primary_expr>
+<array_type_specifier> ::= <type_specifier> "[]"
 
-    <logical_expr> ::= <logical_and_expr> | <logical_or_expr>
+<conditional> ::= "if" <expr> "{" <stmt_list> "}" <elsif_block> <else_block>
 
-    <logical_and_expr> ::= <comparison_expr> ("&&" <comparison_expr>)+
+<elsif_block> ::= "elsif" <expr> "{" <stmt_list> "}" <elsif_block>
+                | empty
 
-    <logical_or_expr> ::= <logical_and_expr> ("||" <logical_and_expr>)+
+<else_block> ::= "else" "{" <stmt_list> "}"
+               | empty
 
-    <comparison_expr> ::= <additive_expr> { <logical_comparator> <additive_expr> }
+<loop> ::= "while" <expr> "{" <stmt_list> "}"
+         | "for" <var_declaration> "," <logical_expr> "," <primary_expr> "{" <stmt_list> "}"
 
-    <additive_expr> ::= <multiplication_expr> { ("+" | "-") <multiplication_expr> }
+<assign_stmt> ::= <identifier> "=" <expr>
 
-    <multiplication_expr> ::= <unary_expr> { ("*" | "/") <unary_expr> }
+<func_call> ::= <identifier> "(" <func_call_params> ")"
 
-    <unary_expr> ::= ("+" | "-") <primary_expr>
+<func_call_params> ::= <expr> <opt_func_call_params>
+                     | empty
 
-    <primary_expr> ::= <identifier> 
-                    | <array_access>
-                    | <numeric_literal> 
-                    | "(" <expr> ")"
+<opt_func_call_params> ::= "," <expr> <opt_func_call_params>
+                         | empty
 
-    <array_access> ::= <identifier> "[" <expr> "]"
+<expr> ::= <logical_expr> 
+         | <func_call>
+         | <primary_expr>
 
-    <identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
+<logical_expr> ::= <logical_and_expr> | <logical_or_expr>
 
-    <numeric_literal> ::= [0-9]+ ( "." [0-9]+ )?
+<logical_and_expr> ::= <comparison_expr> { "&&" <comparison_expr> }
 
-    <logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="
+<logical_or_expr> ::= <logical_and_expr> { "||" <logical_and_expr> }
+
+<comparison_expr> ::= <additive_expr> { <logical_comparator> <additive_expr> }
+
+<additive_expr> ::= <multiplication_expr> { ("+" | "-") <multiplication_expr> }
+
+<multiplication_expr> ::= <unary_expr> { ("*" | "/") <unary_expr> }
+
+<unary_expr> ::= ("+" | "-") <primary_expr>
+
+<primary_expr> ::= <identifier> 
+                 | <array_access>
+                 | <numeric_literal> 
+                 | <boolean_literal>
+                 | "(" <expr> ")"
+
+<array_access> ::= <identifier> "[" <expr> "]"
+
+<identifier> ::= /[a-zA-Z_][a-zA-Z0-9_]*/
+
+<numeric_literal> ::= /[0-9]+ ( "." [0-9]+ )?/
+
+<boolean_literal> ::= "true" | "false"
+
+<logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="
     
-    \end{verbatim}
+\end{verbatim}
 
     \section{Typning}
     Typningen ska vara statisk, där variabler deklareras genom att specificera vilken typ det är.
@@ -111,26 +141,26 @@ Filip Ingvarsson}
 
     \section{Styrstrukturer}
 \begin{verbatim}
-    Exempel if-sats:
-    if (cond) {
-      
-    }
+Exempel if-sats:
+if (cond) {
+  
+}
 
-    Exempel if-else-sats:
-    if (cond) {
-      
-    } else {
+Exempel if-else-sats:
+if (cond) {
+  
+} else {
 
-    }
+}
 
-    Exempel if-elsif-elsesats:
-    if (cond) {
-      
-    } elseif cond {
+Exempel if-elsif-elsesats:
+if (cond) {
+  
+} elseif cond {
 
-    } else {
+} else {
 
-    }
+}
 \end{verbatim}
 
 \section{Iteratorer}
@@ -143,21 +173,21 @@ Exempel:
 for (variabel initiering, true/false-statement, inkremering){
   statements
 }
-begin{verbatim}
+
 for int i=1, i < 10, i++{
   statements
 }
 \end{verbatim}
 \subsection{While-loop}
-while-loopar börjar med nyckelordet 'while' följt av ett true/false-statement. Kodblocket som sedan körs i loopen insluts med {}.
+while-loopar börjar med nyckelordet 'while' följt av ett true/false-statement. Kodblocket som sedan körs i loopen insluts med \{\}.\\
 Exempel:
 \begin{verbatim}
 while true/false-statement {
-  statement
+    statement
 }
 
 while working == true {
-      take_break
+    take_break
 }
 \end{verbatim}
 \subsection{Foreach-loop}
@@ -175,69 +205,70 @@ foreach apple in tree{
     \section{Funktioner}
     Funktioner defineras genom att skriva nyckelordet \emph{func} följt av vilket returtyp funktionen ska ha. Efter returtypen följer funktionsnamnet och en komma separerad parameterlista omgiven av paranteser där varje parameters typ anges innan parameterns namn. Funktionskroppen omslutes av en start- och slutmåsvinge. I slutet av funktionskroppen måste ett nyckelordet \emph{return} finnas om det inte är en void funktion där nyckelordet \emph{void} har skrivit i funktions deklarationen.
 
-    \begin{verbatim}
-    Exempel publik funktion:
-    func string name(string param1, int param2...) {
-        statements
-        return "This is a string"
-    }  
+\begin{verbatim}
+Exempel på en funktion:
+func string name(string param1, int param2...) {
+    statements
+    return "This is a string"
+}  
 \end{verbatim}
     
     \subsection{Parameteröverföring}
     Alla parametrar skickas alltid som referenser och vill man ha en kopia får man anropa funktionen \emph{copy} på objektet.
 
 \begin{verbatim}
-    Exempel funktionsanrop med parameteröverföring:
-    func_name(param1, param2)
+Exempel funktionsanrop med parameteröverföring:
+func_name(param1, param2)
 
-    Exempel funktionsanrop med parameteröverföring som kopior:
-    object.func_name(param1.copy(), param2.copy())
+Exempel funktionsanrop med parameteröverföring som kopior:
+object.func_name(param1.copy(), param2.copy())
 \end{verbatim}
 
     \section{Objektorienterat}
-    Språket ska vara objektorienterat med arv där funktioner kan specifieceras som public, protected och private.
+    Språket ska vara objektorienterat med arv där funktioner kan specificeras som public, protected och private om de finns definierade i klasser. Finns de inte i klasser kommer de att defaulta till publik.
 
-    \begin{verbatim}
-    Exempel publik funktion:
-    func string name(string param1, int param2...) {
-        statements
-        return "This is a string"
-    } 
+\begin{verbatim}
+Exempel publik funktion:
+func string name(string param1, int param2...) {
+    statements
+    return "This is a string"
+} 
 
-    Exempel publik funktion: 
-    public func int name(int param1, int param2...) { 
-        statements
-        return 45 
-    } 
+Exempel publik funktion: 
+public func int name(int param1, int param2...) { 
+    statements
+    return 45 
+} 
 
-    Exempel protected funktion: 
-    protected func string name(string param1, int param2...) { 
-        statements
-        return "This is a string"
-    } 
+Exempel protected funktion: 
+protected func string name(string param1, int param2...) { 
+    statements
+    return "This is a string"
+} 
 
-    Exempel privat funktion: 
-    private func string name(string param1, int param2...) { 
-        statements
-        return "This is a string"
-    } 
+Exempel privat funktion: 
+private func string name(string param1, int param2...) { 
+    statements
+    return "This is a string"
+} 
 \end{verbatim}
     \subsection{Klasser}
-        \begin{verbatim}
-    Exempel klass deklaration:
-    Class Name {
-      
-    }
+\begin{verbatim}
+Exempel klass deklaration:
+Class Name {
+  
+}
 
-    Exempel klass deklaration med arv:
-    Class Name -> Parent {
-      
-    }
+Exempel klass deklaration med arv:
+Class Name -> Parent {
+  
+}
 \end{verbatim}
 
     \section{Scope}
+    Språket ska ha ett statiskt scope vilket betyder att när exempelvis vi letar efter en variabel och går upp till föräldrascopet, kommer vi gå till det scope som är föräldern till där funktionen är definierad. Vid en funktions anropskedja kommer vi då inte att gå upp genom hela kedjan utan vi kommer hoppa upp till funktionens föräldra scope.
 
     \subsection{Variablers livslängd}
-    En variabel där i samband med sitt scope.
+    En variabel där i samband med sitt scope. Definieras en variabel i exempelvis en loop, funktion eller if-sats är variabel bara tillgänglig inom kodblocket.
  
 \end{document}
