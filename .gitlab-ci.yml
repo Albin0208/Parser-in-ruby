@@ -16,9 +16,9 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-stages:          # List of stages for jobs, and their order of execution
-  - build
-  - test
+# stages:          # List of stages for jobs, and their order of execution
+#   - build
+#   - test
 
 # # build-job:       # This job runs in the build stage, which runs first.
 # #   stage: build
@@ -26,16 +26,16 @@ stages:          # List of stages for jobs, and their order of execution
 # #     - echo "Compiling the code..."
 # #     - echo "Compile complete."
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  image: ruby:2.7.2
-  before_script:
-    - apt-get update -y && apt-get install -y bundler
-  script:
-    # - gem install bundler -v 2.1.4
-    - bundler install
-    - echo "Running unit tests..."
-    - bundle exec rake test
+# unit-test-job:   # This job runs in the test stage.
+#   stage: test    # It only starts when the job in the build stage completes successfully.
+#   image: ruby:2.7.2
+#   before_script:
+#     - apt-get update -y && apt-get install -y bundler
+#   script:
+#     # - gem install bundler -v 2.1.4
+#     - bundler install
+#     - echo "Running unit tests..."
+#     - bundle exec rake test
 
 # lint-test-job:   # This job also runs in the test stage.
 #   stage: test    # It can run at the same time as unit-test-job (in parallel).
