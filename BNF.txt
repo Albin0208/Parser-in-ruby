@@ -6,6 +6,7 @@
 <stmt> ::= <var_declaration> 
          | <conditional>
          | <func_declaration>
+         | <class_declaration>
          | <assign_stmt>
          | <loop>
          | <expr>
@@ -27,6 +28,13 @@
 
 <array_literal_tail> ::= "," <expr>
                        | empty
+
+<class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
+                      | "Class" <identifier> "->" <identifier> "{" <class_members> "}"
+
+<class_members> ::= <var_declaration> <class_members>
+                  | <func_declaration> <class_members>
+                  | empty
 
 <func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt_list> "}"
 
@@ -86,6 +94,11 @@
                  | <numeric_literal> 
                  | <boolean_literal>
                  | "(" <expr> ")"
+                 | <class_instance>
+
+
+<class_instance> ::= <identifier> "." "new" "(" ")"
+                   | <identifier> "." "new" "(" <func_call_params> ")"
 
 <array_access> ::= <identifier> "[" <expr> "]"
 
