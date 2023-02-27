@@ -63,6 +63,7 @@ Filip Ingvarsson}
                        | empty
 
 <class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
+                      | "Class" <identifier> "->" <identifier> "{" <class_members> "}"
 
 <class_members> ::= <var_declaration> <class_members>
                   | <func_declaration> <class_members>
@@ -161,15 +162,16 @@ int a
 float b = 3.4
 \end{verbatim}
 
-Varaibler kan även bli satta till konstanter med nyckelordet ``const'' föjt av en vanlig variabel deklaration. Skillnaden här är att en konstant variabel måste tilldelas sitt värde när den skapas.
+Varaibler kan även bli satta till konstanter med nyckelordet ``const'' föjt av en vanlig variabel deklaration. Skillnaden här är att en konstant variabel måste tilldelas sitt värde när den skapas och värdet kan inte ändras i efterhand.
 
 \begin{verbatim}
 Exempel:
 const int a = 4
 const float b = 3.4
 \end{verbatim}
+
 \section{Array / Lista}
-Arrayer skapas genom att skriva typ specificerare följt av ``[]'' och sedan identifieraren. Arrayer kan precis som vanliga variabler deklareras utan att tilldelas. Vill man tilldela en array ett värde när den deklarareras gör man detta genom att ange en kommaseparerad lista inom ``[]''. Värde måste dock vara samma typ som arrayen är.
+Arrayer skapas genom att skriva typ specificerare följt av ``[ ]'' och sedan identifieraren. Arrayer kan precis som vanliga variabler deklareras utan att tilldelas. Vill man tilldela en array ett värde när den deklarareras gör man detta genom att ange en kommaseparerad lista inom ``[ ]''. Värde måste dock vara samma typ som arrayen är.
 
 \begin{verbatim}
 Exempel:
@@ -178,7 +180,7 @@ int[] b = []
 int[] c = [3, 5, 6]
 \end{verbatim}
 
-För att komma åt ett värde i listan gör man det med ``[]'' operator där man specificerar ett index.
+För att komma åt ett värde i listan gör man det med ``[ ]'' operator där man specificerar ett index.
 
 \begin{verbatim}
 Exempel:
