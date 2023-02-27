@@ -1,10 +1,10 @@
 \documentclass{TDP003mall}
 
-\newcommand{\version}{Version 1.1}
+\newcommand{\version}{Version 1.2}
 \author{Albin Dahlén, \url{albda746@student.liu.se}\\
 Filip Ingvarsson, \url{filin764@student.liu.se}}
 \title{Språkspecifikation}
-\date{2023-02-22}
+\date{2023-02-27}
 \rhead{Albin Dahlén \\
 Filip Ingvarsson}
 
@@ -19,7 +19,8 @@ Filip Ingvarsson}
         \begin{tabularx}{\linewidth}{|l|X|l|}
             \hline
             Ver. & Revisionsbeskrivning      & Datum    \\\hline
-            1.1  & Språkspecification 2     & 23-02-22 \\\hline
+            1.1  & Språkspecifikation 2     & 23-02-22 \\\hline
+            1.2  & Språkspecifikation 3     & 23-02-27 \\\hline
         \end{tabularx}
     \end{table}
 
@@ -38,6 +39,7 @@ Filip Ingvarsson}
 <stmt> ::= <var_declaration> 
          | <conditional>
          | <func_declaration>
+         | <class_declaration>
          | <assign_stmt>
          | <loop>
          | <expr>
@@ -59,6 +61,12 @@ Filip Ingvarsson}
 
 <array_literal_tail> ::= "," <expr>
                        | empty
+
+<class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
+
+<class_members> ::= <var_declaration> <class_members>
+                  | <func_declaration> <class_members>
+                  | empty
 
 <func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt_list> "}"
 
@@ -118,6 +126,11 @@ Filip Ingvarsson}
                  | <numeric_literal> 
                  | <boolean_literal>
                  | "(" <expr> ")"
+                 | <class_instance>
+
+
+<class_instance> ::= <identifier> "." "new" "(" ")"
+                   | <identifier> "." "new" "(" <func_call_params> ")"
 
 <array_access> ::= <identifier> "[" <expr> "]"
 
@@ -138,6 +151,42 @@ Filip Ingvarsson}
     int a = 2 \\
     float b = 2 \\
     string c = ``Hej''
+
+    \section{Variabler}
+    Variabler deklareras genom att specificera vilken typ variabeln är följt av en identifierare och eventuellt en tilldelning.
+
+\begin{verbatim}
+Exempel:
+int a
+float b = 3.4
+\end{verbatim}
+
+Varaibler kan även bli satta till konstanter med nyckelordet ``const'' föjt av en vanlig variabel deklaration. Skillnaden här är att en konstant variabel måste tilldelas sitt värde när den skapas.
+
+\begin{verbatim}
+Exempel:
+const int a = 4
+const float b = 3.4
+\end{verbatim}
+\section{Array / Lista}
+Arrayer skapas genom att skriva typ specificerare följt av ``[]'' och sedan identifieraren. Arrayer kan precis som vanliga variabler deklareras utan att tilldelas. Vill man tilldela en array ett värde när den deklarareras gör man detta genom att ange en kommaseparerad lista inom ``[]''. Värde måste dock vara samma typ som arrayen är.
+
+\begin{verbatim}
+Exempel:
+int[] a
+int[] b = []
+int[] c = [3, 5, 6]
+\end{verbatim}
+
+För att komma åt ett värde i listan gör man det med ``[]'' operator där man specificerar ett index.
+
+\begin{verbatim}
+Exempel:
+int[] c = [3, 5, 6]
+c[1]
+\end{verbatim}
+
+I ovan exempel hade vi då fått ut värdet på index 1 vilket är 5.
 
     \section{Styrstrukturer}
 \begin{verbatim}
@@ -263,6 +312,23 @@ Exempel klass deklaration med arv:
 Class Name -> Parent {
   
 }
+
+\end{verbatim}
+
+För att instansiera en klass skriver man klassnamn föjlt av ``.new()''. Inuti paranteserna kan parametrar skickas med.
+
+\begin{verbatim}
+Exempel:
+Person.new()
+Person.new(10, 45)
+\end{verbatim}
+
+För att komma åt medlemsfunktioner i en klass använder man klassinstansen följt av ``.'' och ett funktionsanrop till den funktionen.
+
+\begin{verbatim}
+Exempel:
+Person p = Person.new()
+p.getAge()
 \end{verbatim}
 
     \section{Scope}
