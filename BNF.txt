@@ -26,7 +26,7 @@
 <array_literal> ::= "[" <expr> <array_literal_tail> "]"
                   | "[" "]"
 
-<array_literal_tail> ::= "," <expr>
+<array_literal_tail> ::= "," <expr> <array_literal_tail>
                        | empty
 
 <class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
@@ -62,6 +62,7 @@
          | "for" <var_declaration> "," <logical_expr> "," <primary_expr> "{" <stmt_list> "}"
 
 <assign_stmt> ::= <identifier> "=" <expr>
+                | <array_access> "=" <expr>
 
 <func_call> ::= <identifier> "(" <func_call_params> ")"
 
@@ -85,9 +86,9 @@
 
 <additive_expr> ::= <multiplication_expr> { ("+" | "-") <multiplication_expr> }
 
-<multiplication_expr> ::= <unary_expr> { ("*" | "/") <unary_expr> }
+<multiplication_expr> ::= <unary_expr> { ("*" | "/" | "%") <unary_expr> }
 
-<unary_expr> ::= ("+" | "-") <primary_expr>
+<unary_expr> ::= ("+" | "-" | "!") <primary_expr>
 
 <primary_expr> ::= <identifier> 
                  | <array_access>
