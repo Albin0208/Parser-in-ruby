@@ -1,37 +1,76 @@
-<program> ::= <stmt>+
+<program> ::= <stmt_list>
+
+<stmt_list> ::= <stmt><stmt_list>
+              | <stmt>
 
 <stmt> ::= <var_declaration> 
          | <conditional>
          | <func_declaration>
+         | <class_declaration>
          | <assign_stmt>
          | <loop>
          | <expr>
          | "return" <expr>
 
-<var_declaration> ::= ("const")? <type_specifier> <identifier> (= <expr>)?
-                    | "const")? <array_type_specifier> <identifier> ("=" <array_literal>)?
+<var_declaration> ::= "const" <type_specifier> <identifier> <var_declaration_tail>
+                    | <type_specifier> <identifier> <var_declaration_tail>
+                    | "const" <array_type_specifier> <identifier> <array_declaration_tail>
+                    | <array_type_specifier> <identifier> <array_declaration_tail>
 
-<array_type_specifier> ::= <type_specifier> "[]"
+<var_declaration_tail> ::= "=" <expr>
+                         | empty
 
-<array_literal> ::= "[" (<expr> ("," <expr>)*)? "]"
+<array_declaration_tail> ::= "=" <array_literal>
+                           | empty
 
-<func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt>* "}"
+<array_literal> ::= "[" <expr> <array_literal_tail> "]"
+                  | "[" "]"
 
-<func_params> ::= (<type_specifier> <identifier> ("," <type_specifier> <identifier>)*)? 
+<array_literal_tail> ::= "," <expr> <array_literal_tail>
+                       | empty
+
+<class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
+                      | "Class" <identifier> "->" <identifier> "{" <class_members> "}"
+
+<class_members> ::= <var_declaration> <class_members>
+                  | <func_declaration> <class_members>
+                  | empty
+
+<func_declaration> ::= "func" <func_specifier> <identifier> "(" <func_params> ")" "{" <stmt_list> "}"
+
+<func_params> ::= <type_specifier> <identifier> <opt_func_params>
+                | empty
+
+<opt_func_params> ::= "," <type_specifier> <identifier> <opt_func_params>
+                    | empty
 
 <func_specifier> ::= "void" | <type_specifier>
 
-<type_specifier> ::= "int" | "float" | "bool" | "string"
+<type_specifier> ::= "int" | "float" | "bool" | "string" | <array_type_specifier>
 
-<conditional> ::= "if" <expr> "{" <stmt>+ "}"
-                  ("elsif" <expr> "{" <stmt>+ "}" )*
-                  ("else" "{" <stmt>+ "}")?
+<array_type_specifier> ::= <type_specifier> "[]"
 
-<loop> ::= "while" <expr> "{" <stmt>* "}"
+<conditional> ::= "if" <expr> "{" <stmt_list> "}" <elsif_block> <else_block>
+
+<elsif_block> ::= "elsif" <expr> "{" <stmt_list> "}" <elsif_block>
+                | empty
+
+<else_block> ::= "else" "{" <stmt_list> "}"
+               | empty
+
+<loop> ::= "while" <expr> "{" <stmt_list> "}"
+         | "for" <var_declaration> "," <logical_expr> "," <primary_expr> "{" <stmt_list> "}"
 
 <assign_stmt> ::= <identifier> "=" <expr>
+                | <array_access> "=" <expr>
 
-<func_call> ::= <identifier> "(" (<expr> ("," <expr>)*)? ")"
+<func_call> ::= <identifier> "(" <func_call_params> ")"
+
+<func_call_params> ::= <expr> <opt_func_call_params>
+                     | empty
+
+<opt_func_call_params> ::= "," <expr> <opt_func_call_params>
+                         | empty
 
 <expr> ::= <logical_expr> 
          | <func_call>
@@ -39,30 +78,35 @@
 
 <logical_expr> ::= <logical_and_expr> | <logical_or_expr>
 
-<logical_and_expr> ::= <comparison_expr> ("&&" <comparison_expr>)+
+<logical_and_expr> ::= <comparison_expr> { "&&" <comparison_expr> }
 
-<logical_or_expr> ::= <logical_and_expr> ("||" <logical_and_expr>)+
+<logical_or_expr> ::= <logical_and_expr> { "||" <logical_and_expr> }
 
 <comparison_expr> ::= <additive_expr> { <logical_comparator> <additive_expr> }
 
 <additive_expr> ::= <multiplication_expr> { ("+" | "-") <multiplication_expr> }
 
-<multiplication_expr> ::= <unary_expr> { ("*" | "/") <unary_expr> }
+<multiplication_expr> ::= <unary_expr> { ("*" | "/" | "%") <unary_expr> }
 
-<unary_expr> ::= ("+" | "-") <primary_expr>
+<unary_expr> ::= ("+" | "-" | "!") <primary_expr>
 
 <primary_expr> ::= <identifier> 
                  | <array_access>
                  | <numeric_literal> 
                  | <boolean_literal>
                  | "(" <expr> ")"
+                 | <class_instance>
+
+
+<class_instance> ::= <identifier> "." "new" "(" ")"
+                   | <identifier> "." "new" "(" <func_call_params> ")"
 
 <array_access> ::= <identifier> "[" <expr> "]"
 
-<identifier> ::= [a-zA-Z_][a-zA-Z0-9_]*
+<identifier> ::= /[a-zA-Z_][a-zA-Z0-9_]*/
 
-<numeric_literal> ::= [0-9]+ ( "." [0-9]+ )?
+<numeric_literal> ::= /[0-9]+ ( "." [0-9]+ )?/
 
-<boolean_literal> ::= 
+<boolean_literal> ::= "true" | "false"
 
 <logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="

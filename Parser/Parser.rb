@@ -34,7 +34,7 @@ class Parser
 
     def parse_stmt()
         case at().type
-        when TokenType::CONST, TokenType::TYPE_SPECIFIER # TODO Change second to TYPE_SPECIFIER
+        when TokenType::CONST, TokenType::TYPE_SPECIFIER
             @logger.debug("(#{at().value}) matched var declaration")
             return parse_var_declaration()
         when TokenType::IF
