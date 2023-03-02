@@ -20,12 +20,16 @@ def eval_if_statement(astNode, env)
 
     # Eval all the conditions in the if
     astNode.conditions.each {|cond| conditions_result = evaluate(cond, env).value}
-
+    puts astNode.else_body
     # Check if the conditions of the statement is evaled to true
     if conditions_result
         # TODO Set up new env for if so vars die after if is done
         # Eval the body of the if
         astNode.body.each {|stmt| last_eval = evaluate(stmt, env)}
+    elsif astNode.else_body != nil
+        puts "Evaling else"
+        # Eval the body of the else
+        astNode.else_body.each {|stmt| last_eval = evaluate(stmt, env)}
     end
 
     return last_eval

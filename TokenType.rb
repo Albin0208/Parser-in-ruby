@@ -6,6 +6,7 @@ class TokenType
 	CONST = :CONST
 	FUNC = :FUNC
 	IF = :IF
+	ELSE = :ELSE
 	# THEN = :THEN
 	COMMA = :COMMA
 	# ENDSTMT = :ENDSTMT

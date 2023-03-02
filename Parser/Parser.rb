@@ -84,29 +84,36 @@ class Parser
     end
 
     def parse_conditional()
-        eat() # Eat the if token
+        expect(TokenType::IF) # Eat the if token
 
         # TODO Write test for if
 
-        # conditions = Array.new()
-        condition = nil
+        conditions = Array.new()
         while at().type != TokenType::LBRACE # Parse the conditions of the if statment
-            # conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
-            condition = parse_logical_expr() # Add the condition expr to the conditions array
+            conditions.append(parse_logical_expr()) # Add the condition expr to the conditions array
         end
-        eat() # Eat the lbrace token
+        expect(TokenType::LBRACE) # Eat lbrace token
 
         # Parse else if
-
-
-        # Parse else
 
         body = Array.new()
         while at().type != TokenType::RBRACE # Parse the content of teh if statment
             body.append(parse_stmt())
         end
-        eat() # Eat the rbrace token
-        return IfStatement.new(body, condition)
+        expect(TokenType::RBRACE)# Eat the rbrace token
+
+        else_body = nil
+        if at().type == TokenType::ELSE
+            else_body = Array.new()
+            eat() # Eat the Else token
+            expect(TokenType::LBRACE) # Eat lbrace token
+            while at().type != TokenType::RBRACE # Parse the conditions of the if statment
+                else_body.append(parse_logical_expr()) # Add the condition expr to the conditions array
+            end
+            expect(TokenType::RBRACE)
+        end
+
+        return IfStatement.new(body, conditions, else_body)
     end
 
     def parse_assignment_stmt()

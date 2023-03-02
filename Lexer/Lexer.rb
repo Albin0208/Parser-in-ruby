@@ -24,6 +24,7 @@ KEYWORDS = {
 	"const" => TokenType::CONST,
 	"func" => TokenType::FUNC,
 	"if" => TokenType::IF,
+	"else" => TokenType::ELSE,
 	# "then" => TokenType::THEN,
 	# "end" => TokenType::ENDSTMT,
 	"int" => TokenType::TYPE_SPECIFIER,
