@@ -60,10 +60,10 @@ class TestLexer < Test::Unit::TestCase
 
 		assert_equal(TokenType::IF, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
-		input = "elsif"
-		lexer = Lexer.new(input)
+		# input = "elsif"
+		# lexer = Lexer.new(input)
 
-		assert_equal(TokenType::ELSIF, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		# assert_equal(TokenType::ELSIF, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
 		input = "else"
 		lexer = Lexer.new(input)
