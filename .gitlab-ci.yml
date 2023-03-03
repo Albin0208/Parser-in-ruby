@@ -25,7 +25,7 @@ variables:
   RUBY_VERSION: '2.7'
 
 before_script:
-   gem update --system
+    # - gem update --system
   # - ls
   # - gem install bundler
   # - bundle install
