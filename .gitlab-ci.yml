@@ -33,7 +33,6 @@ before_script:
 test:
   stage: test
   script:
-    - bundle install
-    - bundle exec rake test
+    - rake test
   only:
     - main
