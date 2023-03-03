@@ -25,6 +25,7 @@ variables:
   RUBY_VERSION: '2.6'
 
 before_script:
+  - cd TDP019 # Replace this with the name of your project directory
   - gem install bundler
   - bundle install
 
