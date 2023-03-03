@@ -90,11 +90,9 @@ class TestParser < Test::Unit::TestCase
         assert_equal(NODE_TYPES[:BinaryExpr], conditions.left.type)
         assert_equal(NODE_TYPES[:BinaryExpr], conditions.right.type)
 
-
         # Test with multiple statements in condition
         ast = @parser.produceAST("if 3 < 4 && 4 > 3 && 3 != 4 { int a = 4 a = 4 - 3}")
         conditions = ast.body[0].conditions
-        # puts conditions.right
         assert_equal(NODE_TYPES[:LogicalAnd], conditions.type)
         assert_equal(NODE_TYPES[:LogicalAnd], conditions.left.type)
         assert_equal(NODE_TYPES[:BinaryExpr], conditions.right.type)
@@ -108,7 +106,11 @@ class TestParser < Test::Unit::TestCase
         assert_equal(NODE_TYPES[:VarDeclaration], body[0].type)
         assert_equal("a", body[0].identifier)
         assert_equal(4, body[0].value.left.value)
+    end
 
+    def test_parse_mismatched_type_on_var_declaration
+        assert_raise(InvalidTokenError) { @parser.produceAST("int a = true") }
+        assert_raise(InvalidTokenError) { @parser.produceAST("bool a = 40") }
     end
 
     def test_parse_missing_identifier
