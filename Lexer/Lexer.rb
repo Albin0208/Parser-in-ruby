@@ -7,7 +7,7 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
-	unaryOperator: /\A[\-\+!]/,
+	unaryOperator: /\A[\-\+\!]/,
 	logical: /\A((&&)|(\|\|))/,
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
@@ -118,14 +118,14 @@ class Lexer
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
 			return handle_number_match($~[0])
+		when TOKEN_TYPES[:comparators]
+			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:unaryOperator]
 			return create_token($~[0], TokenType::UNARYOPERATOR, "Found unary operator token", true)
 		when TOKEN_TYPES[:operator]
 			return create_token($~[0], TokenType::BINARYOPERATOR, "Found binary operator token", true)
 		when TOKEN_TYPES[:logical]
 			return create_token($~[0], TokenType::LOGICAL, "Found logical token", true)
-		when TOKEN_TYPES[:comparators]
-			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:assign]
 			return create_token($~[0], TokenType::ASSIGN, "Found assign token", true)
 		when TOKEN_TYPES[:lparen]
