@@ -7,6 +7,7 @@ class TokenType
 	FUNC = :FUNC
 	IF = :IF
 	ELSE = :ELSE
+	BOOLEAN = :BOOLEAN
 	# THEN = :THEN
 	COMMA = :COMMA
 	# ENDSTMT = :ENDSTMT

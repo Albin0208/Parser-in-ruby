@@ -68,7 +68,7 @@ class Parser
         expression = parse_expr()
         puts expression
 
-        # validate_type(expression, type_specifier)
+        validate_type(expression, type_specifier)
         
         # case type_specifier
         # when "int", "float"
@@ -86,23 +86,29 @@ class Parser
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
 
-    # def validate_type(expression, type)
-    #     if !expression.instance_variables.include?(:@value)
-    #         validate_type(expression.left, type)
-    #     end
-    #     case type
-    #     when "int", "float"
-    #         # Make sure we either are assigning a number or a variabel to the number var
-    #         if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
-    #             raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
-    #         end
-    #     when "bool"
-    #         # Make sure we either are assigning a bool or a variabel to the bool var
-    #         if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
-    #             raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
-    #         end
-    #     end
-    # end
+    def validate_type(expression, type)
+        if !expression.instance_variables.include?(:@value)
+            @logger.debug("Validating left side of expression")
+            validate_type(expression.left, type)
+            if expression.instance_variables.include?(:@right)
+                @logger.debug("Validating right side of expression")
+                return validate_type(expression.left, type)
+            end
+            return 
+        end
+        case type
+        when "int", "float"
+            # Make sure we either are assigning a number or a variabel to the number var
+            if expression.type != NODE_TYPES[:NumericLiteral] || expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
+            end
+        when "bool"
+            # Make sure we either are assigning a bool or a variabel to the bool var
+            if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
+            end
+        end
+    end
 
     def parse_conditional()
         expect(TokenType::IF) # Eat the if token
@@ -252,10 +258,13 @@ class Parser
         when TokenType::INTEGER, TokenType::FLOAT
             numLit = NumericLiteral.new(eat().value)
             return numLit
+        when TokenType::BOOLEAN
+            val = eat().value == "true" ? true : false
+            return BooleanLiteral.new(val)
         when TokenType::LPAREN
-            eat() # Eat opening paren
+            expect(TokenType::LPAREN) # Eat opening paren
             value = parse_expr()
-            eat() # Eat closing paren
+            expect(TokenType::RPAREN) # Eat closing paren
             return value
         else
             raise InvalidTokenError.new("Unexpected token found: #{at().to_s}")

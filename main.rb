@@ -4,8 +4,8 @@ require_relative 'Runtime/Enviroment.rb'
 
 def main
     env = Enviroment.new()
-    env.declareVar("true", BooleanVal.new(true), true)
-    env.declareVar("false", BooleanVal.new(false), true)
+    # env.declareVar("true", BooleanVal.new(true), true)
+    # env.declareVar("false", BooleanVal.new(false), true)
     env.declareVar("null", NullVal.new(), true)
     
     debugging = ARGV[0] == "-debug"

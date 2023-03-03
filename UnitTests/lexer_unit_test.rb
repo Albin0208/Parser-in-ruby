@@ -70,15 +70,16 @@ class TestLexer < Test::Unit::TestCase
 
 		assert_equal(TokenType::ELSE, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
-		# input = "then"
-		# lexer = Lexer.new(input)
+		input = "true"
+		lexer = Lexer.new(input)
 
-		# assert_equal(TokenType::THEN, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		assert_equal(TokenType::BOOLEAN, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
-		# input = "end"
-		# lexer = Lexer.new(input)
+		input = "false"
+		lexer = Lexer.new(input)
 
-		# assert_equal(TokenType::ENDSTMT, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		assert_equal(TokenType::BOOLEAN, lexer.tokenize[0].type, "The token was not correctly tokenized")
+
 	end
 
 	def test_tokenize_simple_input
@@ -193,7 +194,7 @@ class TestLexer < Test::Unit::TestCase
 			"EOF: , (1, 12)"], tokens.map(&:to_s))
 	end
 
-	def test_tokenize_input_with_var_decleration
+	def test_tokenize_input_with_var_declaration
 		input = "var a = 5"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
@@ -204,18 +205,19 @@ class TestLexer < Test::Unit::TestCase
 			"EOF: , (1, 10)"], tokens.map(&:to_s))
 	end
 
-	def test_tokenize_input_with_const_var_decleration
-		input = "const a = 5"
+	def test_tokenize_input_with_const_var_declaration
+		input = "const int a = 5"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
 		assert_equal(["CONST: const, (1, 1)",
-			"IDENTIFIER: a, (1, 7)",
-			"ASSIGN: =, (1, 9)",
-			"INTEGER: 5, (1, 11)",
-			"EOF: , (1, 12)"], tokens.map(&:to_s))
+			"TYPE_SPECIFIER: int, (1, 7)",
+			"IDENTIFIER: a, (1, 11)",
+			"ASSIGN: =, (1, 13)",
+			"INTEGER: 5, (1, 15)",
+			"EOF: , (1, 16)"], tokens.map(&:to_s))
 	end
 
-	def test_tokenize_input_with_reassign_var_decleration
+	def test_tokenize_input_with_reassign_var_declaration
 		input = "a = 5"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
@@ -225,11 +227,11 @@ class TestLexer < Test::Unit::TestCase
 			"EOF: , (1, 6)"], tokens.map(&:to_s))
 	end
 
-	def test_tokenize_input_with_var_decleration_with_expr
-		input = "var a = 10 / 5 + 4"
+	def test_tokenize_input_with_var_declaration_with_expr
+		input = "int a = 10 / 5 + 4"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["VAR: var, (1, 1)",
+		assert_equal(["TYPE_SPECIFIER: int, (1, 1)",
 			"IDENTIFIER: a, (1, 5)",
 			"ASSIGN: =, (1, 7)",
 			"INTEGER: 10, (1, 9)",
@@ -240,7 +242,7 @@ class TestLexer < Test::Unit::TestCase
 			"EOF: , (1, 19)"], tokens.map(&:to_s))
 	end
 
-	def test_tokenize_input_with_reassign_var_decleration_with_var
+	def test_tokenize_input_with_reassign_var_declaration_with_var
 		input = "a = 5 * y"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
@@ -270,17 +272,17 @@ class TestLexer < Test::Unit::TestCase
 		input = "true && false"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["IDENTIFIER: true, (1, 1)",
+		assert_equal(["BOOLEAN: true, (1, 1)",
 			"LOGICAL: &&, (1, 6)",
-			"IDENTIFIER: false, (1, 9)",
+			"BOOLEAN: false, (1, 9)",
 			"EOF: , (1, 14)"], tokens.map(&:to_s))
 
 		input = "true || false"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["IDENTIFIER: true, (1, 1)",
+		assert_equal(["BOOLEAN: true, (1, 1)",
 			"LOGICAL: ||, (1, 6)",
-			"IDENTIFIER: false, (1, 9)",
+			"BOOLEAN: false, (1, 9)",
 			"EOF: , (1, 14)"], tokens.map(&:to_s))
 	end
 
