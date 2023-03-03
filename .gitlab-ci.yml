@@ -24,12 +24,6 @@ stages:
 variables:
   RUBY_VERSION: '2.7'
 
-before_script:
-    # - gem update --system
-  # - ls
-  # - gem install bundler
-  # - bundle install
-
 test:
   stage: test
   script:
