@@ -68,19 +68,6 @@ class Parser
         expression = parse_expr()
 
         validate_type(expression, type_specifier)
-        
-        # case type_specifier
-        # when "int", "float"
-        #     # Make sure we either are assigning a number or a variabel to the number var
-        #     if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
-        #         raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
-        #     end
-        # when "bool"
-        #     # Make sure we either are assigning a bool or a variabel to the bool var
-        #     if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
-        #         raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
-        #     end
-        # end
 
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
@@ -120,7 +107,7 @@ class Parser
             conditions = parse_logical_expr() # Add the condition expr to the conditions array
         end
         expect(TokenType::LBRACE) # Eat lbrace token
-        # Parse else if
+        # TODO Parse else if
 
         body = Array.new()
         while at().type != TokenType::RBRACE # Parse the content of teh if statment
@@ -239,7 +226,7 @@ class Parser
     end
 
     def parse_unary_expr()
-        while at().value == :-
+        while [:-, :+, :!].include?(at().value)
             operator = eat().value # Eat the operator
             right = parse_primary_expr()
             return UnaryExpr.new(right, operator)

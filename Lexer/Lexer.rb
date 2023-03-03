@@ -7,8 +7,7 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
-	# unaryOperator: /\A[-\+](?=\d+(\.\d+)?)/,
-	unaryOperator: /\A[\-\+]/,
+	unaryOperator: /\A[\-\+!]/,
 	logical: /\A((&&)|(\|\|))/,
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,

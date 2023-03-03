@@ -26,6 +26,10 @@ class RunTimeVal
       raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
     end
 
+    def %(other)
+        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+    end
+
     def <(other)
         raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
     end
@@ -75,6 +79,10 @@ class NumberVal < RunTimeVal
 
     def /(other)
         return NumberVal.new(@value / other.value)
+    end
+
+    def %(other)
+        return NumberVal.new(@value % other.value)
     end
 
     def <(other)
