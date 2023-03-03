@@ -22,10 +22,10 @@ stages:
   - test
 
 variables:
-  RUBY_VERSION: '2.6'
+  RUBY_VERSION: '2.7'
 
 before_script:
-  - cd TDP019 # Replace this with the name of your project directory
+  - ls
   - gem install bundler
   - bundle install
 
