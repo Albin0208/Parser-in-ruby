@@ -11,7 +11,7 @@ class Parser
         @logging = logging
 
         @logger = Logger.new(STDOUT)
-		@logger.level = Logger::DEBUG
+		@logger.level = logging ? Logger::DEBUG : Logger::FATAL
     end
 
     # Produce a AST from the sourceCode
@@ -66,22 +66,43 @@ class Parser
 
         expect(TokenType::ASSIGN)
         expression = parse_expr()
+        puts expression
+
+        # validate_type(expression, type_specifier)
         
-        case type_specifier
-        when "int", "float"
-            # Make sure we either are assigning a number or a variabel to the number var
-            if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
-                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
-            end
-        when "bool"
-            # Make sure we either are assigning a bool or a variabel to the bool var
-            if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
-                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
-            end
-        end
+        # case type_specifier
+        # when "int", "float"
+        #     # Make sure we either are assigning a number or a variabel to the number var
+        #     if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
+        #         raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
+        #     end
+        # when "bool"
+        #     # Make sure we either are assigning a bool or a variabel to the bool var
+        #     if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
+        #         raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type_specifier}")
+        #     end
+        # end
 
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
+
+    # def validate_type(expression, type)
+    #     if !expression.instance_variables.include?(:@value)
+    #         validate_type(expression.left, type)
+    #     end
+    #     case type
+    #     when "int", "float"
+    #         # Make sure we either are assigning a number or a variabel to the number var
+    #         if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
+    #             raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
+    #         end
+    #     when "bool"
+    #         # Make sure we either are assigning a bool or a variabel to the bool var
+    #         if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
+    #             raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
+    #         end
+    #     end
+    # end
 
     def parse_conditional()
         expect(TokenType::IF) # Eat the if token
@@ -109,7 +130,7 @@ class Parser
             eat() # Eat the Else token
             expect(TokenType::LBRACE) # Eat lbrace token
             while at().type != TokenType::RBRACE # Parse the conditions of the if statment
-                else_body.append(parse_logical_expr()) # Add the condition expr to the conditions array
+                else_body.append(parse_stmt()) # Add the condition expr to the conditions array
             end
             expect(TokenType::RBRACE)
         end
@@ -118,7 +139,7 @@ class Parser
     end
 
     def parse_assignment_stmt()
-        @logger.debug("Parsing assing expression")
+        @logger.debug("Parsing assign expression")
         identifier = parse_identifier()
 
         # Check if we have an assignment token
