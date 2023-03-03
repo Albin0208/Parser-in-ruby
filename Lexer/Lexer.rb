@@ -7,7 +7,8 @@ require_relative '../TokenType.rb'
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
 	operator: /\A[\+\-\*\/\%]/,
-	unaryOperator: /\A[-\+](?=\d+(\.\d+)?)/,
+	# unaryOperator: /\A[-\+](?=\d+(\.\d+)?)/,
+	unaryOperator: /\A[\-\+]/,
 	logical: /\A((&&)|(\|\|))/,
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
@@ -20,7 +21,6 @@ TOKEN_TYPES = {
 }
 
 KEYWORDS = {
-	"var" => TokenType::VAR,
 	"const" => TokenType::CONST,
 	"func" => TokenType::FUNC,
 	"if" => TokenType::IF,
@@ -159,6 +159,20 @@ class Lexer
 	# @return Token - A new Token if type @type
 	def create_token(match, type, message, to_symbol = false)
 		match = to_symbol ? match.to_sym : match
+
+		# Handle unary operators
+		if type == TokenType::UNARYOPERATOR
+			# Check if the previous token is a binary operator, a left parenthesis or the beginning of the input
+			previous_token = @tokens.last
+			if previous_token.nil? || previous_token.type == TokenType::LPAREN || previous_token.type == TokenType::BINARYOPERATOR
+				# This is a unary operator
+				type = TokenType::UNARYOPERATOR
+			else
+				# This is a binary operator
+				type = TokenType::BINARYOPERATOR
+			end
+		end
+
 		token = Token.new(type, match, @line, @column)
 		@logger.debug("#{message}: #{token.value}")
 		advance(token.value.to_s.length)

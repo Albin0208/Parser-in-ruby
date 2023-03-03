@@ -2,7 +2,6 @@
 class TokenType
 	INTEGER = :INTEGER
 	FLOAT = :FLOAT
-	VAR = :VAR
 	CONST = :CONST
 	FUNC = :FUNC
 	IF = :IF

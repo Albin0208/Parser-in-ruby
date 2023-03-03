@@ -66,7 +66,6 @@ class Parser
 
         expect(TokenType::ASSIGN)
         expression = parse_expr()
-        puts expression
 
         validate_type(expression, type_specifier)
         
@@ -86,25 +85,28 @@ class Parser
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
 
+    # Validate that we are trying to assign a correct type to our variable.
+    # @param expression - The expression we want to validate
+    # @param type - What type we are trying to assign to
     def validate_type(expression, type)
-        if !expression.instance_variables.include?(:@value)
+        if !expression.instance_variables.include?(:@value) && expression.type != NODE_TYPES[:Identifier]
             @logger.debug("Validating left side of expression")
             validate_type(expression.left, type)
             if expression.instance_variables.include?(:@right)
                 @logger.debug("Validating right side of expression")
-                return validate_type(expression.left, type)
+                validate_type(expression.left, type)
             end
-            return 
+            return # If we get here the type is correct
         end
         case type
         when "int", "float"
             # Make sure we either are assigning a number or a variabel to the number var
-            if expression.type != NODE_TYPES[:NumericLiteral] || expression.type != NODE_TYPES[:Identifier]
+            if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
                 raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
             end
         when "bool"
             # Make sure we either are assigning a bool or a variabel to the bool var
-            if expression.type != NODE_TYPES[:Boolean] || expression.type != NODE_TYPES[:Identifier]
+            if expression.type != NODE_TYPES[:Boolean] && expression.type != NODE_TYPES[:Identifier]
                 raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
             end
         end
@@ -113,15 +115,11 @@ class Parser
     def parse_conditional()
         expect(TokenType::IF) # Eat the if token
 
-        # TODO Write test for if
-
-        # conditions = Array.new()
         conditions = nil
         while at().type != TokenType::LBRACE # Parse the conditions of the if statment
             conditions = parse_logical_expr() # Add the condition expr to the conditions array
         end
         expect(TokenType::LBRACE) # Eat lbrace token
-        # puts conditions.length
         # Parse else if
 
         body = Array.new()

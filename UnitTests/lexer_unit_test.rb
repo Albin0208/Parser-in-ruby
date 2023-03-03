@@ -15,9 +15,14 @@ class TestLexer < Test::Unit::TestCase
         assert_equal(TokenType::FLOAT, lexer.tokenize[0].type, "Assert that given a decimal number a FLOAT token is returned")
         
         # Test that all the BINARYOPERATORs are converted to BINARYOPERATORs
-        for op in ["+", "-", "*", "/"]
-            lexer = Lexer.new(op)
+        for op in ["*", "/"]
+			lexer = Lexer.new(op)
             assert_equal(TokenType::BINARYOPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
+        end
+
+		for op in ["+", "-"]
+            lexer = Lexer.new(op)
+            assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
         end
 
 		for op in ["<", ">", ">=", "<=", "==", "!="]
@@ -45,10 +50,12 @@ class TestLexer < Test::Unit::TestCase
 	end
 
 	def test_tokenize_keywords
-		input = "var"
-		lexer = Lexer.new(input)
+		for type in ["int", "float", "bool"]
+			lexer = Lexer.new(type)
+			assert_equal(TokenType::TYPE_SPECIFIER, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		end
 
-		assert_equal(TokenType::VAR, lexer.tokenize[0].type, "The token was not correctly tokenized")
+		assert_equal(TokenType::TYPE_SPECIFIER, lexer.tokenize[0].type, "The token was not correctly tokenized")
 
 		input = "const"
 		lexer = Lexer.new(input)
@@ -195,10 +202,10 @@ class TestLexer < Test::Unit::TestCase
 	end
 
 	def test_tokenize_input_with_var_declaration
-		input = "var a = 5"
+		input = "int a = 5"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
-		assert_equal(["VAR: var, (1, 1)",
+		assert_equal(["TYPE_SPECIFIER: int, (1, 1)",
 			"IDENTIFIER: a, (1, 5)",
 			"ASSIGN: =, (1, 7)",
 			"INTEGER: 5, (1, 9)",
@@ -206,15 +213,15 @@ class TestLexer < Test::Unit::TestCase
 	end
 
 	def test_tokenize_input_with_const_var_declaration
-		input = "const int a = 5"
+		input = "const float a = 5.2"
 		lexer = Lexer.new(input)
 		tokens = lexer.tokenize
 		assert_equal(["CONST: const, (1, 1)",
-			"TYPE_SPECIFIER: int, (1, 7)",
-			"IDENTIFIER: a, (1, 11)",
-			"ASSIGN: =, (1, 13)",
-			"INTEGER: 5, (1, 15)",
-			"EOF: , (1, 16)"], tokens.map(&:to_s))
+			"TYPE_SPECIFIER: float, (1, 7)",
+			"IDENTIFIER: a, (1, 13)",
+			"ASSIGN: =, (1, 15)",
+			"FLOAT: 5.2, (1, 17)",
+			"EOF: , (1, 20)"], tokens.map(&:to_s))
 	end
 
 	def test_tokenize_input_with_reassign_var_declaration

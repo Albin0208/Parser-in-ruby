@@ -107,7 +107,7 @@ class TestParser < Test::Unit::TestCase
         body = ast.body[0].else_body
         assert_equal(NODE_TYPES[:VarDeclaration], body[0].type)
         assert_equal("a", body[0].identifier)
-        assert_equal(4, body[0].value.value)
+        assert_equal(4, body[0].value.left.value)
 
     end
 
