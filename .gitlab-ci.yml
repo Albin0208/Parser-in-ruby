@@ -33,4 +33,4 @@ test:
   script:
     - rake test
   only:
-    - master
+    - main
