@@ -69,8 +69,6 @@ class Parser
 
         validate_type(expression, type_specifier) # Validate that the type is correct
 
-
-
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
 
@@ -88,16 +86,8 @@ class Parser
             return # If we get here the type is correct
         end
         case type
-        when "int"
+        when "int", "float"
             # Make sure we either are assigning an integer or a variabel to the integer var
-            if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
-                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
-            end
-            # if expression.type == NODE_TYPES[:NumericLiteral] && expression.value.is_a?(Float)
-            #     expression.value = expression.value.floor
-            # end
-        when "float"
-            # Make sure we either are assigning a number or a variabel to the float var
             if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
                 raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
             end
