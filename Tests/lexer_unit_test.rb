@@ -3,7 +3,7 @@ require_relative '../Lexer/Lexer.rb'
 require_relative '../TokenType.rb'
 
 class TestLexer < Test::Unit::TestCase
-    def test_tokens
+	def test_tokens
         input = "1"
         lexer = Lexer.new(input)
 
@@ -23,7 +23,7 @@ class TestLexer < Test::Unit::TestCase
 		for op in ["+", "-"]
             lexer = Lexer.new(op)
             assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type, "The token '#{op}' was not correctly tokenized")
-        end
+		end
 
 		for op in ["<", ">", ">=", "<=", "==", "!="]
 			lexer = Lexer.new(op)

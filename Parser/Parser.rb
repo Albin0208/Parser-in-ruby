@@ -67,7 +67,9 @@ class Parser
         expect(TokenType::ASSIGN)
         expression = parse_expr()
 
-        validate_type(expression, type_specifier)
+        validate_type(expression, type_specifier) # Validate that the type is correct
+
+
 
         return VarDeclaration.new(is_const, identifier, expression, type_specifier)
     end
@@ -86,8 +88,16 @@ class Parser
             return # If we get here the type is correct
         end
         case type
-        when "int", "float"
-            # Make sure we either are assigning a number or a variabel to the number var
+        when "int"
+            # Make sure we either are assigning an integer or a variabel to the integer var
+            if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
+            end
+            # if expression.type == NODE_TYPES[:NumericLiteral] && expression.value.is_a?(Float)
+            #     expression.value = expression.value.floor
+            # end
+        when "float"
+            # Make sure we either are assigning a number or a variabel to the float var
             if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
                 raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
             end
@@ -240,8 +250,11 @@ class Parser
         case tok
         when TokenType::IDENTIFIER
             return parse_identifier()
-        when TokenType::INTEGER, TokenType::FLOAT
-            numLit = NumericLiteral.new(eat().value)
+        when TokenType::INTEGER
+            numLit = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
+            return numLit
+        when TokenType::FLOAT
+            numLit = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f)
             return numLit
         when TokenType::BOOLEAN
             val = eat().value == "true" ? true : false

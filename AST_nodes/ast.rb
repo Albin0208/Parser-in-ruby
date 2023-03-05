@@ -179,7 +179,7 @@ class Identifier < Expr
 end
 
 class NumericLiteral < Expr
-    attr_reader :value
+    attr_accessor :value
     def initialize(value)
         super(NODE_TYPES[:NumericLiteral])
         @value = value

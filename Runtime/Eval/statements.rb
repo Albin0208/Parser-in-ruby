@@ -11,6 +11,13 @@ end
 
 def eval_var_declaration(astNode, env)
     value = astNode.value ? evaluate(astNode.value, env) : NullVal.new()
+
+    # Convert to correct data type for int and float calculations
+    value = case astNode.value_type
+            when "int" then return NumberVal.new(value.value.to_i )
+            when "float" then return NumberVal.new(value.value.to_f)
+        end
+
     env.declareVar(astNode.identifier, value, astNode.constant)
 end
 
