@@ -1,40 +1,11 @@
 require 'test/unit'
 require_relative '../Parser/Parser.rb'
 
-class TestParser < Test::Unit::TestCase
+class TestParserControlStatements < Test::Unit::TestCase
     def setup
         @parser = Parser.new()
     end
     
-    
-
-    def test_parse_constant_declaration
-        ast = @parser.produceAST("const int x = 1")
-        assert_equal(ast.body[0].identifier, "x")
-        assert_equal(ast.body[0].value.value, 1)
-        assert_equal(ast.body[0].constant, true)
-    end
-
-    def test_parse_reassign_expression
-        ast = @parser.produceAST("x = 2")
-        assert_equal(ast.body[0].assigne.symbol, "x")
-        assert_equal(ast.body[0].value.value, 2)
-
-        # Try assign another variable to y
-        ast = @parser.produceAST("y = x")
-        assert_equal(ast.body[0].assigne.symbol, "y")
-        assert_equal(ast.body[0].value.symbol, "x")
-    end
-
-    def test_parse_binary_expression
-        ast = @parser.produceAST("1 + 2 * 3")
-        assert_equal(ast.body[0].left.value, 1)
-        assert_equal(ast.body[0].op, :+)
-        assert_equal(ast.body[0].right.left.value, 2)
-        assert_equal(ast.body[0].right.op, :*)
-        assert_equal(ast.body[0].right.right.value, 3)
-    end
-
     def test_parse_if_statment
         ast = @parser.produceAST("if 3 < 4 { int a = 4}")
         assert_equal(NODE_TYPES[:IF], ast.body[0].type)
@@ -85,20 +56,4 @@ class TestParser < Test::Unit::TestCase
     end
 
 
-
-
-
-    def test_parse_missing_type_specifier_on_constant
-        assert_raise(RuntimeError) { @parser.produceAST("const a = 1") }
-    end
-
-    def test_parse_missing_value_on_constant
-        assert_raise(NameError) { @parser.produceAST("const float x ") }
-    end
-    
-
-    
-    def test_parse_unknown_token
-        assert_raise(InvalidTokenError) { @parser.produceAST("int x @ 1") }
-    end
 end
