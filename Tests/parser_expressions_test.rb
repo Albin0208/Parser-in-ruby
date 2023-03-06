@@ -162,6 +162,54 @@ class TestParserExpressions < Test::Unit::TestCase
         assert_raise(InvalidTokenError) {@parser.produceAST("4 + 3 *")}
     end
 
+        def test_parse_less_than_expression
+        ast = @parser.produceAST("3 < 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:<, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
+    def test_parse_less_than_or_equal_to_expression
+        ast = @parser.produceAST("3 <= 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:<=, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
+    def test_parse_greater_than_expression
+        ast = @parser.produceAST("3 > 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:>, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
+    def test_parse_greater_than_or_equal_to_expression
+        ast = @parser.produceAST("3 >= 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:>=, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
+    def test_parse_equality_expression
+        ast = @parser.produceAST("3 == 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:==, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
+    def test_parse_inequality_expression
+        ast = @parser.produceAST("3 != 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(3, ast.body[0].left.value)
+        assert_equal(:!=, ast.body[0].op)
+        assert_equal(4, ast.body[0].right.value)
+    end
+
     def test_parse_logical_and_expression
         ast = @parser.produceAST("true && false")
         assert_equal(NODE_TYPES[:LogicalAnd], ast.body[0].type)

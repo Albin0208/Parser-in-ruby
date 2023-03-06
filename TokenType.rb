@@ -25,13 +25,6 @@ class TokenType
 	TYPE_SPECIFIER = :TYPE_SPECIFIER
 end
 
-class Operators
-	PLUS = :+
-	MINUS = :-
-	MULTIPLY = :*
-	DIVIDE = :/
-end
-
-LOGICCOMPARISON = [:<, :>, :>=, :==, :!=].freeze
+LOGICCOMPARISON = [:<, :>, :>=, :<=, :==, :!=].freeze
 ADD_OPS =  [:+, :-].freeze
 MULT_OPS = [:*, :/, :%].freeze
