@@ -38,7 +38,7 @@
 \posttitle{\end{center}}
 \preauthor{\begin{center}\normalsize}
 \postauthor{\end{center}\vfill}
-\predate{\begin{center}Vårterminen 2023\\\version{}\end{center}\begin{center}}
+\predate{\begin{center}Höstterminen 2022\\\version{}\end{center}\begin{center}}
 \postdate{\end{center}}
 \lhead{\thedate}
 \chead{\thetitle}
