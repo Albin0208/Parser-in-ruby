@@ -8,7 +8,7 @@ NODE_TYPES = {
     AssignmentExpr: :AssignmentExpr,
     LogicalAnd: :LogicalAnd,
     LogicalOr: :LogicalOr,
-    UnaryOperator: :UnaryOperator,
+    UnaryExpr: :UnaryExpr,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral,
@@ -127,7 +127,7 @@ end
 class UnaryExpr < Expr
     attr_reader :left, :op
     def initialize(left, op)
-        super(NODE_TYPES[:UnaryOperator])
+        super(NODE_TYPES[:UnaryExpr])
         @left = left
         @op = op
     end
