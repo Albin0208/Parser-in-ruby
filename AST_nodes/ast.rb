@@ -211,7 +211,7 @@ class BooleanLiteral < Expr
 end
 
 class LogicalAndExpr < Expr
-    attr_reader :left, :right
+    attr_reader :left, :right, :op
     def initialize(left, right)
         super(NODE_TYPES[:LogicalAnd])
         @left = left
@@ -231,7 +231,7 @@ class LogicalAndExpr < Expr
 end
 
 class LogicalOrExpr < Expr
-    attr_reader :left, :right
+    attr_reader :left, :right, :op
     def initialize(left, right)
         super(NODE_TYPES[:LogicalOr])
         @left = left

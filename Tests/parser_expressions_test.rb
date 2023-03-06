@@ -161,4 +161,34 @@ class TestParserExpressions < Test::Unit::TestCase
     def test_invalid_expression
         assert_raise(InvalidTokenError) {@parser.produceAST("4 + 3 *")}
     end
+
+    def test_parse_logical_and_expression
+        ast = @parser.produceAST("true && false")
+        assert_equal(NODE_TYPES[:LogicalAnd], ast.body[0].type)
+        assert_equal(:"&&", ast.body[0].op)
+        assert_equal(true, ast.body[0].left.value)
+        assert_equal(false, ast.body[0].right.value)
+    end
+
+    def test_parse_logical_or_expression
+        ast = @parser.produceAST("true || false")
+        assert_equal(NODE_TYPES[:LogicalOr], ast.body[0].type)
+        assert_equal(:"||", ast.body[0].op)
+        assert_equal(true, ast.body[0].left.value)
+        assert_equal(false, ast.body[0].right.value)
+    end
+
+    def test_parse_logical_not_expression
+        ast = @parser.produceAST("!true")
+        assert_equal(NODE_TYPES[:UnaryExpr], ast.body[0].type)
+        assert_equal(:!, ast.body[0].op)
+        assert_equal(true, ast.body[0].left.value)
+
+        ast = @parser.produceAST("!(true && false)")
+        assert_equal(NODE_TYPES[:UnaryExpr], ast.body[0].type)
+        assert_equal(:!, ast.body[0].op)
+        assert_equal(NODE_TYPES[:LogicalAnd], ast.body[0].left.type)
+        assert_equal(true, ast.body[0].left.left.value)
+        assert_equal(false, ast.body[0].left.right.value)
+    end
 end
