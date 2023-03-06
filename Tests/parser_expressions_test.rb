@@ -7,7 +7,6 @@ class TestParserExpressions < Test::Unit::TestCase
     end
 =begin
 TODO 
-Test for unary expressions (e.g. "-x")
 Test for parentheses grouping (e.g. "(1 + 2) * 3")
 Test for operator precedence (e.g. "1 + 2 * 3" vs "1 * 2 + 3")
 Test for associativity of operators (e.g. "1 - 2 - 3" vs "1 - (2 - 3)")
@@ -90,5 +89,39 @@ Test for expressions with variables not defined (e.g. "y = x + 2")
         assert_equal(:-, ast.body[0].op)
         assert_equal(NODE_TYPES[:Identifier], ast.body[0].left.type)
         assert_equal("x", ast.body[0].left.symbol)
+    end
+
+    def test_parens_grouping
+        ast = @parser.produceAST("(3 + 3) * 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:*, ast.body[0].op) # Is higher up in the ast so has lower precedence
+        assert_equal(4, ast.body[0].right.value)
+        additionExpr = ast.body[0].left # Extract the addition expr for easier testing
+        assert_equal(NODE_TYPES[:BinaryExpr], additionExpr.type)
+        assert_equal(3, additionExpr.left.value)
+        assert_equal(3, additionExpr.right.value)
+        assert_equal(:+, additionExpr.op)
+
+        ast = @parser.produceAST("(3 * (3 - 4)) * 4")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:*, ast.body[0].op) # Is higher up in the ast so has lower precedence
+        assert_equal(4, ast.body[0].right.value)
+        firstParens = ast.body[0].left # Extract the addition expr for easier testing
+        assert_equal(NODE_TYPES[:BinaryExpr], firstParens.type)
+        assert_equal(3, firstParens.left.value)
+        assert_equal(:*, firstParens.op)
+        secondParens = firstParens.right
+        assert_equal(NODE_TYPES[:BinaryExpr], secondParens.type)
+        assert_equal(3, secondParens.left.value)
+        assert_equal(4, secondParens.right.value)
+        assert_equal(:-, secondParens.op)
+    end
+
+    def test_operator_precedence
+
+    end
+
+    def test_invalid_expression
+
     end
 end
