@@ -88,6 +88,7 @@ Test for expressions with variables not defined (e.g. "y = x + 2")
         ast = @parser.produceAST("-x")
         assert_equal(NODE_TYPES[:UnaryExpr], ast.body[0].type)
         assert_equal(:-, ast.body[0].op)
-        assert_equal(3, ast.body[0].left.value)
+        assert_equal(NODE_TYPES[:Identifier], ast.body[0].left.type)
+        assert_equal("x", ast.body[0].left.symbol)
     end
 end
