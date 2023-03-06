@@ -7,7 +7,6 @@ class TestParserExpressions < Test::Unit::TestCase
     end
 =begin
 TODO 
-Test for parentheses grouping (e.g. "(1 + 2) * 3")
 Test for operator precedence (e.g. "1 + 2 * 3" vs "1 * 2 + 3")
 Test for associativity of operators (e.g. "1 - 2 - 3" vs "1 - (2 - 3)")
 Test for invalid expressions (e.g. "x = 1 +")
@@ -118,7 +117,52 @@ Test for expressions with variables not defined (e.g. "y = x + 2")
     end
 
     def test_operator_precedence
+        # Test addition and multiplication
+        ast = @parser.produceAST("1 + 2 * 3")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:+, ast.body[0].op)
+        assert_equal(1, ast.body[0].left.value)
+        multiplicationExpr = ast.body[0].right
+        assert_equal(NODE_TYPES[:BinaryExpr], multiplicationExpr.type)
+        assert_equal(:*, multiplicationExpr.op)
+        assert_equal(2, multiplicationExpr.left.value)
+        assert_equal(3, multiplicationExpr.right.value)
 
+        # Test addition and division
+        ast = @parser.produceAST("1 + 2 / 3")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:+, ast.body[0].op)
+        assert_equal(1, ast.body[0].left.value)
+        divisionExpr = ast.body[0].right
+        assert_equal(NODE_TYPES[:BinaryExpr], divisionExpr.type)
+        assert_equal(:/, divisionExpr.op)
+        assert_equal(2, divisionExpr.left.value)
+        assert_equal(3, divisionExpr.right.value)
+
+        # Test multiplication and division are read from left to right
+        ast = @parser.produceAST("1 * 2 / 3")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:/, ast.body[0].op)
+        multiplicationExpr = ast.body[0].left
+        assert_equal(NODE_TYPES[:BinaryExpr], multiplicationExpr.type)
+        assert_equal(:*, multiplicationExpr.op)
+        assert_equal(1, multiplicationExpr.left.value)
+        assert_equal(2, multiplicationExpr.right.value)
+        assert_equal(3, ast.body[0].right.value)
+
+        # Test addition, divition with unary
+        ast = @parser.produceAST("1 + 2 / -3")
+        assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+        assert_equal(:+, ast.body[0].op)
+        assert_equal(1, ast.body[0].left.value)
+        divisionExpr = ast.body[0].right
+        assert_equal(NODE_TYPES[:BinaryExpr], divisionExpr.type)
+        assert_equal(:/, divisionExpr.op)
+        assert_equal(2, divisionExpr.left.value)
+        unaryExpr = divisionExpr.right
+        assert_equal(NODE_TYPES[:UnaryExpr], unaryExpr.type)
+        assert_equal(:-, unaryExpr.op)
+        assert_equal(3, unaryExpr.left.value)
     end
 
     def test_invalid_expression
