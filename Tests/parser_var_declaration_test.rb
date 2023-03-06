@@ -63,4 +63,9 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     def test_parse_missing_value_on_constant
         assert_raise(NameError) { @parser.produceAST("const float x ") }
     end
+
+    def test_parse_declaring_with_invalid_var_names
+        assert_raise(RuntimeError) { @parser.produceAST("int if = 4") }
+        assert_raise(RuntimeError) { @parser.produceAST("int 123 = 4") }
+    end
 end

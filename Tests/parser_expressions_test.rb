@@ -5,13 +5,6 @@ class TestParserExpressions < Test::Unit::TestCase
     def setup
         @parser = Parser.new()
     end
-=begin
-TODO 
-Test for operator precedence (e.g. "1 + 2 * 3" vs "1 * 2 + 3")
-Test for associativity of operators (e.g. "1 - 2 - 3" vs "1 - (2 - 3)")
-Test for invalid expressions (e.g. "x = 1 +")
-Test for expressions with variables not defined (e.g. "y = x + 2")
-=end
 
     def test_parse_reassign_expression
         ast = @parser.produceAST("x = 2")
