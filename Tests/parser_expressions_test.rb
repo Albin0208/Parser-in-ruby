@@ -167,5 +167,6 @@ Test for expressions with variables not defined (e.g. "y = x + 2")
 
     def test_invalid_expression
         assert_raise(InvalidTokenError) {@parser.produceAST("4 + 3 *")}
+        assert_raise(InvalidTokenError) {@parser.produceAST("4 ++ 3")}
     end
 end
