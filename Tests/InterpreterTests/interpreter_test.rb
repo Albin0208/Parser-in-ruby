@@ -160,6 +160,7 @@ class TestInterpreter < Test::Unit::TestCase
 
         # Evaluate program
         result = @interpreter.evaluate(program, @env)
+        assert_instance_of(NumberVal, result)
 
         # Check variables
         assert_equal(7, @env.variables["x"].value)
