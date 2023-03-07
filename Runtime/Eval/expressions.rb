@@ -4,7 +4,6 @@ require_relative '../../AST_nodes/ast.rb'
 
 def eval_identifier(astNode, env)
     val = env.lookupVar(astNode.symbol)
-    puts val.type
     return val
 end
 
@@ -44,7 +43,6 @@ def eval_binary_expr(binop, env)
 end
 
 def eval_assignment_expr(astNode, env)
-    # TODO Fix error where a var can be assigned to the wrong type
     if astNode.assigne.type != NODE_TYPES[:Identifier]
         raise "Cannot assign to none Identifier type"
     end
