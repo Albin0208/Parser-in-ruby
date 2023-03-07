@@ -162,7 +162,7 @@ class TestParserExpressions < Test::Unit::TestCase
         assert_raise(InvalidTokenError) {@parser.produceAST("4 + 3 *")}
     end
 
-        def test_parse_less_than_expression
+    def test_parse_less_than_expression
         ast = @parser.produceAST("3 < 4")
         assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
         assert_equal(3, ast.body[0].left.value)
