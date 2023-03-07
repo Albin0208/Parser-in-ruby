@@ -98,7 +98,17 @@ class TestInterpreter < Test::Unit::TestCase
     end
 
     def test_evaluate_unary_expr
+        # Test unary minus
+        ast = UnaryExpr.new(NumericLiteral.new(5), :-)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(-5, result.value)
 
+        # Test logical negation
+        ast = UnaryExpr.new(BooleanLiteral.new(true), :!)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
     end
 
     def test_evaluate_binary_expr

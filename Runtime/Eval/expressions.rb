@@ -31,7 +31,7 @@ def eval_unary_expr(binop, env)
     when :+
         return NumberVal.new(+lhs.value)
     when :!
-        return NumberVal.new(!lhs.value)
+        return BooleanVal.new(!lhs.value)
     end
 end
 
