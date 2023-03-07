@@ -66,7 +66,7 @@ class NumberVal < RunTimeVal
 
     def +(other)
         return NumberVal.new(@value + other.value)
-      end
+    end
     
     def -(other)
         return NumberVal.new(@value - other.value)

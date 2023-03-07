@@ -1,5 +1,5 @@
 require_relative '../Enviroment.rb'
-require_relative '../Interpreter.rb'
+# require_relative '../Interpreter.rb'
 require_relative '../../AST_nodes/ast.rb'
 
 def eval_identifier(astNode, env)

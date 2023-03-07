@@ -1,4 +1,4 @@
-require_relative '../Interpreter.rb'
+# require_relative '../Interpreter.rb'
 require_relative '../Enviroment.rb'
 
 def eval_program(program, env)
@@ -25,11 +25,7 @@ end
 
 def eval_if_statement(astNode, env)
     last_eval = NullVal.new()
-    conditions_result = true
 
-    # Eval all the conditions in the if
-    # astNode.conditions.each {|cond| conditions_result = evaluate(cond, env).value}
-    
     # Check if the conditions of the statement is evaled to true
     if evaluate(astNode.conditions, env).value
         # TODO Set up new env for if so vars die after if is done
