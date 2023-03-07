@@ -140,6 +140,31 @@ class TestInterpreter < Test::Unit::TestCase
     end
 
     def test_evaluate_program
+        # Declare variables
+        ast1 = VarDeclaration.new(false, "x", NumericLiteral.new(5), "int")
+        ast2 = VarDeclaration.new(false, "y", NumericLiteral.new(10), "int")
 
+        # Assign to variable x
+        ast3 = AssignmentExpr.new(NumericLiteral.new(7), Identifier.new("x"))
+
+        # Calculate z = x + y
+        ast4 = BinaryExpr.new(Identifier.new("x"), :+, Identifier.new("y"))
+        ast5 = VarDeclaration.new(false, "z", ast4, "int")
+
+        # Calculate t = z * 2
+        ast6 = BinaryExpr.new(Identifier.new("z"), :*, NumericLiteral.new(2))
+        ast7 = VarDeclaration.new(false, "t", ast6, "int")
+
+        # Create program
+        program = Program.new([ast1, ast2, ast3, ast5, ast7])
+
+        # Evaluate program
+        result = @interpreter.evaluate(program, @env)
+
+        # Check variables
+        assert_equal(7, @env.variables["x"].value)
+        assert_equal(10, @env.variables["y"].value)
+        assert_equal(17, @env.variables["z"].value)
+        assert_equal(34, @env.variables["t"].value)
     end
 end
