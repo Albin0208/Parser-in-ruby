@@ -19,7 +19,7 @@ def main
         result = interpreter.evaluate(program, env)
 
         program.display_info() unless not debugging
-        p result.to_s
+        puts result.to_s
     end
     puts "Bye!"
 end

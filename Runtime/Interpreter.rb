@@ -30,6 +30,10 @@ class Interpreter
             return eval_var_declaration(astNode, env)
         when NODE_TYPES[:IF]
             return eval_if_statement(astNode, env)
+        when NODE_TYPES[:Boolean]
+            return BooleanVal.new(astNode.value)
+        when NODE_TYPES[:Null]
+            return NullVal.new()
         else
             raise NotImplementedError.new("This AST Node has not yet been setup for #{astNode.type} #{astNode}")
         end

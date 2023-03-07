@@ -12,7 +12,8 @@ NODE_TYPES = {
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral,
-    Boolean: :Boolean
+    Boolean: :Boolean,
+    Null: :Null
 }
 
 #####################################
@@ -62,11 +63,11 @@ class VarDeclaration < Stmt
     end
 
     def to_s
-        return "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}"
+        return "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"
     end
 
     def display_info(indent = 0)
-        puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier}"
+        puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier} #{@value_type}"
         @value.display_info(indent + 2) if @value
     end
 end
@@ -199,6 +200,22 @@ class BooleanLiteral < Expr
     def initialize(value)
         super(NODE_TYPES[:Boolean])
         @value = value
+    end
+
+    def to_s
+        @value.to_s
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
+class NullLiteral < Expr
+    attr_reader :value
+    def initialize()
+        super(NODE_TYPES[:Null])
+        @value = "null"
     end
 
     def to_s

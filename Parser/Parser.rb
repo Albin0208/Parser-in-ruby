@@ -254,6 +254,9 @@ class Parser
             value = parse_expr()
             expect(TokenType::RPAREN) # Eat closing paren
             return value
+        when TokenType::NULL
+            expect(TokenType::NULL)
+            return NullLiteral.new()
         else
             raise InvalidTokenError.new("Unexpected token found: #{at().to_s}")
         end

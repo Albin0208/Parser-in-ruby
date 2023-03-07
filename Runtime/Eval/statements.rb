@@ -2,7 +2,7 @@ require_relative '../Interpreter.rb'
 require_relative '../Enviroment.rb'
 
 def eval_program(program, env)
-    last_eval = "nil"
+    last_eval = NullVal.new()
 
     program.body.each {|stmt| last_eval = evaluate(stmt, env)}
 
@@ -12,17 +12,19 @@ end
 def eval_var_declaration(astNode, env)
     value = astNode.value ? evaluate(astNode.value, env) : NullVal.new()
 
-    # Convert to correct data type for int and float calculations
-    value = case astNode.value_type
-            when "int" then return NumberVal.new(value.value.to_i )
-            when "float" then return NumberVal.new(value.value.to_f)
+    if not value.instance_of?(NullVal)
+        # Convert to correct data type for int and float calculations
+        value = case astNode.value_type
+                when "int" then NumberVal.new(value.value.to_i )
+                when "float" then NumberVal.new(value.value.to_f)
         end
+    end
 
     env.declareVar(astNode.identifier, value, astNode.constant)
 end
 
 def eval_if_statement(astNode, env)
-    last_eval = "nil"
+    last_eval = NullVal.new()
     conditions_result = true
 
     # Eval all the conditions in the if

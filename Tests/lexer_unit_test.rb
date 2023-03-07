@@ -55,8 +55,6 @@ class TestLexer < Test::Unit::TestCase
 			assert_equal(TokenType::TYPE_SPECIFIER, lexer.tokenize[0].type, "The token was not correctly tokenized")
 		end
 
-		assert_equal(TokenType::TYPE_SPECIFIER, lexer.tokenize[0].type, "The token was not correctly tokenized")
-
 		input = "const"
 		lexer = Lexer.new(input)
 

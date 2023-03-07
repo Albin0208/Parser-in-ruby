@@ -5,17 +5,17 @@ class RunTimeVal
       @value = value
       @type = type
     end
-  
-    def ==(other)
-      @value == other.value && @type == other.type
-    end
-  
+
     def +(other)
       raise TypeError, "unsupported operand types for +: #{@type} and #{other.type}"
     end
   
     def -(other)
       raise TypeError, "unsupported operand types for -: #{@type} and #{other.type}"
+    end
+
+    def !()
+        raise TypeError, "unsupported operand types for -: #{@type} and #{other.type}"
     end
   
     def *(other)
@@ -51,12 +51,11 @@ class RunTimeVal
     end
 
     def ==(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        @value == other.value && @type == other.type
     end
     
     def to_s
         return @value
-        return "Value: #{@value}, Type: #{@type}"
     end
 end
 
@@ -126,6 +125,6 @@ end
 
 class NullVal < RunTimeVal
     def initialize()
-        super(value, :null)
+        super("null", :null)
     end
 end

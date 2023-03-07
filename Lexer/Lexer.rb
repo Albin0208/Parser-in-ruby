@@ -26,6 +26,7 @@ KEYWORDS = {
 	"else" => TokenType::ELSE,
 	"true" => TokenType::BOOLEAN,
 	"false" => TokenType::BOOLEAN,
+	"null" => TokenType::NULL,
 	# "then" => TokenType::THEN,
 	# "end" => TokenType::ENDSTMT,
 	"int" => TokenType::TYPE_SPECIFIER,
