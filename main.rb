@@ -4,7 +4,6 @@ require_relative 'Runtime/Enviroment.rb'
 
 def main
     env = Enviroment.new()
-    env.declareVar("null", NullVal.new(), true) # TODO Fix this so it is not a variabel
     
     debugging = ARGV[0] == "-debug"
 
