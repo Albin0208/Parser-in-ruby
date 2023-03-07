@@ -112,7 +112,31 @@ class TestInterpreter < Test::Unit::TestCase
     end
 
     def test_evaluate_binary_expr
+        ast = BinaryExpr.new(NumericLiteral.new(3), :-, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(-7, result.value)
 
+        ast = BinaryExpr.new(NumericLiteral.new(3), :*, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(30, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3.0), :/, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(0.3, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :%, NumericLiteral.new(2))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(1, result.value)
+
+        # Test for precedence
+        ast = BinaryExpr.new(NumericLiteral.new(3), :+, BinaryExpr.new(NumericLiteral.new(10), :*, NumericLiteral.new(2)))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(23, result.value)
     end
 
     def test_evaluate_program
