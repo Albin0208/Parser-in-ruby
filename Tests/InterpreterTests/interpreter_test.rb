@@ -46,11 +46,55 @@ class TestInterpreter < Test::Unit::TestCase
     end
 
     def test_evaluate_logical_and
+        # Test true && true
+        ast = LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
 
+        # Test true && false
+        ast = LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(false))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
+
+        # Test false && true
+        ast = LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
+
+        # Test false && false
+        ast = LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(false))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
     end
 
     def test_evaluate_logical_or
+        # Test true || true
+        ast = LogicalOrExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
 
+        # Test true || false
+        ast = LogicalOrExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(false))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+        
+        # Test false || true
+        ast = LogicalOrExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        # Test false || false
+        ast = LogicalOrExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(false))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
     end
 
     def test_evaluate_unary_expr
