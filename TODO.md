@@ -6,15 +6,15 @@
 ## Interpreter tests
 
 ### Test arithmetic operations:
-- Addition: 2+3
-- Subtraction: 5-3
-- Multiplication: 2*4
-- Division: 10/2
-- Modulo: 10%3
+- [x] Addition: 2+3
+- [x] Subtraction: 5-3
+- [x] Multiplication: 2*4
+- [x] Division: 10/2
+- [x] Modulo: 10%3
 ### Test variable assignment and retrieval:
 
-- Assignment: x = 5
-- Retrieval: x
+- [x] Assignment: x = 5
+- [x] Retrieval: x
 ### Test conditional statements:
 - If statement: if 5 > 3 then puts "5 is greater than 3" end
 - If-else statement: if 5 < 3 then puts "5 is less than 3" else puts "5 is not less than 3" end
