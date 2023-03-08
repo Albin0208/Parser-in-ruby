@@ -197,11 +197,21 @@ class TestInterpreter < Test::Unit::TestCase
         assert_instance_of(BooleanVal, result)
         assert_equal(true, result.value)
 
+        ast = BinaryExpr.new(StringLiteral.new("hello"), :==, StringLiteral.new("byeee"))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
+
         # Test string inequality comparison
         ast = BinaryExpr.new(StringLiteral.new("hello"), :!=, StringLiteral.new("world"))
         result = @interpreter.evaluate(ast, @env)
         assert_instance_of(BooleanVal, result)
         assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(StringLiteral.new("hello"), :!=, StringLiteral.new("hello"))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
     end
 
     def test_evaluate_unary_expr
