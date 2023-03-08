@@ -16,8 +16,8 @@
 - [x] Assignment: x = 5
 - [x] Retrieval: x
 ### Test conditional statements:
-- [ ] If statement: if 5 > 3 then puts "5 is greater than 3" end
-- [ ] If-else statement: if 5 < 3 then puts "5 is less than 3" else puts "5 is not less than 3" end
+- [ ] If statement: if 5 > 3 { 3 + 3}
+- [ ] If-else statement: if 5 > 3 { 5 + 3} else { 5 - 3}
 ### Test loops:
 
 - [ ] While loop: i = 1; while i <= 5 do puts i; i += 1; end
