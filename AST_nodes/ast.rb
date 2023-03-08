@@ -213,6 +213,7 @@ class BooleanLiteral < Expr
 end
 
 class StringLiteral < Expr
+    attr_reader :value
     def initialize(value)
         super(NODE_TYPES[:String])
         @value = value

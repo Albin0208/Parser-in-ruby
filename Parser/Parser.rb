@@ -255,7 +255,7 @@ class Parser
             val = eat().value == "true" ? true : false
             return BooleanLiteral.new(val)
         when TokenType::STRING
-            return StringLiteral.new(expect(TokenType::STRING).to_s)
+            return StringLiteral.new(expect(TokenType::STRING).value.to_s)
         when TokenType::LPAREN
             expect(TokenType::LPAREN) # Eat opening paren
             value = parse_expr()

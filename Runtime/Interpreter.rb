@@ -12,6 +12,8 @@ class Interpreter
         case astNode.type
         when NODE_TYPES[:NumericLiteral]
             return NumberVal.new(astNode.value)
+        when NODE_TYPES[:String]
+            return StringVal.new(astNode.value)
         when NODE_TYPES[:Identifier]
             return eval_identifier(astNode, env)
         when NODE_TYPES[:AssignmentExpr]

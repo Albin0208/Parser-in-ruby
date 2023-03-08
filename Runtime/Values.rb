@@ -109,6 +109,55 @@ class NumberVal < RunTimeVal
     end
 end
 
+class StringVal < RunTimeVal
+    def initialize(value)
+        super(value, :string)
+    end
+
+    def +(other)
+        return NumberVal.new(@value + other.value)
+    end
+    
+    def -(other)
+        return NumberVal.new(@value - other.value)
+    end
+
+    def *(other)
+        return NumberVal.new(@value * other.value)
+    end
+
+    def /(other)
+        return NumberVal.new(@value / other.value)
+    end
+
+    def %(other)
+        return NumberVal.new(@value % other.value)
+    end
+
+    def <(other)
+        return BooleanVal.new(@value < other.value)
+    end
+
+    def >(other)
+        return BooleanVal.new(@value > other.value)
+    end
+
+    def >=(other)
+        return BooleanVal.new(@value >= other.value)
+    end
+
+    def <=(other)
+        return BooleanVal.new(@value <= other.value)
+    end
+
+    def !=(other)
+        return BooleanVal.new(@value != other.value)
+    end
+
+    def ==(other)
+        return BooleanVal.new(@value == other.value)
+    end
+end
 class BooleanVal < RunTimeVal
     def initialize(value = true)
         super(value, :boolean)
