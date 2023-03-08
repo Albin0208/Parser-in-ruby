@@ -44,17 +44,17 @@ class TestInterpreter < Test::Unit::TestCase
 
         ast = VarDeclaration.new(false, "b", BooleanLiteral.new(true), "bool")
         result = @interpreter.evaluate(ast, @env)
-        # assert_equal(true, result.value)
+        assert_equal(true, result.value)
         assert_instance_of(BooleanVal, @env.variables["b"])
         assert_equal(true, @env.variables["b"].value)
     end
 
     def test_evaluate_retrieval_of_var
-        ast = VarDeclaration.new(false, "x", NumericLiteral.new(5), "int")
+        @env.declareVar("x", NumberVal.new(10), false, "int")
+        ast = Identifier.new("x")
         result = @interpreter.evaluate(ast, @env)
-        assert_equal(5, result.value)
-        assert_instance_of(NumberVal, @env.variables["x"])
-        assert_equal(5, @env.variables["x"].value)
+        assert_instance_of(NumberVal, result)
+        assert_equal(10, result.value)
     end
 
     def test_evaluate_var_assignment_expr
