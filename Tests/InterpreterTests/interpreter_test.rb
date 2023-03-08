@@ -35,6 +35,13 @@ class TestInterpreter < Test::Unit::TestCase
         assert_instance_of(NumberVal, @env.variables["x"])
         assert_equal(5, @env.variables["x"].value)
 
+        # Test empty var declaration
+        ast = VarDeclaration.new(false, "empty", "int")
+        result = @interpreter.evaluate(ast, @env)
+        assert_equal("null", result.value)
+        assert_instance_of(NullVal, @env.variables["empty"])
+        assert_equal("null", @env.variables["empty"].value)
+
         ast = VarDeclaration.new(true, "t", NumericLiteral.new(5), "int")
         result = @interpreter.evaluate(ast, @env)
         assert_equal(5, result.value)
