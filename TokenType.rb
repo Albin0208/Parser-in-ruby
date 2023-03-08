@@ -7,6 +7,7 @@ class TokenType
 	IF = :IF
 	ELSE = :ELSE
 	BOOLEAN = :BOOLEAN
+	STRING = :STRING
 	NULL = :NULL
 	# THEN = :THEN
 	COMMA = :COMMA

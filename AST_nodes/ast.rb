@@ -13,6 +13,7 @@ NODE_TYPES = {
     Identifier: :Identifier,
     NumericLiteral: :NumericLiteral,
     Boolean: :Boolean,
+    String: :String,
     Null: :Null
 }
 
@@ -204,6 +205,21 @@ class BooleanLiteral < Expr
 
     def to_s
         @value.to_s
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
+class StringLiteral < Expr
+    def initialize(value)
+        super(NODE_TYPES[:String])
+        @value = value
+    end
+
+    def to_s
+        "\"#{@value.to_s}\""
     end
 
     def display_info(indent = 0)

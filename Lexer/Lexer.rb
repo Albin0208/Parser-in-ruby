@@ -6,6 +6,7 @@ require_relative '../TokenType.rb'
 
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
+	string: /\A"([^"]*)"/,
 	operator: /\A[\+\-\*\/\%]/,
 	unaryOperator: /\A[\-\+\!]/,
 	logical: /\A((&&)|(\|\|))/,
@@ -27,11 +28,12 @@ KEYWORDS = {
 	"true" => TokenType::BOOLEAN,
 	"false" => TokenType::BOOLEAN,
 	"null" => TokenType::NULL,
-	# "then" => TokenType::THEN,
-	# "end" => TokenType::ENDSTMT,
+
+	# Type Specifiers
 	"int" => TokenType::TYPE_SPECIFIER,
 	"float" => TokenType::TYPE_SPECIFIER,
-	"bool" => TokenType::TYPE_SPECIFIER
+	"bool" => TokenType::TYPE_SPECIFIER,
+	"string" => TokenType::TYPE_SPECIFIER
 }
 
 # The lexer class
@@ -119,6 +121,9 @@ class Lexer
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
 			return handle_number_match($~[0])
+		when TOKEN_TYPES[:string]
+			puts "String"
+			return handle_string_match($~[0])
 		when TOKEN_TYPES[:comparators]
 			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:unaryOperator]
@@ -198,6 +203,17 @@ class Lexer
 			end
 			return create_token(match.to_i, TokenType::INTEGER, "Found integer token")
 		end
+	end
+
+	# Handles when we have matched a string
+	# @param match - The value of the token we have matched
+	# @return Token - A new string token
+	def handle_string_match(match)
+		# TODO Add support for escaping chars
+		match = match[1..-2]
+		tok = create_token(match.to_s, TokenType::STRING, "Found string token")
+		advance(2) # Advance for the quotes since we don't save them
+		return tok
 	end
 
 	# Handle when we have matched a identifier

@@ -96,6 +96,11 @@ class Parser
             if expression.type != NODE_TYPES[:Boolean] && expression.type != NODE_TYPES[:Identifier]
                 raise InvalidTokenError.new("Can't assign none numeric value to value of type #{type}")
             end
+        when "string"
+            # Make sure we either are assigning a string or a variabel to the string var
+            if expression.type != NODE_TYPES[:String] && expression.type != NODE_TYPES[:Identifier]
+                raise InvalidTokenError.new("Can't assign none string value to value of type #{type}")
+            end
         end
     end
 
@@ -249,6 +254,8 @@ class Parser
         when TokenType::BOOLEAN
             val = eat().value == "true" ? true : false
             return BooleanLiteral.new(val)
+        when TokenType::STRING
+            return StringLiteral.new(expect(TokenType::STRING).to_s)
         when TokenType::LPAREN
             expect(TokenType::LPAREN) # Eat opening paren
             value = parse_expr()
