@@ -12,7 +12,7 @@ class Enviroment
     def declareVar(varname, value, is_constant = false, value_type)
         if @variables.has_key?(varname)
             # TODO Create a better error
-            raise "Cannot declare \"#{varname}\" as it is already defined"
+            raise RuntimeError, "Cannot declare \"#{varname}\" as it is already defined"
         end
 
         @variables[varname] = value
@@ -25,7 +25,7 @@ class Enviroment
         env = resolve(varname)
         if env.constants.include?(varname)
             # TODO Create better error
-            raise "Cannot reassign constant variable \"#{varname}\""
+            raise RuntimeError, "Cannot reassign constant variable \"#{varname}\""
         end
 
         # If the value is a number, try to convert it to int or float based on the variable type.
@@ -39,7 +39,7 @@ class Enviroment
             # Check if the value type matches the variable type.
             if value.type != env.var_types[varname]
             # TODO: Create a more informative error message.
-            raise "Can't assign a value of type \"#{value.type}\" to a variable of type \"#{env.var_types[varname]}\"."
+            raise RuntimeError, "Can't assign a value of type \"#{value.type}\" to a variable of type \"#{env.var_types[varname]}\"."
             end
         end
 
