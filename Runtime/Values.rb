@@ -27,27 +27,27 @@ class RunTimeVal
     end
 
     def %(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for %: #{@type} and #{other.type}"
     end
 
     def <(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for <: #{@type} and #{other.type}"
     end
 
     def >(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for >: #{@type} and #{other.type}"
     end
 
     def >=(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for >=: #{@type} and #{other.type}"
     end
 
     def <=(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for <=: #{@type} and #{other.type}"
     end
 
     def !=(other)
-        raise TypeError, "unsupported operand types for /: #{@type} and #{other.type}"
+        raise TypeError, "unsupported operand types for !=: #{@type} and #{other.type}"
     end
 
     def ==(other)
