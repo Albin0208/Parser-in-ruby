@@ -18,6 +18,7 @@ class Enviroment
         @variables[varname] = value
         @var_types[varname] = value_type
         @constants.add(varname) unless not is_constant
+        
         return value
     end
 
