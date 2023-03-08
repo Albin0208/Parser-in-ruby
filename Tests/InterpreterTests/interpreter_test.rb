@@ -34,6 +34,13 @@ class TestInterpreter < Test::Unit::TestCase
         assert_equal(5, result.value)
         assert_instance_of(NumberVal, @env.variables["x"])
         assert_equal(5, @env.variables["x"].value)
+
+        ast = VarDeclaration.new(true, "t", NumericLiteral.new(5), "int")
+        result = @interpreter.evaluate(ast, @env)
+        assert_equal(5, result.value)
+        assert_instance_of(NumberVal, @env.variables["t"])
+        assert_equal(5, @env.variables["t"].value)
+        assert_true(@env.constants.include?("t"))
     end
 
     def test_evaluate_var_assignment_expr
