@@ -183,6 +183,13 @@ class TestInterpreter < Test::Unit::TestCase
         # assert_equal("The answer is 42", result.value)
     end
 
+    def test_evaluate_string_multiplication
+        ast = BinaryExpr.new(StringLiteral.new("Hello"), :*, NumericLiteral.new(3))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(StringVal, result)
+        assert_equal("HelloHelloHello", result.value)
+    end
+
     def test_evaluate_string_comparison
         # Test string equality comparison
         ast = BinaryExpr.new(StringLiteral.new("hello"), :==, StringLiteral.new("hello"))
