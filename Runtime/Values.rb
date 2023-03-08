@@ -117,37 +117,9 @@ class StringVal < RunTimeVal
     def +(other)
         return StringVal.new(@value + other.value)
     end
-    
-    def -(other)
-        return StringVal.new(@value - other.value)
-    end
 
     def *(other)
         return StringVal.new(@value * other.value)
-    end
-
-    def /(other)
-        return StringVal.new(@value / other.value)
-    end
-
-    def %(other)
-        return StringVal.new(@value % other.value)
-    end
-
-    def <(other)
-        return BooleanVal.new(@value < other.value)
-    end
-
-    def >(other)
-        return BooleanVal.new(@value > other.value)
-    end
-
-    def >=(other)
-        return BooleanVal.new(@value >= other.value)
-    end
-
-    def <=(other)
-        return BooleanVal.new(@value <= other.value)
     end
 
     def !=(other)
