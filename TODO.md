@@ -1,6 +1,7 @@
 # Features to add 
 
-- [ ] Strings 
+- [x] Strings
+    - [ ] Allow escaping a string
 - [ ] Elsif
 - [ ] Arrays
     - [ ] ArrayLiteral

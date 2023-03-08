@@ -115,23 +115,23 @@ class StringVal < RunTimeVal
     end
 
     def +(other)
-        return NumberVal.new(@value + other.value)
+        return StringVal.new(@value + other.value)
     end
     
     def -(other)
-        return NumberVal.new(@value - other.value)
+        return StringVal.new(@value - other.value)
     end
 
     def *(other)
-        return NumberVal.new(@value * other.value)
+        return StringVal.new(@value * other.value)
     end
 
     def /(other)
-        return NumberVal.new(@value / other.value)
+        return StringVal.new(@value / other.value)
     end
 
     def %(other)
-        return NumberVal.new(@value % other.value)
+        return StringVal.new(@value % other.value)
     end
 
     def <(other)
