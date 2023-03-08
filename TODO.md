@@ -1,3 +1,23 @@
+# Features to add 
+
+- [ ] Strings 
+- [ ] Elsif
+- [ ] Arrays
+    - [ ] ArrayLiteral
+    - [ ] Array accessor
+- [ ] Loops
+    - [ ] While loop
+    - [ ] For loop
+    - [ ] Loop over containers
+- [ ] Hashmap
+    - [ ] HashLiteral
+    - [ ] Hash accessor
+- [ ] Functions
+    - [ ] Function Declaration
+    - [ ] Function calls
+- [ ] Classes
+    - [ ] Inheritance
+
 # Tests
 ## Lexer tests
 
