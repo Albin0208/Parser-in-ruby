@@ -256,10 +256,85 @@ class TestInterpreter < Test::Unit::TestCase
         assert_equal(23, result.value)
     end
 
+    def test_evaluate_binary_expr_comparison
+        ast = BinaryExpr.new(NumericLiteral.new(3), :<, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :>, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3.0), :==, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(false, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :"!=", NumericLiteral.new(2))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :>=, NumericLiteral.new(-4))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :>=, NumericLiteral.new(3))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :<=, NumericLiteral.new(3))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+
+        ast = BinaryExpr.new(NumericLiteral.new(3), :<=, NumericLiteral.new(10))
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(BooleanVal, result)
+        assert_equal(true, result.value)
+    end
+
     def test_evaluate_if_statment
-        ast = IfStatement.new(Array.new(NumericLiteral.new(3)), LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)), nil)
+        # Test a if evaling to true
+        ast = IfStatement.new([NumericLiteral.new(3)], LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)), nil)
         result = @interpreter.evaluate(ast, @env)
         assert_instance_of(NumberVal, result)
+        assert_equal(3, result.value)
+
+        # Test a if evaling to false
+        ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), nil)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NullVal, result)
+        assert_equal("null", result.value)
+
+        # Test a if evaling to false
+        condition = BinaryExpr.new(NumericLiteral.new(5), :>, NumericLiteral.new(3))
+        body = [BinaryExpr.new(NumericLiteral.new(3), :+, NumericLiteral.new(3))]
+        ast = IfStatement.new(body, condition, nil)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(6, result.value)
+    end
+
+    def test_evaluate_else_statment
+        # Test else
+        ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), [NumericLiteral.new(45)])
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(45, result.value)
+
+        # Test a if evaling to false and else running
+        condition = BinaryExpr.new(NumericLiteral.new(5), :<, NumericLiteral.new(3))
+        body = [BinaryExpr.new(NumericLiteral.new(5), :+, NumericLiteral.new(3))]
+        else_body = [BinaryExpr.new(NumericLiteral.new(5), :-, NumericLiteral.new(3))]
+        ast = IfStatement.new(body, condition, else_body)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+        assert_equal(2, result.value)
     end
 
     def test_evaluate_program

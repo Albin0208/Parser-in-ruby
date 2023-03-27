@@ -37,8 +37,8 @@
 - [x] Assignment: x = 5
 - [x] Retrieval: x
 ### Test conditional statements:
-- [ ] If statement: if 5 > 3 { 3 + 3}
-- [ ] If-else statement: if 5 > 3 { 5 + 3} else { 5 - 3}
+- [x] If statement: if 5 > 3 { 3 + 3}
+- [x] If-else statement: if 5 < 3 { 5 + 3} else { 5 - 3}
 ### Test loops:
 
 - [ ] While loop: i = 1; while i <= 5 do puts i; i += 1; end
