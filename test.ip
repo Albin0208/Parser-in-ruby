@@ -1,0 +1,11 @@
+int a = 3.14
+
+if a > 4 {
+    a = 94
+} else {
+    a = -90
+}
+
+a
+
+#print(a)

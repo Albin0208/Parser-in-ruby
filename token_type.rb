@@ -1,0 +1,34 @@
+# frozen_string_literal: true
+
+# All the different token types available
+class TokenType
+  INTEGER = :INTEGER
+  FLOAT = :FLOAT
+  CONST = :CONST
+  FUNC = :FUNC
+  IF = :IF
+  ELSE = :ELSE
+  BOOLEAN = :BOOLEAN
+  STRING = :STRING
+  NULL = :NULL
+  # THEN = :THEN
+  COMMA = :COMMA
+  # ENDSTMT = :ENDSTMT
+  ASSIGN = :ASSIGN
+  LOGICAL = :LOGICAL
+  COMPARISON = :COMPARISON
+  UNARYOPERATOR = :UNARYOPERATOR
+  BINARYOPERATOR = :BINARYOPERATOR
+  IDENTIFIER = :IDENTIFIER
+  RESERVED = :RESERVED
+  LPAREN = :LPAREN
+  RPAREN = :RPAREN
+  LBRACE = :LBRACE
+  RBRACE = :RBRACE
+  EOF = :EOF
+  TYPE_SPECIFIER = :TYPE_SPECIFIER
+end
+
+LOGICCOMPARISON = %i[< > >= <= == !=].freeze
+ADD_OPS =  %i[+ -].freeze
+MULT_OPS = %i[* / %].freeze
