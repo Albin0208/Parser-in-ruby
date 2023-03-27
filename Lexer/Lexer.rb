@@ -6,24 +6,34 @@ require_relative '../TokenType.rb'
 
 TOKEN_TYPES = {
 	integer: /\A\d+(\.\d+)?/,
+	string: /\A"([^"]*)"/,
 	operator: /\A[\+\-\*\/\%]/,
-	unaryOperator: /\A[-\+](?=\d+(\.\d+)?)/,
+	unaryOperator: /\A[\-\+\!]/,
 	logical: /\A((&&)|(\|\|))/,
 	comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
 	lparen: /\A\(/,
 	rparen: /\A\)/,
+	lbrace: /\A\{/,
+	rbrace: /\A\}/,
 	assign: /\A\=/,
 	identifier: /\A([a-z]|_[a-z])\w*/i,
 	separators: /\A,/,
 }
 
 KEYWORDS = {
-	"var" => TokenType::VAR,
 	"const" => TokenType::CONST,
 	"func" => TokenType::FUNC,
 	"if" => TokenType::IF,
-	"then" => TokenType::THEN,
-	"end" => TokenType::ENDSTMT
+	"else" => TokenType::ELSE,
+	"true" => TokenType::BOOLEAN,
+	"false" => TokenType::BOOLEAN,
+	"null" => TokenType::NULL,
+
+	# Type Specifiers
+	"int" => TokenType::TYPE_SPECIFIER,
+	"float" => TokenType::TYPE_SPECIFIER,
+	"bool" => TokenType::TYPE_SPECIFIER,
+	"string" => TokenType::TYPE_SPECIFIER
 }
 
 # The lexer class
@@ -111,20 +121,27 @@ class Lexer
 		case @string[@position..-1]
 		when TOKEN_TYPES[:integer]
 			return handle_number_match($~[0])
+		when TOKEN_TYPES[:string]
+			puts "String"
+			return handle_string_match($~[0])
+		when TOKEN_TYPES[:comparators]
+			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:unaryOperator]
 			return create_token($~[0], TokenType::UNARYOPERATOR, "Found unary operator token", true)
 		when TOKEN_TYPES[:operator]
 			return create_token($~[0], TokenType::BINARYOPERATOR, "Found binary operator token", true)
 		when TOKEN_TYPES[:logical]
 			return create_token($~[0], TokenType::LOGICAL, "Found logical token", true)
-		when TOKEN_TYPES[:comparators]
-			return create_token($~[0], TokenType::COMPARISON, "Found comparison token", true)
 		when TOKEN_TYPES[:assign]
 			return create_token($~[0], TokenType::ASSIGN, "Found assign token", true)
 		when TOKEN_TYPES[:lparen]
 			return create_token($~[0], TokenType::LPAREN, "Found left paren token", true)
 		when TOKEN_TYPES[:rparen]
 			return create_token($~[0], TokenType::RPAREN, "Found right paren token", true)
+		when TOKEN_TYPES[:lbrace]
+			return create_token($~[0], TokenType::LBRACE, "Found left brace token", true)
+		when TOKEN_TYPES[:rbrace]
+			return create_token($~[0], TokenType::RBRACE, "Found right brace token", true)
 		when TOKEN_TYPES[:separators]
 			return create_token($~[0], TokenType::COMMA, "Found comma token", true)
 		when TOKEN_TYPES[:identifier]
@@ -147,6 +164,20 @@ class Lexer
 	# @return Token - A new Token if type @type
 	def create_token(match, type, message, to_symbol = false)
 		match = to_symbol ? match.to_sym : match
+
+		# Handle unary operators
+		if type == TokenType::UNARYOPERATOR
+			# Check if the previous token is a binary operator, a left parenthesis or the beginning of the input
+			previous_token = @tokens.last
+			if previous_token.nil? || previous_token.type == TokenType::LPAREN || previous_token.type == TokenType::BINARYOPERATOR
+				# This is a unary operator
+				type = TokenType::UNARYOPERATOR
+			else
+				# This is a binary operator
+				type = TokenType::BINARYOPERATOR
+			end
+		end
+
 		token = Token.new(type, match, @line, @column)
 		@logger.debug("#{message}: #{token.value}")
 		advance(token.value.to_s.length)
@@ -172,6 +203,17 @@ class Lexer
 			end
 			return create_token(match.to_i, TokenType::INTEGER, "Found integer token")
 		end
+	end
+
+	# Handles when we have matched a string
+	# @param match - The value of the token we have matched
+	# @return Token - A new string token
+	def handle_string_match(match)
+		# TODO Add support for escaping chars
+		match = match[1..-2]
+		tok = create_token(match.to_s, TokenType::STRING, "Found string token")
+		advance(2) # Advance for the quotes since we don't save them
+		return tok
 	end
 
 	# Handle when we have matched a identifier

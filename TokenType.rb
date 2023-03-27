@@ -2,13 +2,16 @@
 class TokenType
 	INTEGER = :INTEGER
 	FLOAT = :FLOAT
-	VAR = :VAR
 	CONST = :CONST
 	FUNC = :FUNC
 	IF = :IF
-	THEN = :THEN
+	ELSE = :ELSE
+	BOOLEAN = :BOOLEAN
+	STRING = :STRING
+	NULL = :NULL
+	# THEN = :THEN
 	COMMA = :COMMA
-	ENDSTMT = :ENDSTMT
+	# ENDSTMT = :ENDSTMT
 	ASSIGN = :ASSIGN
 	LOGICAL = :LOGICAL
 	COMPARISON = :COMPARISON
@@ -18,16 +21,12 @@ class TokenType
 	RESERVED = :RESERVED
 	LPAREN = :LPAREN
 	RPAREN = :RPAREN
+	LBRACE = :LBRACE
+	RBRACE = :RBRACE
 	EOF = :EOF
+	TYPE_SPECIFIER = :TYPE_SPECIFIER
 end
 
-class Operators
-	PLUS = :+
-	MINUS = :-
-	MULTIPLY = :*
-	DIVIDE = :/
-end
-
-LOGICCOMPARISON = [:<, :>, :>=, :==, :!=].freeze
+LOGICCOMPARISON = [:<, :>, :>=, :<=, :==, :!=].freeze
 ADD_OPS =  [:+, :-].freeze
 MULT_OPS = [:*, :/, :%].freeze

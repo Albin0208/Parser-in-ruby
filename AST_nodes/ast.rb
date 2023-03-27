@@ -8,10 +8,13 @@ NODE_TYPES = {
     AssignmentExpr: :AssignmentExpr,
     LogicalAnd: :LogicalAnd,
     LogicalOr: :LogicalOr,
-    UnaryOperator: :UnaryOperator,
+    UnaryExpr: :UnaryExpr,
     BinaryExpr: :BinaryExpr,
     Identifier: :Identifier,
-    NumericLiteral: :NumericLiteral
+    NumericLiteral: :NumericLiteral,
+    Boolean: :Boolean,
+    String: :String,
+    Null: :Null
 }
 
 #####################################
@@ -51,30 +54,32 @@ class Program < Stmt
 end
 
 class VarDeclaration < Stmt
-    attr_reader :value, :identifier, :constant
-    def initialize(constant, identifier, value = nil)
+    attr_reader :value, :identifier, :constant, :value_type
+    def initialize(constant, identifier, value = nil, value_type)
         super(NODE_TYPES[:VarDeclaration])
         @constant = constant
         @identifier = identifier
         @value = value
+        @value_type = value_type 
     end
 
     def to_s
-        return "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}"
+        return "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"
     end
 
     def display_info(indent = 0)
-        puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier}"
+        puts "#{" " * indent} #{self.class.name}: #{@constant} #{@identifier} #{@value_type}"
         @value.display_info(indent + 2) if @value
     end
 end
 
 class IfStatement < Stmt
-    attr_reader :body, :conditions
-    def initialize(body, conditions)
+    attr_reader :body, :conditions, :else_body
+    def initialize(body, conditions, else_body)
         super(NODE_TYPES[:IF])
         @body = body # A list of all statements
         @conditions = conditions # A list of all the conditions
+        @else_body = else_body
     end
 
     def to_s
@@ -84,8 +89,13 @@ class IfStatement < Stmt
     def display_info(indent = 0)
         puts "#{" " * indent} #{self.class.name}"
         puts "#{" " * indent} Conditions:"
-        @conditions.each { |stmt| stmt.display_info(indent + 2) }
+        @conditions.display_info(indent + 2)
+        puts "#{" " * indent} Body:"
         @body.each { |stmt| stmt.display_info(indent + 2) }
+        if @else_body != nil
+            puts "#{" " * indent} Else body:"
+            @else_body.each { |stmt| stmt.display_info(indent + 2) }
+        end
     end
 end
 
@@ -120,7 +130,7 @@ end
 class UnaryExpr < Expr
     attr_reader :left, :op
     def initialize(left, op)
-        super(NODE_TYPES[:UnaryOperator])
+        super(NODE_TYPES[:UnaryExpr])
         @left = left
         @op = op
     end
@@ -172,7 +182,7 @@ class Identifier < Expr
 end
 
 class NumericLiteral < Expr
-    attr_reader :value
+    attr_accessor :value
     def initialize(value)
         super(NODE_TYPES[:NumericLiteral])
         @value = value
@@ -187,8 +197,56 @@ class NumericLiteral < Expr
     end
 end
 
+class BooleanLiteral < Expr
+    attr_reader :value
+    def initialize(value)
+        super(NODE_TYPES[:Boolean])
+        @value = value
+    end
+
+    def to_s
+        @value.to_s
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
+class StringLiteral < Expr
+    attr_reader :value
+    def initialize(value)
+        super(NODE_TYPES[:String])
+        @value = value
+    end
+
+    def to_s
+        "\"#{@value.to_s}\""
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
+class NullLiteral < Expr
+    attr_reader :value
+    def initialize()
+        super(NODE_TYPES[:Null])
+        @value = "null"
+    end
+
+    def to_s
+        @value.to_s
+    end
+
+    def display_info(indent = 0)
+        puts "#{" " * indent} #{self.class.name}: #{@value}"
+    end
+end
+
 class LogicalAndExpr < Expr
-    attr_reader :left, :right
+    attr_reader :left, :right, :op
     def initialize(left, right)
         super(NODE_TYPES[:LogicalAnd])
         @left = left
@@ -208,7 +266,7 @@ class LogicalAndExpr < Expr
 end
 
 class LogicalOrExpr < Expr
-    attr_reader :left, :right
+    attr_reader :left, :right, :op
     def initialize(left, right)
         super(NODE_TYPES[:LogicalOr])
         @left = left

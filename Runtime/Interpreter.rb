@@ -12,6 +12,8 @@ class Interpreter
         case astNode.type
         when NODE_TYPES[:NumericLiteral]
             return NumberVal.new(astNode.value)
+        when NODE_TYPES[:String]
+            return StringVal.new(astNode.value)
         when NODE_TYPES[:Identifier]
             return eval_identifier(astNode, env)
         when NODE_TYPES[:AssignmentExpr]
@@ -20,7 +22,7 @@ class Interpreter
             return eval_logical_and_expr(astNode, env)
         when NODE_TYPES[:LogicalOr]
             return eval_logical_or_expr(astNode, env)
-        when NODE_TYPES[:UnaryOperator]
+        when NODE_TYPES[:UnaryExpr]
             return eval_unary_expr(astNode, env)
         when NODE_TYPES[:BinaryExpr]
             return eval_binary_expr(astNode, env)
@@ -30,6 +32,10 @@ class Interpreter
             return eval_var_declaration(astNode, env)
         when NODE_TYPES[:IF]
             return eval_if_statement(astNode, env)
+        when NODE_TYPES[:Boolean]
+            return BooleanVal.new(astNode.value)
+        when NODE_TYPES[:Null]
+            return NullVal.new()
         else
             raise NotImplementedError.new("This AST Node has not yet been setup for #{astNode.type} #{astNode}")
         end
