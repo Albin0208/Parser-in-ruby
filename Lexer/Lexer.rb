@@ -63,7 +63,8 @@ class Lexer
 				if open_parens == 0
 					# We have got a closing parenthesis without a opening one
 					raise UnmatchedParenthesisError.new(
-					"Unmatched opening parenthesis for closing parenthesis at line #{token.line}, column #{token.column} in #{@current_line}")
+						  "Unmatched opening parenthesis for closing parenthesis at line 
+						  #{token.line}, column #{token.column} in #{@current_line}")
 				else
 					open_parens -= 1
 				end
@@ -77,7 +78,8 @@ class Lexer
 			line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
 			# We have more opening parentheses than closing ones
 			raise UnmatchedParenthesisError.new(
-				"Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
+				  "Unmathced closing parenthesis for opening parenthesis at line 
+				  #{last_open_paren.line}, column #{last_open_paren.column} in #{line}")
 		end
 
 		@tokens << Token.new(TokenType::EOF, "", @line, @column) # Add a end of file token to be used by the parser
@@ -243,13 +245,4 @@ class Lexer
 	def at_eof
 		return @position >= @string.length
 	end
-end
-
-if __FILE__ == $0
-#   input = "1 + 2.3 * 03 - \n(4 / 2) - 2"
-	# input = "1.3"
-
-  input = gets.chomp()
-  lexer = Lexer.new(input)
-  puts lexer.tokenize.map(&:to_s).inspect
 end

@@ -17,7 +17,7 @@ class Parser
     # Produce a AST from the sourceCode
     # @param sourceCode - The string of code
     # @return Program - Return the top node in the AST
-    def produceAST(sourceCode)
+    def produce_ast(sourceCode)
         @tokens = Lexer.new(sourceCode).tokenize()
         puts @tokens.map(&:to_s).inspect unless not @logging # Display the tokens list
         program = Program.new([])
