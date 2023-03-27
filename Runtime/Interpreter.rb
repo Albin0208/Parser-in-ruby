@@ -1,43 +1,43 @@
-require_relative '../AST_nodes/ast.rb'
-require_relative 'Values.rb'
-require_relative 'Eval/expressions.rb'
-require_relative 'Eval/statements.rb'
+# frozen_string_literal: true
+
+require_relative '../ast_nodes/ast'
+require_relative 'values'
+require_relative 'eval/expressions'
+require_relative 'eval/statements'
 
 class Interpreter
-    def initialize()
-        
-    end
+  def initialize; end
 
-    def evaluate(astNode, env)
-        case astNode.type
-        when NODE_TYPES[:NumericLiteral]
-            return NumberVal.new(astNode.value)
-        when NODE_TYPES[:String]
-            return StringVal.new(astNode.value)
-        when NODE_TYPES[:Identifier]
-            return eval_identifier(astNode, env)
-        when NODE_TYPES[:AssignmentExpr]
-            return eval_assignment_expr(astNode, env)
-        when NODE_TYPES[:LogicalAnd]
-            return eval_logical_and_expr(astNode, env)
-        when NODE_TYPES[:LogicalOr]
-            return eval_logical_or_expr(astNode, env)
-        when NODE_TYPES[:UnaryExpr]
-            return eval_unary_expr(astNode, env)
-        when NODE_TYPES[:BinaryExpr]
-            return eval_binary_expr(astNode, env)
-        when NODE_TYPES[:Program]
-            return eval_program(astNode, env)
-        when NODE_TYPES[:VarDeclaration]
-            return eval_var_declaration(astNode, env)
-        when NODE_TYPES[:IF]
-            return eval_if_statement(astNode, env)
-        when NODE_TYPES[:Boolean]
-            return BooleanVal.new(astNode.value)
-        when NODE_TYPES[:Null]
-            return NullVal.new()
-        else
-            raise NotImplementedError.new("This AST Node has not yet been setup for #{astNode.type} #{astNode}")
-        end
+  def evaluate(ast_node, env)
+    case ast_node.type
+    when NODE_TYPES[:NumericLiteral]
+      NumberVal.new(ast_node.value)
+    when NODE_TYPES[:String]
+      StringVal.new(ast_node.value)
+    when NODE_TYPES[:Identifier]
+      eval_identifier(ast_node, env)
+    when NODE_TYPES[:AssignmentExpr]
+      eval_assignment_expr(ast_node, env)
+    when NODE_TYPES[:LogicalAnd]
+      eval_logical_and_expr(ast_node, env)
+    when NODE_TYPES[:LogicalOr]
+      eval_logical_or_expr(ast_node, env)
+    when NODE_TYPES[:UnaryExpr]
+      eval_unary_expr(ast_node, env)
+    when NODE_TYPES[:BinaryExpr]
+      eval_binary_expr(ast_node, env)
+    when NODE_TYPES[:Program]
+      eval_program(ast_node, env)
+    when NODE_TYPES[:VarDeclaration]
+      eval_var_declaration(ast_node, env)
+    when NODE_TYPES[:IF]
+      eval_if_statement(ast_node, env)
+    when NODE_TYPES[:Boolean]
+      BooleanVal.new(ast_node.value)
+    when NODE_TYPES[:Null]
+      NullVal.new
+    else
+      raise NotImplementedError, "This AST Node has not yet been setup for #{ast_node.type} #{ast_node}"
     end
+  end
 end

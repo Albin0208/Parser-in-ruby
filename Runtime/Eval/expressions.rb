@@ -1,51 +1,49 @@
-require_relative '../Enviroment.rb'
-# require_relative '../Interpreter.rb'
-require_relative '../../AST_nodes/ast.rb'
+# frozen_string_literal: true
 
-def eval_identifier(astNode, env)
-    val = env.lookupVar(astNode.symbol)
-    return val
+require_relative '../enviroment'
+require_relative '../../ast_nodes/ast'
+
+def eval_identifier(ast_node, env)
+  env.lookup_var(ast_node.symbol)
 end
 
 def eval_logical_and_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    return BooleanVal.new(false) unless lhs.value == true # Don't eval right side if we are false
+  lhs = evaluate(binop.left, env)
+  return BooleanVal.new(false) unless lhs.value == true # Don't eval right side if we are false
 
-    rhs = evaluate(binop.right, env)
-    # We have come here so we know the expr is true if the right side is true
-    return BooleanVal.new(rhs.value == true)
+  rhs = evaluate(binop.right, env)
+  # We have come here so we know the expr is true if the right side is true
+  BooleanVal.new(rhs.value == true)
 end
 
 def eval_logical_or_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    rhs = evaluate(binop.right, env)
+  lhs = evaluate(binop.left, env)
+  rhs = evaluate(binop.right, env)
 
-    return BooleanVal.new(lhs.value == true ||rhs.value == true)
+  BooleanVal.new(lhs.value == true || rhs.value == true)
 end
 
 def eval_unary_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    case binop.op
-    when :-
-        return NumberVal.new(-lhs.value)
-    when :+
-        return NumberVal.new(+lhs.value)
-    when :!
-        return BooleanVal.new(!lhs.value)
-    end
+  lhs = evaluate(binop.left, env)
+  case binop.op
+  when :-
+    NumberVal.new(-lhs.value)
+  when :+
+    NumberVal.new(+lhs.value)
+  when :!
+    BooleanVal.new(!lhs.value)
+  end
 end
 
 def eval_binary_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    rhs = evaluate(binop.right, env)
+  lhs = evaluate(binop.left, env)
+  rhs = evaluate(binop.right, env)
 
-    return lhs.send(binop.op, rhs)
+  lhs.send(binop.op, rhs)
 end
 
-def eval_assignment_expr(astNode, env)
-    if astNode.assigne.type != NODE_TYPES[:Identifier]
-        raise "Cannot assign to none Identifier type"
-    end
+def eval_assignment_expr(ast_node, env)
+  raise 'Cannot assign to none Identifier type' if ast_node.assigne.type != NODE_TYPES[:Identifier]
 
-    return env.assignVar(astNode.assigne.symbol, evaluate(astNode.value, env))
+  env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
 end

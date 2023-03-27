@@ -1,40 +1,40 @@
-require_relative 'Parser/Parser.rb'
-require_relative 'Runtime/Interpreter.rb'
-require_relative 'Runtime/Enviroment.rb'
+# frozen_string_literal: true
+
+require_relative 'parser/parser'
+require_relative 'runtime/interpreter'
+require_relative 'runtime/enviroment'
 
 def main
-    env = Enviroment.new()
-    
-    debugging = ARGV[0] == "-debug"
+  env = Enviroment.new
 
-    file = debugging ? ARGV[1] : ARGV[0]
+  debugging = ARGV[0] == '-debug'
 
-    parser = Parser.new(debugging)
-    interpreter = Interpreter.new()
-    input = ""
+  file = debugging ? ARGV[1] : ARGV[0]
 
-    if not file.nil?
-        program = parser.produce_ast(File.read(file))
-        puts program.to_s unless not debugging
+  parser = Parser.new(debugging)
+  interpreter = Interpreter.new
+  input = ''
 
-        result = interpreter.evaluate(program, env)
+  if !file.nil?
+    program = parser.produce_ast(File.read(file))
+    puts program.to_s if debugging
 
-        program.display_info() unless not debugging
-        puts result.to_s
-    else
-        while (input = STDIN.gets.chomp()) != "exit"
-            program = parser.produce_ast(input)
-            puts program.to_s unless not debugging
+    result = interpreter.evaluate(program, env)
 
-            result = interpreter.evaluate(program, env)
+    program.display_info if debugging
+    puts result.to_s
+  else
+    while (input = $stdin.gets.chomp) != 'exit'
+      program = parser.produce_ast(input)
+      puts program.to_s if debugging
 
-            program.display_info() unless not debugging
-            puts result.to_s
-        end
-        puts "Bye!"
+      result = interpreter.evaluate(program, env)
+
+      program.display_info if debugging
+      puts result.to_s
     end
+    puts 'Bye!'
+  end
 end
 
-if __FILE__ == $0
-    main()
-end
+main if __FILE__ == $PROGRAM_NAME
