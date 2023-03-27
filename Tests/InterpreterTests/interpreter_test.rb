@@ -256,6 +256,12 @@ class TestInterpreter < Test::Unit::TestCase
         assert_equal(23, result.value)
     end
 
+    def test_evaluate_if_statment
+        ast = IfStatement.new(Array.new(NumericLiteral.new(3)), LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)), nil)
+        result = @interpreter.evaluate(ast, @env)
+        assert_instance_of(NumberVal, result)
+    end
+
     def test_evaluate_program
         # Declare variables
         ast1 = VarDeclaration.new(false, "x", NumericLiteral.new(5), "int")

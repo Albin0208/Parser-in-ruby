@@ -90,6 +90,7 @@ class IfStatement < Stmt
         puts "#{" " * indent} #{self.class.name}"
         puts "#{" " * indent} Conditions:"
         @conditions.display_info(indent + 2)
+        puts "#{" " * indent} Body:"
         @body.each { |stmt| stmt.display_info(indent + 2) }
         if @else_body != nil
             puts "#{" " * indent} Else body:"
