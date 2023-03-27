@@ -301,7 +301,7 @@ class Parser
       expect(TokenType::NULL)
       return NullLiteral.new()
     else
-      raise InvalidTokenError.new("Unexpected token found: #{at().to_s}")
+      raise InvalidTokenError.new("Unexpected token found: #{at()}")
     end
   end
 
