@@ -32,6 +32,8 @@ class Parser
 
     private
 
+    # Parses a statement of different types
+    # @return Stmt - The statement parsed as a AST node
     def parse_stmt()
         case at().type
         when TokenType::CONST, TokenType::TYPE_SPECIFIER
@@ -46,6 +48,8 @@ class Parser
         end
     end
 
+    # Parse a variable declaration
+    # @return VarDeclaration - The Vardeclaration AST node
     def parse_var_declaration()
         is_const = at().type == TokenType::CONST # Get if const keyword is present
 
@@ -104,6 +108,8 @@ class Parser
         end
     end
 
+    # Parses conditional statments such as if, else if and else
+    # @return IfStatement - The If statement AST node
     def parse_conditional()
         expect(TokenType::IF) # Eat the if token
 
@@ -134,21 +140,29 @@ class Parser
         return IfStatement.new(body, conditions, else_body)
     end
 
+    # Parses a assignment statement or just a identifier
+    # @return AssignmentExpr || Identifier - The AST node
     def parse_assignment_stmt()
         @logger.debug("Parsing assign expression")
         identifier = parse_identifier()
 
+        # if at().type == TokenType::ASSIGN
+        #     eat()
+        #     value = parse_expr() # Parse the right side
+        #     return AssignmentExpr.new(value, identifier)
+        # end
+
         # Check if we have an assignment token
-        if at().type == TokenType::ASSIGN
-            eat()
-            value = parse_expr() # Parse the right side
-            return AssignmentExpr.new(value, identifier)
-        end
+        expect(TokenType::ASSIGN)
+        value = parse_expr() # Parse the right side
+        return AssignmentExpr.new(value, identifier)
         
-        # Assignment not found so just return the identifier
+        # # Assignment not found so just return the identifier
         return identifier
     end
 
+    # Parses a expression
+    # @return Stmt - The AST node matched
     def parse_expr()
         # case at().type
         # else
@@ -167,7 +181,8 @@ class Parser
     # UnaryExpr
     # PrimaryExpr
 
-
+    # Parses a logical expression
+    # @return Expr - The AST node matching the parsed expr
     def parse_logical_expr()
         left = parse_logical_and_expr()
 
@@ -181,6 +196,8 @@ class Parser
         return left
     end
 
+    # Parses a logical expression
+    # @return Expr - The AST node matching the parsed expr
     def parse_logical_and_expr()
         left = parse_comparison_expr()
         
@@ -194,6 +211,8 @@ class Parser
         return left
     end
 
+    # Parses a comparison expression
+    # @return Expr - The AST node matching the parsed expr
 	def parse_comparison_expr()
 		left = parse_additive_expr()
 
@@ -206,6 +225,8 @@ class Parser
 		return left
 	end
 
+    # Parses a additive expression
+    # @return Expr - The AST node matching the parsed expr
     def parse_additive_expr()
         left = parse_multiplication_expr()
 
@@ -218,6 +239,8 @@ class Parser
         return left
     end
     
+    # Parses a multiplication expression
+    # @return Expr - The AST node matching the parsed expr
     def parse_multiplication_expr()
         left = parse_unary_expr()
 
@@ -230,6 +253,8 @@ class Parser
         return left
     end
 
+    # Parses a unary expression
+    # @return Expr - The AST node matching the parsed expr
     def parse_unary_expr()
         while [:-, :+, :!].include?(at().value)
             operator = eat().value # Eat the operator
@@ -240,6 +265,9 @@ class Parser
 		return parse_primary_expr()
     end
 
+    # Parses a primary expression.
+    # This is the smallest part of the expr, such as numbers and so on
+    # @return Expr - The AST node matching the parsed expr
     def parse_primary_expr()
         tok = at().type
         case tok
