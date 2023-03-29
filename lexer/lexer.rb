@@ -55,7 +55,7 @@ class Lexer
     @string = string.rstrip # Remove any trailing whitespace
     @current_line = ''
     @position = 0
-    @line = 0
+    @line = 1
     @column = 1
 
     @tokens = []
@@ -79,9 +79,9 @@ class Lexer
         if open_parens.zero?
           last_close_paren = @tokens.select { |t| t.type == TokenType::RPAREN }.last # Get the last close parenthesis
 
-          line = @string.each_line.to_a[last_close_paren.line - 1] # Get the line where the error was
+          tmp_line = @string.each_line.to_a[last_close_paren.line - 1] # Get the line where the error was
           # We have got a closing parenthesis without a opening one
-          raise UnmatchedParenthesisError, "Unmatched opening parenthesis for closing parenthesis at line #{last_close_paren.line}, column #{last_close_paren.column} in #{line}"
+          raise UnmatchedParenthesisError, "Unmatched opening parenthesis for closing parenthesis at line #{last_close_paren.line}, column #{last_close_paren.column} in #{tmp_line}"
         else
           open_parens -= 1
         end
@@ -92,9 +92,9 @@ class Lexer
     if open_parens.positive?
       last_open_paren = @tokens.select { |t| t.type == TokenType::LPAREN }.last # Get the last opened parenthesis
 
-      line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
+      tmp_line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
       # We have more opening parentheses than closing ones
-      raise UnmatchedParenthesisError, "Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}"
+      raise UnmatchedParenthesisError, "Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{tmp_line}"
     end
 
     @tokens << Token.new(TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
@@ -117,16 +117,16 @@ class Lexer
     end
 
     # Update the current line being parsed
-   @current_line = @string.split("\n")[@line-1]
+    @current_line = @string.split("\n")[@line-1]
 
     @logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
 
     # If we have found a comment, handle it and recursively call next_token
     if @string[@position] == '#'
-    # return handle_comment() if @string[@position] == '#'
       handle_comment()
       return next_token # Call next_token to get the next token after the comment
     end
+    
 
     # Match and handle tokens
     TOKEN_TYPES.each do |type, regex|
@@ -152,7 +152,7 @@ class Lexer
   end
 
   ##################################################
-  # 				Helper functions				 #
+  # 				       Helper functions			        	 #
   ##################################################
 
   # Create the token
@@ -186,24 +186,18 @@ class Lexer
     advance(token.value.to_s.length)
     token
   end
-
-  def handle_whitespace
-    if @string[@position] == "\n"
-      @line += 1
-      @column = 1
-    else
-      @column += 1
-    end
-    @position += 1
-  end
   
+  #
+  # Handles a comment by skiping the rest of that line
+  #
   def handle_comment
       @logger.debug('Found comment token')
       while @string[@position] != "\n"
         @position += 1
         return nil if at_eof # We have reached the end of file
       end
-      @line += 1
+      @position += 1 # Step past the new line
+      @line += 1 # Increase line count to next
       @column = 1 # Reset to first index on line
   end
 
@@ -228,7 +222,7 @@ class Lexer
       raise InvalidTokenError, "Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}"
     end
 
-    create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
+    return create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
   end
 
   # Handles when we have matched a string
@@ -253,12 +247,8 @@ class Lexer
     # Check if it is a keyword
     return create_token(match, KEYWORDS[match], 'Found keyword token') if KEYWORDS.key?(match)
 
-    # # Create keyword token
-
-
     # If not it is a user defined keyword
-    # # Create keyword token
-    create_token(match, TokenType::IDENTIFIER, 'Found identifier token')
+    return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')
   end
 
   # Advance where we are in the string
@@ -272,6 +262,6 @@ class Lexer
   #
   # @return [Boolean] If we have reach the end of the input string
   def at_eof
-    @position >= @string.length
+    return @position >= @string.length
   end
 end

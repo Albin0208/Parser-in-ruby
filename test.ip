@@ -1,6 +1,6 @@
 int a = 3.14
 
-# This is a comment and should not be processed
+# This is a comment and should not be processed 3 + 3
 
 (3 - 4- (2))
 
