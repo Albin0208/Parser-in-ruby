@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative '../enviroment'
 
 def eval_program(program, env)

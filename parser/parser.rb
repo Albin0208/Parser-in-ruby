@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative '../ast_nodes/ast'
 require_relative '../lexer/lexer'
 require_relative '../token_type'

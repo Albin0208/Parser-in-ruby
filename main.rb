@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative 'parser/parser'
 require_relative 'runtime/interpreter'
 require_relative 'runtime/enviroment'

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # All the different token types available
 class TokenType
   INTEGER = :INTEGER
