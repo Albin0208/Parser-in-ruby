@@ -134,32 +134,35 @@ class Lexer
       return next_token # Call next_token to get the next token after the comment
     end
 
+    token_matchers = [
+      # [TOKEN_TYPES[:integer], TokenType::NUMBER],
+      # [TOKEN_TYPES[:string], TokenType::STRING],
+      [TOKEN_TYPES[:comparators], TokenType::COMPARISON],
+      [TOKEN_TYPES[:unaryOperator], TokenType::UNARYOPERATOR],
+      [TOKEN_TYPES[:operator], TokenType::BINARYOPERATOR],
+      [TOKEN_TYPES[:logical], TokenType::LOGICAL],
+      [TOKEN_TYPES[:assign], TokenType::ASSIGN],
+      [TOKEN_TYPES[:lparen], TokenType::LPAREN],
+      [TOKEN_TYPES[:rparen], TokenType::RPAREN],
+      [TOKEN_TYPES[:lbrace], TokenType::LBRACE],
+      [TOKEN_TYPES[:rbrace], TokenType::RBRACE],
+      [TOKEN_TYPES[:separators], TokenType::COMMA],
+      # [TOKEN_TYPES[:identifier], TokenType::IDENTIFIER]
+    ]
+
+    # Go through all simple tokens
+    token_matchers.each do |pattern, type|
+      if @string[@position..] =~ /\A#{pattern}/
+        return create_token($LAST_MATCH_INFO[0], type, "Found #{type.to_s.downcase}", true)
+      end
+    end
+
+
     case @string[@position..]
     when TOKEN_TYPES[:integer]
       return handle_number_match($LAST_MATCH_INFO[0])
     when TOKEN_TYPES[:string]
-      puts 'String'
       return handle_string_match($LAST_MATCH_INFO[0])
-    when TOKEN_TYPES[:comparators]
-      return create_token($LAST_MATCH_INFO[0], TokenType::COMPARISON, 'Found comparison token', true)
-    when TOKEN_TYPES[:unaryOperator]
-      return create_token($LAST_MATCH_INFO[0], TokenType::UNARYOPERATOR, 'Found unary operator token', true)
-    when TOKEN_TYPES[:operator]
-      return create_token($LAST_MATCH_INFO[0], TokenType::BINARYOPERATOR, 'Found binary operator token', true)
-    when TOKEN_TYPES[:logical]
-      return create_token($LAST_MATCH_INFO[0], TokenType::LOGICAL, 'Found logical token', true)
-    when TOKEN_TYPES[:assign]
-      return create_token($LAST_MATCH_INFO[0], TokenType::ASSIGN, 'Found assign token', true)
-    when TOKEN_TYPES[:lparen]
-      return create_token($LAST_MATCH_INFO[0], TokenType::LPAREN, 'Found left paren token', true)
-    when TOKEN_TYPES[:rparen]
-      return create_token($LAST_MATCH_INFO[0], TokenType::RPAREN, 'Found right paren token', true)
-    when TOKEN_TYPES[:lbrace]
-      return create_token($LAST_MATCH_INFO[0], TokenType::LBRACE, 'Found left brace token', true)
-    when TOKEN_TYPES[:rbrace]
-      return create_token($LAST_MATCH_INFO[0], TokenType::RBRACE, 'Found right brace token', true)
-    when TOKEN_TYPES[:separators]
-      return create_token($LAST_MATCH_INFO[0], TokenType::COMMA, 'Found comma token', true)
     when TOKEN_TYPES[:identifier]
       return handle_identifier_match($LAST_MATCH_INFO[0])
     end

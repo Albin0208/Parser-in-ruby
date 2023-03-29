@@ -30,7 +30,7 @@ class Parser
   #
   # @return [Program] Return the top node in the AST
   def produce_ast(source_code)
-    @tokens = Lexer.new(source_code).tokenize
+    @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list
     program = Program.new([])
 
