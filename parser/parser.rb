@@ -158,9 +158,13 @@ class Parser
     identifier = parse_identifier
 
     # Check if we have an assignment token
-    expect(TokenType::ASSIGN)
-    value = parse_expr # Parse the right side
-    return AssignmentExpr.new(value, identifier)
+    if at().type == TokenType::ASSIGN
+      expect(TokenType::ASSIGN)
+      value = parse_expr # Parse the right side
+      return AssignmentExpr.new(value, identifier)
+    end
+
+    return identifier
   end
 
   # Parses a expression

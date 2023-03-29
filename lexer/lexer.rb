@@ -110,14 +110,9 @@ class Lexer
 
     # Skip whitespace
     while @string[@position] =~ /\A\s/
-      # We find a new line update the line and column value
-      if @string[@position] == "\n"
-        @line += 1
-        @column = 1 # Reset to first index on line
-      else
-        @column += 1
-      end
-      @position += 1
+      @line += 1 if @string[@position] == "\n" # New line found, update line value
+      @column = @string[@position] == "\n" ? 1 : @column + 1 # New line found we want to reset column else add 1
+      @position += 1 # Increase our position in the string
     end
 
     @logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
@@ -156,7 +151,6 @@ class Lexer
         return create_token($LAST_MATCH_INFO[0], type, "Found #{type.to_s.downcase}", true)
       end
     end
-
 
     case @string[@position..]
     when TOKEN_TYPES[:integer]
@@ -206,6 +200,26 @@ class Lexer
     @logger.debug("#{message}: #{token.value}")
     advance(token.value.to_s.length)
     token
+  end
+
+  def handle_whitespace
+    if @string[@position] == "\n"
+      @line += 1
+      @column = 1
+    else
+      @column += 1
+    end
+    @position += 1
+  end
+  
+  def handle_comment
+    @logger.debug('Found comment token')
+    while @string[@position] != /\n/
+      @position += 1
+      return nil if at_eof
+    end
+    @line += 1
+    @column = 1
   end
 
   # Handles when we have matched a number
