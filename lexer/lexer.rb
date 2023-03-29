@@ -67,13 +67,11 @@ class Lexer
   #
   def tokenize
     stack = [] # Use a stack to keep track of open parentheses
-    last_open_paren = nil # Keep track of the last open parenthesis
 
     while (token = next_token())
       case token.type
       when TokenType::LPAREN
         stack.push(token)
-         last_open_paren = token
       when TokenType::RPAREN
         stack.empty? ? raise_unmatched_paren_error(token) : stack.pop()
       end
@@ -81,8 +79,8 @@ class Lexer
       @tokens << token
     end
 
-    if !stack.empty?
-      raise_unmatched_paren_error(last_open_paren)
+    unless stack.empty?
+      raise_unmatched_paren_error(stack.last)
     end
 
     @tokens << Token.new(TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
