@@ -7,23 +7,22 @@ require_relative 'token'
 require_relative '../errors/errors'
 require_relative '../token_type'
 
-# The order matters and they have to be the same name as in the token_type
-# Longer matches has to come first
-TOKEN_TYPES = {
-  integer: /\A\d+(\.\d+)?/,
-  string: /\A"([^"]*)"/,
-  comparison: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
-  unaryOperator: /\A[-+!]/,
-  binaryoperator: %r{\A[+\-*/%]},
-  logical: /\A((&&)|(\|\|))/,
-  lparen: /\A\(/,
-  rparen: /\A\)/,
-  lbrace: /\A\{/,
-  rbrace: /\A\}/,
-  assign: /\A=/,
-  identifier: /\A([a-z]|_[a-z])\w*/i,
-  separators: /\A,/
-}.freeze
+# Create an array of tuples so order doesn't matter then convert to hash
+TOKEN_TYPES = [
+  [:integer, /\A\d+(\.\d+)?/],
+  [:string, /\A"([^"]*)"/],
+  [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
+  [:unaryOperator, /\A[-+!]/],
+  [:binaryoperator, %r{\A[+\-*/%]}],
+  [:logical, /\A((&&)|(\|\|))/],
+  [:lparen, /\A\(/],
+  [:rparen, /\A\)/],
+  [:lbrace, /\A\{/],
+  [:rbrace, /\A\}/],
+  [:assign, /\A=/],
+  [:identifier, /\A([a-z]|_[a-z])\w*/i],
+  [:separators, /\A,/]
+].to_h.freeze
 
 KEYWORDS = {
   const: TokenType::CONST,
@@ -76,7 +75,7 @@ class Lexer
     # Use hash table which has a time complexity of O(1) for fast lookup
     # LPAREN and RPAREN are matched with a lambda function that takes a token as input
     actions = {
-      TokenType::LPAREN => -> (token) { stack.push(token); last_open_paren = token},
+      TokenType::LPAREN => -> (token) { stack.push(token).then do last_open_paren = token end},
       TokenType::RPAREN => -> (token) { stack.empty? ? raise_unmatched_paren_error(token) : stack.pop() }
     }
 
@@ -124,7 +123,7 @@ class Lexer
     end
 
     # Update the current line being parsed
-    @current_line = @string.split("\n")[@line-1]
+    @current_line = @string.lines[@line - 1]
 
     @logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
 
