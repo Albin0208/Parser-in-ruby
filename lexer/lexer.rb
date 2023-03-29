@@ -69,16 +69,15 @@ class Lexer
     stack = [] # Use a stack to keep track of open parentheses
     last_open_paren = nil # Keep track of the last open parenthesis
 
-    # Use hash table which has a time complexity of O(1) for fast lookup
-    # LPAREN and RPAREN are matched with a lambda function that takes a token as input
-    actions = {
-      TokenType::LPAREN => -> (token) { stack.push(token).then do last_open_paren = token end},
-      TokenType::RPAREN => -> (token) { stack.empty? ? raise_unmatched_paren_error(token) : stack.pop() }
-    }
-
     while (token = next_token())
-      actions[token.type]&.(token) # & is used to safely call the function. This only calls the object if it is not nil. Similar to check if not nil then use .call on the lambda function
-     
+      case token.type
+      when TokenType::LPAREN
+        stack.push(token)
+         last_open_paren = token
+      when TokenType::RPAREN
+        stack.empty? ? raise_unmatched_paren_error(token) : stack.pop()
+      end
+
       @tokens << token
     end
 
