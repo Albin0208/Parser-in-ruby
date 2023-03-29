@@ -116,6 +116,9 @@ class Lexer
       @position += 1 # Increase our position in the string
     end
 
+    # Update the current line being parsed
+   @current_line = @string.split("\n")[@line-1]
+
     @logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
 
     # If we have found a comment, handle it and recursively call next_token
