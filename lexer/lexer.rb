@@ -70,31 +70,24 @@ class Lexer
   # @return [Array] A Array of the tokens found
   #
   def tokenize
-    open_parens = 0 # Keep track of number of parens opened
-    while (token = next_token)
-      case token.type
-      when TokenType::LPAREN
-        open_parens += 1
-      when TokenType::RPAREN
-        if open_parens.zero?
-          last_close_paren = @tokens.select { |t| t.type == TokenType::RPAREN }.last # Get the last close parenthesis
+    stack = [] # Use a stack to keep track of open parentheses
+    last_open_paren = nil # Keep track of the last open parenthesis
 
-          tmp_line = @string.each_line.to_a[last_close_paren.line - 1] # Get the line where the error was
-          # We have got a closing parenthesis without a opening one
-          raise UnmatchedParenthesisError, "Unmatched opening parenthesis for closing parenthesis at line #{last_close_paren.line}, column #{last_close_paren.column} in #{tmp_line}"
-        else
-          open_parens -= 1
-        end
-      end
+    # Use hash table which has a time complexity of O(1) for fast lookup
+    # LPAREN and RPAREN are matched with a lambda function that takes a token as input
+    actions = {
+      TokenType::LPAREN => -> (token) { stack.push(token); last_open_paren = token},
+      TokenType::RPAREN => -> (token) { stack.empty? ? raise_unmatched_paren_error(token) : stack.pop() }
+    }
+
+    while (token = next_token())
+      actions[token.type]&.(token) # & is used to safely call the function. This only calls the object if it is not nil. Similar to check if not nil then use .call on the lambda function
+     
       @tokens << token
     end
 
-    if open_parens.positive?
-      last_open_paren = @tokens.select { |t| t.type == TokenType::LPAREN }.last # Get the last opened parenthesis
-
-      tmp_line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
-      # We have more opening parentheses than closing ones
-      raise UnmatchedParenthesisError, "Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{tmp_line}"
+    if !stack.empty?
+      raise_unmatched_paren_error(last_open_paren)
     end
 
     @tokens << Token.new(TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
@@ -102,6 +95,20 @@ class Lexer
   end
 
   private
+
+  #
+  # Raise a unmatched parenthesis error if a open or close paren is missing
+  #
+  # @param [Token] token The paren token that misses a open or close paren
+  #
+  def raise_unmatched_paren_error(token)
+    line_num = token.line
+    tmp_line = @string.each_line.to_a[line_num - 1] # Get the line where the error was
+
+    # We have an unmatched parenthesis
+    error_type = token.type == TokenType::LPAREN ? "opening" : "closing"
+    raise UnmatchedParenthesisError, "Unmatched #{error_type} parenthesis at line #{line_num}, column #{token.column} in #{tmp_line}"
+  end
 
   # Get the next token
   #
