@@ -26,19 +26,19 @@ TOKEN_TYPES = {
 }.freeze
 
 KEYWORDS = {
-  'const' => TokenType::CONST,
-  'func' => TokenType::FUNC,
-  'if' => TokenType::IF,
-  'else' => TokenType::ELSE,
-  'true' => TokenType::BOOLEAN,
-  'false' => TokenType::BOOLEAN,
-  'null' => TokenType::NULL,
+  const: TokenType::CONST,
+  func: TokenType::FUNC,
+  if: TokenType::IF,
+  else: TokenType::ELSE,
+  true: TokenType::BOOLEAN,
+  false: TokenType::BOOLEAN,
+  null: TokenType::NULL,
 
   # Type Specifiers
-  'int' => TokenType::TYPE_SPECIFIER,
-  'float' => TokenType::TYPE_SPECIFIER,
-  'bool' => TokenType::TYPE_SPECIFIER,
-  'string' => TokenType::TYPE_SPECIFIER
+  int: TokenType::TYPE_SPECIFIER,
+  float: TokenType::TYPE_SPECIFIER,
+  bool: TokenType::TYPE_SPECIFIER,
+  string: TokenType::TYPE_SPECIFIER
 }.freeze
 
 #
@@ -257,7 +257,7 @@ class Lexer
   # @return [Token] A new identifier token
   def handle_identifier_match(match)
     # Check if it is a keyword
-    return create_token(match, KEYWORDS[match], 'Found keyword token') if KEYWORDS.key?(match)
+    return create_token(match, KEYWORDS[match.to_sym], 'Found keyword token') if KEYWORDS.key?(match.to_sym)
 
     # If not it is a user defined keyword
     return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')
