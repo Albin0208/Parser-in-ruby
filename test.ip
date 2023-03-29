@@ -1,5 +1,11 @@
 int a = 3.14
 
+# This is a comment and should not be processed
+
+(3 - 4- (2))
+
+#??
+
 if a > 4 {
     a = 94
 } else {

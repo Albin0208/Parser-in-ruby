@@ -11,6 +11,10 @@ def main
 
   file = debugging ? ARGV[1] : ARGV[0]
 
+  if file
+    debugging = ARGV[1] == '-debug'
+  end
+
   parser = Parser.new(debugging)
   interpreter = Interpreter.new
   input = ''

@@ -7,13 +7,15 @@ require_relative 'token'
 require_relative '../errors/errors'
 require_relative '../token_type'
 
+# The order matters and they have to be the same name as in the token_type
+# Longer matches has to come first
 TOKEN_TYPES = {
   integer: /\A\d+(\.\d+)?/,
   string: /\A"([^"]*)"/,
-  operator: %r{\A[+\-*/%]},
+  comparison: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
   unaryOperator: /\A[-+!]/,
+  binaryoperator: %r{\A[+\-*/%]},
   logical: /\A((&&)|(\|\|))/,
-  comparators: /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/,
   lparen: /\A\(/,
   rparen: /\A\)/,
   lbrace: /\A\{/,
@@ -53,7 +55,7 @@ class Lexer
     @string = string.rstrip # Remove any trailing whitespace
     @current_line = ''
     @position = 0
-    @line = 1
+    @line = 0
     @column = 1
 
     @tokens = []
@@ -75,9 +77,11 @@ class Lexer
         open_parens += 1
       when TokenType::RPAREN
         if open_parens.zero?
+          last_close_paren = @tokens.select { |t| t.type == TokenType::RPAREN }.last # Get the last close parenthesis
+
+          line = @string.each_line.to_a[last_close_paren.line - 1] # Get the line where the error was
           # We have got a closing parenthesis without a opening one
-          raise UnmatchedParenthesisError, "Unmatched opening parenthesis for closing parenthesis at line
-						  #{token.line}, column #{token.column} in #{@current_line}"
+          raise UnmatchedParenthesisError, "Unmatched opening parenthesis for closing parenthesis at line #{last_close_paren.line}, column #{last_close_paren.column} in #{line}"
         else
           open_parens -= 1
         end
@@ -90,12 +94,11 @@ class Lexer
 
       line = @string.each_line.to_a[last_open_paren.line - 1] # Get the line where the error was
       # We have more opening parentheses than closing ones
-      raise UnmatchedParenthesisError, "Unmathced closing parenthesis for opening parenthesis at line
-				  #{last_open_paren.line}, column #{last_open_paren.column} in #{line}"
+      raise UnmatchedParenthesisError, "Unmathced closing parenthesis for opening parenthesis at line #{last_open_paren.line}, column #{last_open_paren.column} in #{line}"
     end
 
     @tokens << Token.new(TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
-    @tokens
+    return @tokens
   end
 
   private
@@ -106,8 +109,6 @@ class Lexer
   def next_token
     return nil if at_eof
 
-    @current_line = @string[0..@string.length].match(/^\s*.*$/)
-
     # Skip whitespace
     while @string[@position] =~ /\A\s/
       @line += 1 if @string[@position] == "\n" # New line found, update line value
@@ -117,49 +118,30 @@ class Lexer
 
     @logger.debug("Parsing token at line #{@line}, column #{@column}, Token: #{@string[@position]}")
 
-    # Add check for comments
-    if @string[@position] =~ /\A#/
-      @logger.debug('Found comment token')
-      while @string[@position] != /\n/
-        @position += 1
-        return nil if at_eof # We have reached the end of file
-      end
-      @line += 1
-      @column = 1 # Reset to first index on line
+    # If we have found a comment, handle it and recursively call next_token
+    if @string[@position] == '#'
+    # return handle_comment() if @string[@position] == '#'
+      handle_comment()
       return next_token # Call next_token to get the next token after the comment
     end
 
-    token_matchers = [
-      # [TOKEN_TYPES[:integer], TokenType::NUMBER],
-      # [TOKEN_TYPES[:string], TokenType::STRING],
-      [TOKEN_TYPES[:comparators], TokenType::COMPARISON],
-      [TOKEN_TYPES[:unaryOperator], TokenType::UNARYOPERATOR],
-      [TOKEN_TYPES[:operator], TokenType::BINARYOPERATOR],
-      [TOKEN_TYPES[:logical], TokenType::LOGICAL],
-      [TOKEN_TYPES[:assign], TokenType::ASSIGN],
-      [TOKEN_TYPES[:lparen], TokenType::LPAREN],
-      [TOKEN_TYPES[:rparen], TokenType::RPAREN],
-      [TOKEN_TYPES[:lbrace], TokenType::LBRACE],
-      [TOKEN_TYPES[:rbrace], TokenType::RBRACE],
-      [TOKEN_TYPES[:separators], TokenType::COMMA],
-      # [TOKEN_TYPES[:identifier], TokenType::IDENTIFIER]
-    ]
-
-    # Go through all simple tokens
-    token_matchers.each do |pattern, type|
-      if @string[@position..] =~ /\A#{pattern}/
-        return create_token($LAST_MATCH_INFO[0], type, "Found #{type.to_s.downcase}", true)
+    # Match and handle tokens
+    TOKEN_TYPES.each do |type, regex|
+      if @string[@position..] =~ /\A#{regex}/
+        return case type
+              when :integer
+                handle_number_match($LAST_MATCH_INFO[0])
+              when :string
+                handle_string_match($LAST_MATCH_INFO[0])
+              when :identifier
+                handle_identifier_match($LAST_MATCH_INFO[0])
+              else
+                # Create a new token with the TokenType of type, retrived with const_get from the TokenType class
+                create_token($LAST_MATCH_INFO[0], TokenType.const_get(type.to_s.upcase), 
+                            "Found #{type} token", true)
+              end
+        end
       end
-    end
-
-    case @string[@position..]
-    when TOKEN_TYPES[:integer]
-      return handle_number_match($LAST_MATCH_INFO[0])
-    when TOKEN_TYPES[:string]
-      return handle_string_match($LAST_MATCH_INFO[0])
-    when TOKEN_TYPES[:identifier]
-      return handle_identifier_match($LAST_MATCH_INFO[0])
-    end
 
     # If we get here, no token was matched, so we have an invalid character or token
     raise InvalidTokenError,
@@ -213,13 +195,13 @@ class Lexer
   end
   
   def handle_comment
-    @logger.debug('Found comment token')
-    while @string[@position] != /\n/
-      @position += 1
-      return nil if at_eof
-    end
-    @line += 1
-    @column = 1
+      @logger.debug('Found comment token')
+      while @string[@position] != "\n"
+        @position += 1
+        return nil if at_eof # We have reached the end of file
+      end
+      @line += 1
+      @column = 1 # Reset to first index on line
   end
 
   # Handles when we have matched a number
