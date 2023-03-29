@@ -107,7 +107,7 @@ class Lexer
   #
   # @return [Token | nil] Return the new token or nil if we have reached the end of the input string
   def next_token
-    return nil if at_eof
+    return nil if at_eof()
 
     # Skip whitespace
     while @string[@position] =~ /\A\s/
@@ -123,14 +123,21 @@ class Lexer
 
     # If we have found a comment, handle it and recursively call next_token
     if @string[@position] == '#'
-      handle_comment()
-      return next_token # Call next_token to get the next token after the comment
+      @logger.debug('Found comment token')
+      while @string[@position] != "\n"
+        @position += 1
+        return nil if at_eof # We have reached the end of file
+      end
+      @position += 1 # Step past the new line
+      @line += 1 # Increase line count to next
+      @column = 1 # Reset to first index on line
+      return next_token() # Call next_token to get the next token after the comment
     end
 
     # Match and handle tokens
     TOKEN_TYPES.each do |type, regex|
       if @string[@position..] =~ /\A#{regex}/
-        return handle_token_match(type, $LAST_MATCH_INFO[0])
+        return handle_token_match(type, $&)
       end
     end
 
@@ -174,20 +181,6 @@ class Lexer
     advance(token.value.to_s.length)
     token
   end
-  
-  #
-  # Handles a comment by skiping the rest of that line
-  #
-  def handle_comment
-      @logger.debug('Found comment token')
-      while @string[@position] != "\n"
-        @position += 1
-        return nil if at_eof # We have reached the end of file
-      end
-      @position += 1 # Step past the new line
-      @line += 1 # Increase line count to next
-      @column = 1 # Reset to first index on line
-  end
 
   #
   # Handles a token match
@@ -210,6 +203,7 @@ class Lexer
           end
   end
 
+  #
   # Handles when we have matched a number
   #
   # @param [String] match The value of the token we have matched
@@ -234,6 +228,7 @@ class Lexer
     return create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
   end
 
+  #
   # Handles when we have matched a string
   #
   # @param [String] match The value of the token we have matched
@@ -247,6 +242,7 @@ class Lexer
     tok
   end
 
+  #
   # Handle when we have matched a identifier
   #
   # @param [String] match The value of the token we have matched
@@ -260,6 +256,7 @@ class Lexer
     return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')
   end
 
+  #
   # Advance where we are in the string
   # @param [int] length How far we should advance, Default: 1
   def advance(length = 1)
@@ -267,6 +264,7 @@ class Lexer
     @column += length
   end
 
+  #
   # Check if we have reached the end of the input string
   #
   # @return [Boolean] If we have reach the end of the input string
