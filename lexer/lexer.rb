@@ -1,4 +1,3 @@
-require 'English'
 require 'logger'
 
 require_relative 'token'
