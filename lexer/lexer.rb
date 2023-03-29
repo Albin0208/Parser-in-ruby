@@ -126,25 +126,13 @@ class Lexer
       handle_comment()
       return next_token # Call next_token to get the next token after the comment
     end
-    
 
     # Match and handle tokens
     TOKEN_TYPES.each do |type, regex|
       if @string[@position..] =~ /\A#{regex}/
-        return case type
-              when :integer
-                handle_number_match($LAST_MATCH_INFO[0])
-              when :string
-                handle_string_match($LAST_MATCH_INFO[0])
-              when :identifier
-                handle_identifier_match($LAST_MATCH_INFO[0])
-              else
-                # Create a new token with the TokenType of type, retrived with const_get from the TokenType class
-                create_token($LAST_MATCH_INFO[0], TokenType.const_get(type.to_s.upcase), 
-                            "Found #{type} token", true)
-              end
-        end
+        return handle_token_match(type, $LAST_MATCH_INFO[0])
       end
+    end
 
     # If we get here, no token was matched, so we have an invalid character or token
     raise InvalidTokenError,
@@ -199,6 +187,27 @@ class Lexer
       @position += 1 # Step past the new line
       @line += 1 # Increase line count to next
       @column = 1 # Reset to first index on line
+  end
+
+  #
+  # Handles a token match
+  #
+  # @param [Symbol] type What type of token this is
+  # @param [String] match The match found
+  #
+  # @return [Token] The token created
+  #
+  def handle_token_match(type, match)
+    return case type
+          when :integer
+            handle_number_match(match)
+          when :string
+            handle_string_match(match)
+          when :identifier
+            handle_identifier_match(match)
+          else
+            create_token(match, TokenType.const_get(type.to_s.upcase), "Found #{type} token", true)
+          end
   end
 
   # Handles when we have matched a number
