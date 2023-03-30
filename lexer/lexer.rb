@@ -25,6 +25,7 @@ KEYWORDS = {
   const: TokenType::CONST,
   func: TokenType::FUNC,
   if: TokenType::IF,
+  elsif: TokenType::ELSIF,
   else: TokenType::ELSE,
   true: TokenType::BOOLEAN,
   false: TokenType::BOOLEAN,

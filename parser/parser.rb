@@ -125,14 +125,31 @@ class Parser
 
     conditions = nil
     while at.type != TokenType::LBRACE # Parse the conditions of the if statment
-      conditions = parse_logical_expr # Add the condition expr to the conditions array
+      conditions = parse_logical_expr() # Add the condition expr to the conditions array
     end
     expect(TokenType::LBRACE) # ea) lbrace token
-    # TODO Parse else if
-
+    
     body = []
-    body.append(parse_stmt) while at.type != TokenType::RBRACE # Parse the content of teh if statment
+    body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the if statment
     expect(TokenType::RBRACE) # eat the rbrace token
+
+    # Parse else if
+    elsif_stmt = []
+    while at().type == TokenType::ELSIF
+      expect(TokenType::ELSIF)
+
+      elsif_conditions = nil
+      while at().type != TokenType::LBRACE # Parse the conditions of the elsif statment
+        elsif_conditions = parse_logical_expr() # Add the condition expr to the conditions array
+      end
+      expect(TokenType::LBRACE) # ea) lbrace token
+      
+      elsif_body = []
+      elsif_body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the elsif statment
+      expect(TokenType::RBRACE) # eat the rbrace token
+
+      elsif_stmt << ElsifStatement.new(elsif_body, elsif_conditions)
+    end
 
     else_body = nil
     if at.type == TokenType::ELSE
@@ -145,7 +162,7 @@ class Parser
       expect(TokenType::RBRACE)
     end
 
-    IfStatement.new(body, conditions, else_body)
+    return IfStatement.new(body, conditions, else_body, elsif_stmt)
   end
 
   # Parses a assignment statement

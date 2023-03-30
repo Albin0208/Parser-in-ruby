@@ -31,10 +31,20 @@ def eval_if_statement(ast_node, env)
     # TODO: Set up new env for if so vars die after if is done
     # Eval the body of the if
     ast_node.body.each { |stmt| last_eval = evaluate(stmt, env) }
-  elsif !ast_node.else_body.nil?
+    return last_eval
+  end
+  if !ast_node.elsif_stmts.nil?
+    ast_node.elsif_stmts.each do |stmt|
+      if evaluate(stmt.conditions, env).value
+        stmt.body.each { |stmt| last_eval = evaluate(stmt, env) }
+        return last_eval
+      end
+    end
+  end
+  if !ast_node.else_body.nil?
     # Eval the body of the else
     ast_node.else_body.each { |stmt| last_eval = evaluate(stmt, env) }
   end
 
-  last_eval
+  return last_eval
 end
