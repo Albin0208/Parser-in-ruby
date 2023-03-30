@@ -308,4 +308,30 @@ class TestLexer < Test::Unit::TestCase
                     "EOF: , (1, #{5 + op.length})"], tokens.map(&:to_s))
     end
   end
+
+  def test_tokenize_simple_string
+    # Test double quotes
+    input = "\"hej då\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+    assert_equal(['STRING: hej då, (1, 1)',
+                  "EOF: , (1, 9)"], tokens.map(&:to_s))
+
+    # Test single quotes
+    input = "'hej då'"
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+    assert_equal(['STRING: hej då, (1, 1)',
+                  "EOF: , (1, 9)"], tokens.map(&:to_s))
+  end
+
+  def test_error_on_missmatched_quotes_on_string
+    input = "\"hej då\'"
+    lexer = Lexer.new(input)
+    assert_raise(InvalidStringError) { lexer.tokenize }
+
+    input = "\'hej då\""
+    lexer = Lexer.new(input)
+    assert_raise(InvalidStringError) { lexer.tokenize }
+  end
 end
