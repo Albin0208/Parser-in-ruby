@@ -209,23 +209,25 @@ class Lexer
   # @param [String] match The value of the token we have matched
   #
   # @return [Token] A new number token
-  def handle_number_match(match)
+  def handle_number_match(number_str)
     # Check for whitespace between two numbers
-    if @string[@position + match.length..] =~ /\A\s*\d+/
+    if @string[@position + number_str.length..] =~ /\A\s*\d+/
       raise InvalidTokenError,
             "Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}"
     end
 
     # Check for if number has trailing digits when starting with 0 and that it is not a unary operator
-    if match.length > 1 && match[0].to_i.zero? && !TOKEN_TYPES[:unaryOperator].match(match[0])
+    if number_str.length > 1 && number_str[0].to_i.zero? && !TOKEN_TYPES[:unaryOperator].match(number_str[0])
       raise InvalidTokenError, "Number starting with 0 has trailing digits at line #{@line}, column #{@column} in #{@current_line}"
     end
 
-    return case match
+    return case number_str
           when /^\d+\.\d+$/ # Match a float
-            create_token(match.to_f, TokenType::FLOAT, 'Found float token') if match.include?('.')
+            create_token(number_str.to_f, TokenType::FLOAT, 'Found float token')
           when /^\d+$/ # Match a integer
-            create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
+            create_token(number_str.to_i, TokenType::INTEGER, 'Found integer token')
+          else
+            raise InvalidTokenError, "Unrecognized number format at line #{@line}, column #{@column} in #{@current_line}"
           end
   end
 
