@@ -1,8 +1,10 @@
 int a = 3.14
 
+string b = "hej då"*3
+3 + 3 * 4
 # This is a comment and should not be processed 3 + 3
 
-(3 - 4- (2)()(
+#(3 - 4- (2)()(
 #int b = 3 # Declare var
 #??
 
@@ -13,5 +15,6 @@ if a > 4 {
 }
 
 a
+b
 
 #print(a)

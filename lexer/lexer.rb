@@ -7,7 +7,7 @@ require_relative '../token_type'
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
   [:integer, /\A\d+(\.\d+)?/],
-  [:string, /\A"([^"]*)"/],
+  [:string, /\A"(?:\\.|[^\\"])*"/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
   [:unaryOperator, /\A[-+!]/],
   [:binaryoperator, %r{\A[+\-*/%]}],
@@ -18,7 +18,7 @@ TOKEN_TYPES = [
   [:rbrace, /\A\}/],
   [:assign, /\A=/],
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
-  [:separators, /\A,/]
+  [:separators, /\A,/],
 ].to_h.freeze
 
 KEYWORDS = {
@@ -179,7 +179,7 @@ class Lexer
     token = Token.new(type, match, @line, @column)
     @logger.debug("#{message}: #{token.value}")
     advance(token.value.to_s.length)
-    token
+    return token
   end
 
   #
@@ -194,7 +194,7 @@ class Lexer
     return case type
           when :integer
             handle_number_match(match)
-          when :string
+          when :string, :string_esc
             handle_string_match(match)
           when :identifier
             handle_identifier_match(match)
@@ -211,10 +211,10 @@ class Lexer
   # @return [Token] A new number token
   def handle_number_match(number_str)
     # Check for whitespace between two numbers
-    if @string[@position + number_str.length..] =~ /\A\s*\d+/
-      raise InvalidTokenError,
-            "Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}"
-    end
+    # if @string[@position + number_str.length..] =~ /\A\s*\d+/
+    #   raise InvalidTokenError,
+    #         "Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}"
+    # end
 
     # Check for if number has trailing digits when starting with 0 and that it is not a unary operator
     if number_str.length > 1 && number_str[0].to_i.zero? && !TOKEN_TYPES[:unaryOperator].match(number_str[0])
@@ -238,11 +238,12 @@ class Lexer
   #
   # @return [Token] A new string token
   def handle_string_match(match)
-    # TODO: Add support for escaping chars
-    match = match[1..-2]
+    match_length = match.length
+    match = match[1..-2] # Remove quotes
+    match.tr!('\\', '') # Replace backslashes with their following characters
     tok = create_token(match.to_s, TokenType::STRING, 'Found string token')
-    advance(2) # Advance for the quotes since we don't save them
-    tok
+    advance(match_length - match.length) # Advance for the quotes since we don't save them and the differnece if we have remove any escaping chars
+    return tok
   end
 
   #
