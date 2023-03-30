@@ -365,6 +365,13 @@ class TestLexer < Test::Unit::TestCase
 
     assert_equal(["STRING: hej \tdå, (1, 1)",
                   "EOF: , (1, 11)"], tokens.map(&:to_s))
+    # Test carriage return
+    input = "\"hej \\rdå\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+
+    assert_equal(["STRING: hej \rdå, (1, 1)",
+                  "EOF: , (1, 11)"], tokens.map(&:to_s))
 
     # Test \n \t and \" togethet
     input = "\"hej \\ndå\\\t\\\"\""
