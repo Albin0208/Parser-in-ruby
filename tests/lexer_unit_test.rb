@@ -334,4 +334,12 @@ class TestLexer < Test::Unit::TestCase
     lexer = Lexer.new(input)
     assert_raise(InvalidStringError) { lexer.tokenize }
   end
+
+  def test_escaping_string
+    input = "\"hej \\\"då\\\" bruv\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+    assert_equal(['STRING: hej "då" bruv, (1, 1)',
+                  "EOF: , (1, 18)"], tokens.map(&:to_s))
+  end
 end

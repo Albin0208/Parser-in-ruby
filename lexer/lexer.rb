@@ -242,13 +242,35 @@ class Lexer
     if match[0] != match[-1]
       raise InvalidStringError, "Missmatched quotes expected matching #{match[0]} at line #{@line}, column #{@column + match.length - 1} in #{@current_line}"
     end
-    
+
     match_length = match.length
     match = match[1..-2] # Remove quotes
-    match.tr!('\\', '') # Replace backslashes with their following characters
-    tok = create_token(match.to_s, TokenType::STRING, 'Found string token')
+    match = replace_escape_sequences(match) # Replace escape sequences
+    tok = create_token(match, TokenType::STRING, 'Found string token')
     advance(match_length - match.length) # Advance for the quotes since we don't save them and the differnece if we have remove any escaping chars
     return tok
+  end
+
+  #
+  # Replaces escaped chares with correct escape char
+  #
+  # @param [String] str The string we want to replace in
+  #
+  # @return [String] String after the replace
+  #
+  def replace_escape_sequences(str)
+    # Table of all escape mappings
+    escape_table = {
+      "\\n" => "\n",
+      "\\r" => "\r",
+      "\\t" => "\t",
+      '\\"' => '"',
+      "\\'" => "'",
+      "\\\\" => "\\"
+      # Add more escape sequences as needed
+    }
+    escape_regex = Regexp.union(escape_table.keys) # Unify all escape regex to one regex
+    return str.gsub(escape_regex, escape_table) # Replace all occurrences of every entry in the escape table
   end
 
   #
