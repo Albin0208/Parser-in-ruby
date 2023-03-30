@@ -27,5 +27,19 @@ You can also run the parser in debug mode, which will print additional informati
 ruby main.rb - debug
 ```
 
+## Unit tests
+To run the test, you'll need to have Rake installed on your system. If you don't have Rake you can run the following command int your terminal:
+
+```bash
+gem install rake
+```
+
+### Running the tests
+To run the unit test, simply execute the following command in your terminal:
+
+```bash
+rake test
+```
+
 ## License
 This project is released under the MIT License. See the [LICENSE](https://github.com/Albin0208/Parser-in-ruby/blob/master/LICENSE) file for details.

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test/unit'
 require_relative '../../runtime/interpreter'
 
@@ -51,11 +49,23 @@ class TestInterpreter < Test::Unit::TestCase
     assert_equal(5, @env.variables['t'].value)
     assert_true(@env.constants.include?('t'))
 
+    ast = VarDeclaration.new(false, 'y', 'float', NumericLiteral.new(5.34))
+    result = @interpreter.evaluate(ast, @env)
+    assert_equal(5.34, result.value)
+    assert_instance_of(NumberVal, @env.variables['y'])
+    assert_equal(5.34, @env.variables['y'].value)
+
     ast = VarDeclaration.new(false, 'b', 'bool', BooleanLiteral.new(true))
     result = @interpreter.evaluate(ast, @env)
     assert_equal(true, result.value)
     assert_instance_of(BooleanVal, @env.variables['b'])
     assert_equal(true, @env.variables['b'].value)
+
+    ast = VarDeclaration.new(false, 'str', 'string', StringLiteral.new("Hello"))
+    result = @interpreter.evaluate(ast, @env)
+    assert_equal('Hello', result.value)
+    assert_instance_of(StringVal, @env.variables['str'])
+    assert_equal('Hello', @env.variables['str'].value)
   end
 
   def test_evaluate_retrieval_of_var
@@ -214,6 +224,13 @@ class TestInterpreter < Test::Unit::TestCase
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
+  end
+
+  def test_evaluate_string_with_escape_chars
+    ast = StringLiteral.new('hello \n bye')
+    result = @interpreter.evaluate(ast, @env)
+    assert_instance_of(StringVal, result)
+    assert_equal('hello \n bye', result.value)
   end
 
   def test_evaluate_unary_expr

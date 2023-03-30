@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative 'parser/parser'
 require_relative 'runtime/interpreter'
 require_relative 'runtime/enviroment'
@@ -10,6 +8,10 @@ def main
   debugging = ARGV[0] == '-debug'
 
   file = debugging ? ARGV[1] : ARGV[0]
+
+  if file
+    debugging = ARGV[1] == '-debug'
+  end
 
   parser = Parser.new(debugging)
   interpreter = Interpreter.new

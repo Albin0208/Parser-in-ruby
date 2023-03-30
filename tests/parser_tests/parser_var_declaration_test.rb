@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'test/unit'
 require_relative '../../parser/parser'
 
@@ -19,6 +17,12 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     assert_equal(ast.body[0].identifier, 'a')
     assert_equal(ast.body[0].value.symbol, 'x')
     assert_equal(ast.body[0].constant, false)
+
+      # Test for declaration of var to value of another var
+      ast = @parser.produce_ast('string a = "Hej"')
+      assert_equal(ast.body[0].identifier, 'a')
+      assert_equal(ast.body[0].value.value, 'Hej')
+      assert_equal(ast.body[0].constant, false)
   end
 
   def test_parse_variable_declaration_without_assign

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require_relative '../ast_nodes/ast'
 require_relative '../lexer/lexer'
 require_relative '../token_type'
@@ -30,7 +28,7 @@ class Parser
   #
   # @return [Program] Return the top node in the AST
   def produce_ast(source_code)
-    @tokens = Lexer.new(source_code).tokenize
+    @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list
     program = Program.new([])
 
@@ -158,9 +156,13 @@ class Parser
     identifier = parse_identifier
 
     # Check if we have an assignment token
-    expect(TokenType::ASSIGN)
-    value = parse_expr # Parse the right side
-    return AssignmentExpr.new(value, identifier)
+    if at().type == TokenType::ASSIGN
+      expect(TokenType::ASSIGN)
+      value = parse_expr # Parse the right side
+      return AssignmentExpr.new(value, identifier)
+    end
+
+    return identifier
   end
 
   # Parses a expression

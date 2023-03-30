@@ -1,7 +1,7 @@
 # Features to add 
 
 - [x] Strings
-    - [ ] Allow escaping a string
+    - [x] Allow escaping a string
 - [ ] Elsif
 - [ ] Arrays
     - [ ] ArrayLiteral
@@ -21,10 +21,17 @@
 
 # Tests
 ## Lexer tests
+- [x] Test string
+    - [x] Test with "" and ''
+    - [x] Test that error raises when string has missmatched quotes
+    - [x] Test that we can escape chars with \
 
 ## Parser tests
+- [x] Test string
+    - [x] Test that string parser correctly
 
 ## Interpreter tests
+- [ ] Test that string evaluates correctly
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3
