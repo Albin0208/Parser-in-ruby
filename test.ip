@@ -1,20 +1,15 @@
-int a = 3.14
+int a = 3
 
-string b = "hej då"*3
-3 + 3 * 4
-# This is a comment and should not be processed 3 + 3
-
-#(3 - 4- (2)()(
-#int b = 3 # Declare var
-#??
+a
 
 if a > 4 {
     a = 94
-} else {
+} elsif a == 2 {
+    a = -2
+} elsif a < 2 {
     a = -90
+} else {
+    a = -100
 }
 
 a
-b
-
-#print(a)

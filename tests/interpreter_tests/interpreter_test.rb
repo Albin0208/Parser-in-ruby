@@ -321,13 +321,13 @@ class TestInterpreter < Test::Unit::TestCase
   def test_evaluate_if_statment
     # Test a if evaling to true
     ast = IfStatement.new([NumericLiteral.new(3)],
-                          LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)), nil)
+                          LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)), nil, nil)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(3, result.value)
 
     # Test a if evaling to false
-    ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), nil)
+    ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), nil, nil)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NullVal, result)
     assert_equal('null', result.value)
@@ -335,7 +335,26 @@ class TestInterpreter < Test::Unit::TestCase
     # Test a if evaling to false
     condition = BinaryExpr.new(NumericLiteral.new(5), :>, NumericLiteral.new(3))
     body = [BinaryExpr.new(NumericLiteral.new(3), :+, NumericLiteral.new(3))]
-    ast = IfStatement.new(body, condition, nil)
+    ast = IfStatement.new(body, condition, nil, nil)
+    result = @interpreter.evaluate(ast, @env)
+    assert_instance_of(NumberVal, result)
+    assert_equal(6, result.value)
+  end
+
+  def test_evaluate_elsif_statment
+    # Test with single elsif
+    elsifs = [ElsifStatement.new([NumericLiteral.new(4)], LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)))]
+    ast = IfStatement.new([NumericLiteral.new(3)],
+                          LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true)), nil, elsifs)
+    result = @interpreter.evaluate(ast, @env)
+    assert_instance_of(NumberVal, result)
+    assert_equal(4, result.value)
+
+    # Test with multiple elsif
+    elsifs = [ElsifStatement.new([NumericLiteral.new(4)], LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))),
+              ElsifStatement.new([NumericLiteral.new(6)], LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true)))]
+    ast = IfStatement.new([NumericLiteral.new(3)],
+                          LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true)), nil, elsifs)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(6, result.value)
@@ -343,7 +362,7 @@ class TestInterpreter < Test::Unit::TestCase
 
   def test_evaluate_else_statment
     # Test else
-    ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), [NumericLiteral.new(45)])
+    ast = IfStatement.new([NumericLiteral.new(3)], BooleanLiteral.new(false), [NumericLiteral.new(45)], nil)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(45, result.value)
@@ -351,8 +370,10 @@ class TestInterpreter < Test::Unit::TestCase
     # Test a if evaling to false and else running
     condition = BinaryExpr.new(NumericLiteral.new(5), :<, NumericLiteral.new(3))
     body = [BinaryExpr.new(NumericLiteral.new(5), :+, NumericLiteral.new(3))]
+    elsif_stmts = [ElsifStatement.new([NumericLiteral.new(4)], LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))),
+              ElsifStatement.new([NumericLiteral.new(6)], LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true)))]
     else_body = [BinaryExpr.new(NumericLiteral.new(5), :-, NumericLiteral.new(3))]
-    ast = IfStatement.new(body, condition, else_body)
+    ast = IfStatement.new(body, condition, else_body, elsif_stmts)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(2, result.value)

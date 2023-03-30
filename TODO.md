@@ -2,7 +2,7 @@
 
 - [x] Strings
     - [x] Allow escaping a string
-- [ ] Elsif
+- [x] Elsif
 - [ ] Arrays
     - [ ] ArrayLiteral
     - [ ] Array accessor
@@ -25,13 +25,16 @@
     - [x] Test with "" and ''
     - [x] Test that error raises when string has missmatched quotes
     - [x] Test that we can escape chars with \
+- [x] Test Elsif
 
 ## Parser tests
 - [x] Test string
     - [x] Test that string parser correctly
+- [x] Test Elsif
 
 ## Interpreter tests
-- [ ] Test that string evaluates correctly
+- [x] Test that string evaluates correctly
+- [x] Test Elsif
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3

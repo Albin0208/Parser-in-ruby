@@ -3,6 +3,7 @@ NODE_TYPES = {
   Program: :Program,
   VarDeclaration: :VarDeclaration,
   IF: :IF,
+  ELSIF: :ELSIF,
 
   # Expressions
   AssignmentExpr: :AssignmentExpr,
@@ -89,7 +90,7 @@ end
 
 # This class represents the ast node for a if statement
 class IfStatement < Stmt
-  attr_reader :body, :conditions, :else_body
+  attr_reader :body, :conditions, :else_body, :elsif_stmts
 
   #
   # Creates an if statment node
@@ -97,12 +98,14 @@ class IfStatement < Stmt
   # @param [Array] body A list of all the nodes inside the if body
   # @param [Expr] conditions The conditions of the if
   # @param [Array] else_body A list of all the nodes inside the else body
+  # @param [Array] elsif_stmts A list of all the elsif statements
   #
-  def initialize(body, conditions, else_body)
+  def initialize(body, conditions, else_body, elsif_stmts)
     super(NODE_TYPES[:IF])
     @body = body # A list of all statements
     @conditions = conditions
     @else_body = else_body
+    @elsif_stmts = elsif_stmts
   end
 
   def to_s
@@ -115,10 +118,45 @@ class IfStatement < Stmt
     @conditions.display_info(indent + 2)
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
+
+    unless @elsif_stmts.nil?
+      puts "#{' ' * indent} Elsifs:"
+      @elsif_stmts.each { |stmt| stmt.display_info(indent + 2) }
+    end
+
     return if @else_body.nil?
 
     puts "#{' ' * indent} Else body:"
     @else_body.each { |stmt| stmt.display_info(indent + 2) }
+  end
+end
+
+# This class represents the ast node for a elsif statement
+class ElsifStatement < Stmt
+  attr_reader :body, :conditions
+
+  #
+  # Creates an elsif statment node
+  #
+  # @param [Array] body A list of all the nodes inside the if body
+  # @param [Expr] conditions The conditions of the if
+  #
+  def initialize(body, conditions)
+    super(NODE_TYPES[:ELSIF])
+    @body = body # A list of all statements
+    @conditions = conditions
+  end
+
+  def to_s
+    @body.map(&:to_s)
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * indent} Conditions:"
+    @conditions.display_info(indent + 2)
+    puts "#{' ' * indent} Body:"
+    @body.each { |stmt| stmt.display_info(indent + 2) }
   end
 end
 

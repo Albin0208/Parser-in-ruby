@@ -5,6 +5,7 @@ class TokenType
   CONST = :CONST
   FUNC = :FUNC
   IF = :IF
+  ELSIF = :ELSIF
   ELSE = :ELSE
   BOOLEAN = :BOOLEAN
   STRING = :STRING
