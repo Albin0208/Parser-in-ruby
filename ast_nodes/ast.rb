@@ -98,8 +98,9 @@ class IfStatement < Stmt
   # @param [Array] body A list of all the nodes inside the if body
   # @param [Expr] conditions The conditions of the if
   # @param [Array] else_body A list of all the nodes inside the else body
+  # @param [Array] elsif_stmts A list of all the elsif statements
   #
-  def initialize(body, conditions, else_body, elsif_stmts)
+  def initialize(body, conditions, else_body = nil, elsif_stmts = nil)
     super(NODE_TYPES[:IF])
     @body = body # A list of all statements
     @conditions = conditions
