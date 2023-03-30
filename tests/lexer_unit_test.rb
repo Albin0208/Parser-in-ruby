@@ -335,11 +335,43 @@ class TestLexer < Test::Unit::TestCase
     assert_raise(InvalidStringError) { lexer.tokenize }
   end
 
-  def test_escaping_string
+  def test_escaping_quotes_in_string
     input = "\"hej \\\"då\\\" bruv\""
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
     assert_equal(['STRING: hej "då" bruv, (1, 1)',
                   "EOF: , (1, 18)"], tokens.map(&:to_s))
+
+    input = "\'hej \\\'då\\\' bruv\'"
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+    assert_equal(["STRING: hej 'då' bruv, (1, 1)",
+                  "EOF: , (1, 18)"], tokens.map(&:to_s))
+  end
+
+  def test_escaping_char_in_string
+    # Test newline
+    input = "\"hej \\ndå\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+
+    assert_equal(["STRING: hej \n" + "då, (1, 1)",
+                  "EOF: , (1, 11)"], tokens.map(&:to_s))
+
+    # Test tab
+    input = "\"hej \\tdå\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+
+    assert_equal(["STRING: hej \tdå, (1, 1)",
+                  "EOF: , (1, 11)"], tokens.map(&:to_s))
+
+    # Test \n \t and \" togethet
+    input = "\"hej \\ndå\\\t\\\"\""
+    lexer = Lexer.new(input)
+    tokens = lexer.tokenize
+
+    assert_equal(["STRING: hej \n" + "då\\\t\", (1, 1)",
+                  "EOF: , (1, 15)"], tokens.map(&:to_s))
   end
 end
