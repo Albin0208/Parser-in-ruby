@@ -24,8 +24,24 @@ stages:
 variables:
   RUBY_VERSION: '2.7'
 
-test:
+test_ver_2.7:
   stage: test
+  image: ruby:2.7
+  script:
+    - rake test
+  only:
+    - main
+
+test_ver_3:
+  stage: test
+  image: ruby:3
+  script:
+    - rake test
+  only:
+    - main
+test_ver_latest:
+  stage: test
+  image: ruby:latest
   script:
     - rake test
   only:
