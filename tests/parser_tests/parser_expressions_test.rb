@@ -45,6 +45,11 @@ class TestParserExpressions < Test::Unit::TestCase
     assert_equal(ast.body[0].left.value, 3)
     assert_equal(ast.body[0].op, :*)
     assert_equal(ast.body[0].right.value, 4)
+
+    ast = @parser.produce_ast('"hej" * 4')
+    assert_equal(ast.body[0].left.value, 'hej')
+    assert_equal(ast.body[0].op, :*)
+    assert_equal(ast.body[0].right.value, 4)
   end
 
   def test_parse_division_expression
@@ -200,6 +205,12 @@ class TestParserExpressions < Test::Unit::TestCase
     assert_equal(3, ast.body[0].left.value)
     assert_equal(:==, ast.body[0].op)
     assert_equal(4, ast.body[0].right.value)
+
+    ast = @parser.produce_ast('"hej" == "hej"')
+    assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+    assert_equal('hej', ast.body[0].left.value)
+    assert_equal(:==, ast.body[0].op)
+    assert_equal('hej', ast.body[0].right.value)
   end
 
   def test_parse_inequality_expression
@@ -208,6 +219,12 @@ class TestParserExpressions < Test::Unit::TestCase
     assert_equal(3, ast.body[0].left.value)
     assert_equal(:!=, ast.body[0].op)
     assert_equal(4, ast.body[0].right.value)
+
+    ast = @parser.produce_ast('"hej" != "hej då"')
+    assert_equal(NODE_TYPES[:BinaryExpr], ast.body[0].type)
+    assert_equal('hej', ast.body[0].left.value)
+    assert_equal(:!=, ast.body[0].op)
+    assert_equal('hej då', ast.body[0].right.value)
   end
 
   def test_parse_logical_and_expression

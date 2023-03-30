@@ -27,8 +27,8 @@
     - [x] Test that we can escape chars with \
 
 ## Parser tests
-- [ ] Test string
-    - [ ] Test that string parser correctly
+- [x] Test string
+    - [x] Test that string parser correctly
 
 ## Interpreter tests
 - [ ] Test that string evaluates correctly
