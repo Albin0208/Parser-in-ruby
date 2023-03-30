@@ -21,10 +21,10 @@
 
 # Tests
 ## Lexer tests
-- [ ] Test string
-    - [ ] Test with "" and ''
-    - [ ] Test that error raises when string has missmatched quotes
-    - [ ] Test that we can escape chars with \
+- [x] Test string
+    - [x] Test with "" and ''
+    - [x] Test that error raises when string has missmatched quotes
+    - [x] Test that we can escape chars with \
 
 ## Parser tests
 - [ ] Test string
