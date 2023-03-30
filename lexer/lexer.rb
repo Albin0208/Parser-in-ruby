@@ -216,16 +216,17 @@ class Lexer
             "Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}"
     end
 
-    # Check if we have a float
-    return create_token(match.to_f, TokenType::FLOAT, 'Found float token') if match.include?('.')
-
-
-    # Check for if number has trailing digits when starting with 0
-    if match.length > 1 && match[0].to_i.zero?
-      raise InvalidTokenError, "Invalid octal digit at line #{@line}, column #{@column} in #{@current_line}"
+    # Check for if number has trailing digits when starting with 0 and that it is not a unary operator
+    if match.length > 1 && match[0].to_i.zero? && !TOKEN_TYPES[:unaryOperator].match(match[0])
+      raise InvalidTokenError, "Number starting with 0 has trailing digits at line #{@line}, column #{@column} in #{@current_line}"
     end
 
-    return create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
+    return case match
+          when /^\d+\.\d+$/ # Match a float
+            create_token(match.to_f, TokenType::FLOAT, 'Found float token') if match.include?('.')
+          when /^\d+$/ # Match a integer
+            create_token(match.to_i, TokenType::INTEGER, 'Found integer token')
+          end
   end
 
   #
