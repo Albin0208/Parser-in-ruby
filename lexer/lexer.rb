@@ -7,7 +7,7 @@ require_relative '../token_type'
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
   [:integer, /\A\d+(\.\d+)?/],
-  [:string, /\A"(?:\\.|[^\\"])*"/],
+  [:string, /\A("|')(?:\\.|[^\\"])*("|')/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
   [:unaryOperator, /\A[-+!]/],
   [:binaryoperator, %r{\A[+\-*/%]}],
@@ -238,6 +238,11 @@ class Lexer
   #
   # @return [Token] A new string token
   def handle_string_match(match)
+    # Make sure that quotes of same type is used in starting and end
+    if match[0] != match[-1]
+      raise InvalidStringError, "Missmatched quotes expected matching #{match[0]} at line #{@line}, column #{@column + match.length - 1} in #{@current_line}"
+    end
+    
     match_length = match.length
     match = match[1..-2] # Remove quotes
     match.tr!('\\', '') # Replace backslashes with their following characters
