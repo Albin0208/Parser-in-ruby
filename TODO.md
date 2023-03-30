@@ -25,16 +25,16 @@
     - [x] Test with "" and ''
     - [x] Test that error raises when string has missmatched quotes
     - [x] Test that we can escape chars with \
-- [ ] Test Elsif
+- [x] Test Elsif
 
 ## Parser tests
 - [x] Test string
     - [x] Test that string parser correctly
-- [ ] Test Elsif
+- [x] Test Elsif
 
 ## Interpreter tests
 - [x] Test that string evaluates correctly
-- [ ] Test Elsif
+- [x] Test Elsif
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3
