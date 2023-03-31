@@ -137,7 +137,12 @@ class Parser
   def parse_function_declaration
     expect(TokenType::FUNC) # Eat the func keyword
 
-    type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
+    type_specifier = nil
+    if at().type == TokenType::VOID
+      type_specifier = expect(TokenType::VOID).value
+    else
+      type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
+    end
 
     identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
 
@@ -147,7 +152,14 @@ class Parser
 
     expect(TokenType::LBRACE) # Start of function body
     body = []
-    body.append(parse_stmt()) while at().type != TokenType::RBRACE
+    body.append(parse_stmt()) while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
+    if type_specifier != 'void'
+      # TODO Parse return statement
+      expect(TokenType::RETURN)
+      return_body = []
+      return_body.append(parse_expr()) while at().type != TokenType::RBRACE
+      body.append(ReturnStmt.new(type_specifier, return_body))
+    end
     expect(TokenType::RBRACE) # End of function body
 
     return FuncDeclaration.new(type_specifier, identifier, nil, body)

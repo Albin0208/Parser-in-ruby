@@ -52,3 +52,11 @@ def eval_if_statement(ast_node, env)
 
   return last_eval
 end
+
+def eval_return_stmt(ast_node, env)
+  last_eval = NullVal.new
+  puts ast_node
+  ast_node.body.each() { |stmt| last_eval = evaluate(stmt, env)}
+
+  return last_eval
+end

@@ -19,7 +19,6 @@ TOKEN_TYPES = [
   [:assign, /\A=/],
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:separators, /\A,/],
-  # [:func_call, /\A([a-z]|_[a-z])\w*\(/i],
 ].to_h.freeze
 
 KEYWORDS = {
@@ -31,12 +30,14 @@ KEYWORDS = {
   true: TokenType::BOOLEAN,
   false: TokenType::BOOLEAN,
   null: TokenType::NULL,
+  return: TokenType::RETURN,
 
   # Type Specifiers
   int: TokenType::TYPE_SPECIFIER,
   float: TokenType::TYPE_SPECIFIER,
   bool: TokenType::TYPE_SPECIFIER,
-  string: TokenType::TYPE_SPECIFIER
+  string: TokenType::TYPE_SPECIFIER,
+  void: TokenType::VOID
 }.freeze
 
 #

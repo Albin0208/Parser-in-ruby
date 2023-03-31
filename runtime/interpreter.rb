@@ -32,6 +32,9 @@ class Interpreter
       eval_func_declaration(ast_node, env)
     when NODE_TYPES[:CallExpr]
       eval_call_expr(ast_node, env)
+    when NODE_TYPES[:ReturnStmt]
+      puts "Return"
+      eval_return_stmt(ast_node, env)
     when NODE_TYPES[:IF]
       eval_if_statement(ast_node, env)
     when NODE_TYPES[:Boolean]

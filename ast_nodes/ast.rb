@@ -3,6 +3,7 @@ NODE_TYPES = {
   Program: :Program,
   VarDeclaration: :VarDeclaration,
   FuncDeclaration: :FuncDeclaration,
+  ReturnStmt: :ReturnStmt,
   IF: :IF,
   ELSIF: :ELSIF,
 
@@ -110,6 +111,27 @@ class FuncDeclaration < Stmt
     puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Params:"
     @params.display_info(indent + 2) unless @params.nil?
+    puts "#{' ' * indent} Body:"
+    @body.each { |stmt| stmt.display_info(indent + 2) }
+  end
+end
+
+class ReturnStmt < Stmt
+  attr_reader :return_type, :body
+
+  def initialize(return_type, body)
+    super(NODE_TYPES[:ReturnStmt])
+    @return_type = return_type
+    @body = body
+  end
+
+  def to_s
+    "Type: #{@return_type}, Body: #{@body}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
   end
