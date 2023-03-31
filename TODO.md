@@ -16,8 +16,8 @@
 - [ ] Functions
     - [x] Function Declaration
     - [x] Function calls
-    - [ ] Add void type for functions
-    - [ ] Return Statments
+    - [x] Add void type for functions
+    - [x] Return Statments
         - [ ] Checks for type so correct when returning
     - [ ] Setup new env for a function body
     - [ ] Not allowed to create a function in another function
