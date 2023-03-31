@@ -41,6 +41,10 @@ class Enviroment
     return value
   end
 
+  def declare_func(func_name, body)
+
+  end
+
   #
   # Assign a new value to a variable
   #

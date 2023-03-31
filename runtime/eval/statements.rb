@@ -5,7 +5,7 @@ def eval_program(program, env)
 
   program.body.each { |stmt| last_eval = evaluate(stmt, env) }
 
-  last_eval
+  return last_eval
 end
 
 def eval_var_declaration(ast_node, env)
@@ -20,7 +20,11 @@ def eval_var_declaration(ast_node, env)
             end
   end
 
-  env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+  env.declare_func(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+end
+
+def eval_func_declaration(ast_node, env)
+  #env.declare_var(ast_node.identifier, value, ast_node.value_type, false)
 end
 
 def eval_if_statement(ast_node, env)

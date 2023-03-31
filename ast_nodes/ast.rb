@@ -105,7 +105,7 @@ class FuncDeclaration < Stmt
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}"
     puts "#{' ' * indent} Params:"
-    @params.display_info(indent + 2)
+    @params.display_info(indent + 2) unless @params.nil?
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
   end
