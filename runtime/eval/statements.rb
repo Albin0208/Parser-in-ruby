@@ -20,11 +20,11 @@ def eval_var_declaration(ast_node, env)
             end
   end
 
-  env.declare_func(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+  env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
 end
 
 def eval_func_declaration(ast_node, env)
-  #env.declare_var(ast_node.identifier, value, ast_node.value_type, false)
+  env.declare_var(ast_node.identifier, ast_node.body, ast_node.type_specifier, false)
 end
 
 def eval_if_statement(ast_node, env)

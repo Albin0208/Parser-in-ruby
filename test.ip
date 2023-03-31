@@ -1,3 +1,6 @@
-func hej() {
+func int hej() {
     int a = 2
 }
+#-3 + 4
+#4 + hej()
+hej() + 4

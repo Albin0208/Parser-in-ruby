@@ -26,6 +26,7 @@ class TokenType
   RBRACE = :RBRACE
   EOF = :EOF
   TYPE_SPECIFIER = :TYPE_SPECIFIER
+  FUNC_CALL = :FUNC_CALL
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze

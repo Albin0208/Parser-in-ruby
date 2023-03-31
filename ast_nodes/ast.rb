@@ -7,6 +7,7 @@ NODE_TYPES = {
   ELSIF: :ELSIF,
 
   # Expressions
+  CallExpr: :CallExpr,
   AssignmentExpr: :AssignmentExpr,
   LogicalAnd: :LogicalAnd,
   LogicalOr: :LogicalOr,
@@ -90,20 +91,23 @@ class VarDeclaration < Stmt
 end
 
 class FuncDeclaration < Stmt
-  attr_reader :identifier, :params, :body
-  def initialize(identifier, params, body)
+  attr_reader :type_specifier, :identifier, :params, :body
+
+  def initialize(type_specifier, identifier, params, body)
     super(NODE_TYPES[:FuncDeclaration])
+    @type_specifier = type_specifier
     @identifier = identifier
     @params = params
     @body = body
   end
 
-    def to_s
-    "Ident: #{@identifier}, Params: #{@params}, body: #{@body}"
+  def to_s
+    "Type: #{@type_specifier}, Ident: #{@identifier}, Params: #{@params}, body: #{@body}"
   end
 
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Params:"
     @params.display_info(indent + 2) unless @params.nil?
     puts "#{' ' * indent} Body:"
@@ -189,6 +193,26 @@ end
 
 # This class represents the ast node for a expression
 class Expr < Stmt
+end
+
+class CallExpr < Expr
+  attr_reader :func_name, :params
+
+  def initialize(func_name, params)
+    super(NODE_TYPES[:CallExpr])
+    @func_name = func_name
+    @params = params
+  end
+
+  def to_s
+    "Func name: #{@func_name}, Params: #{@params}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * (indent + 2)} Func name: #{func_name}"
+    #@value.display_info(indent + 2)
+  end
 end
 
 # This class represents the ast node for a assignment expression

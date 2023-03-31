@@ -45,3 +45,14 @@ def eval_assignment_expr(ast_node, env)
 
   env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
 end
+
+def eval_call_expr(ast_node, env)
+  #puts ast_node.func_name
+  #p env.variables.keys
+  #puts env.variables.key?(ast_node.func_name)
+  last_eval = NullVal.new
+  body = env.lookup_var(ast_node.func_name.symbol)
+  body.each() { |stmt| last_eval = evaluate(stmt, env)}
+
+  return last_eval
+end
