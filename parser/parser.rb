@@ -44,29 +44,29 @@ class Parser
   #
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
-    return case at().type
-          when TokenType::CONST, TokenType::TYPE_SPECIFIER
-            @logger.debug("(#{at.value}) matched var declaration")
-            parse_var_declaration()
-          when TokenType::IF
-            parse_conditional()
-          when TokenType::IDENTIFIER
-            if next_token().type == TokenType::LPAREN
-              left = parse_func_call()
-              if at().type == TokenType::BINARYOPERATOR
-                op = eat().value
-                right = parse_expr()
-                return BinaryExpr.new(left, op, right)
-              end
-              return left
-            else
-              parse_assignment_stmt()
-            end
-          when TokenType::FUNC
-            parse_function_declaration()
-          else
-            parse_expr()
-          end
+    case at().type
+    when TokenType::CONST, TokenType::TYPE_SPECIFIER
+      @logger.debug("(#{at.value}) matched var declaration")
+      return parse_var_declaration()
+    when TokenType::IF
+      return parse_conditional()
+    when TokenType::IDENTIFIER
+      if next_token().type == TokenType::LPAREN
+        left = parse_func_call()
+        if at().type == TokenType::BINARYOPERATOR
+          op = eat().value
+          right = parse_expr()
+          return BinaryExpr.new(left, op, right)
+        end
+        return left
+      else
+        return parse_assignment_stmt()
+      end
+    when TokenType::FUNC
+      return parse_function_declaration()
+    else
+      return parse_expr()
+    end
   end
 
   # Parse a variable declaration
