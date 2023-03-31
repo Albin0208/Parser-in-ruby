@@ -14,8 +14,11 @@
     - [ ] HashLiteral
     - [ ] Hash accessor
 - [ ] Functions
-    - [ ] Function Declaration
-    - [ ] Function calls
+    - [x] Function Declaration
+    - [x] Function calls
+    - [ ] Return Statments
+        - [ ] Checks for type so correct when returning
+    - [ ] Setup new env for a function body
     - [ ] Not allowed to create a function in another function
     - [ ] Lambda functions?
 - [ ] Classes

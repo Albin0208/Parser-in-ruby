@@ -148,7 +148,6 @@ class Parser
     expect(TokenType::LBRACE) # Start of function body
     body = []
     body.append(parse_stmt()) while at().type != TokenType::RBRACE
-    puts body
     expect(TokenType::RBRACE) # End of function body
 
     return FuncDeclaration.new(type_specifier, identifier, nil, body)
