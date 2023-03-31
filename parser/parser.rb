@@ -33,9 +33,9 @@ class Parser
     program = Program.new([])
 
     # Parse until end of file
-    program.body.append(parse_stmt) while not_eof
+    program.body.append(parse_stmt()) while not_eof()
 
-    program
+    return program
   end
 
   private
@@ -44,16 +44,28 @@ class Parser
   #
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
-    case at.type
+    case at().type
     when TokenType::CONST, TokenType::TYPE_SPECIFIER
       @logger.debug("(#{at.value}) matched var declaration")
-      parse_var_declaration
+      return parse_var_declaration()
     when TokenType::IF
-      parse_conditional
+      return parse_conditional()
     when TokenType::IDENTIFIER
-      parse_assignment_stmt
+      if next_token().type == TokenType::LPAREN
+        left = parse_func_call()
+        if at().type == TokenType::BINARYOPERATOR
+          op = eat().value
+          right = parse_expr()
+          return BinaryExpr.new(left, op, right)
+        end
+        return left
+      else
+        return parse_assignment_stmt()
+      end
+    when TokenType::FUNC
+      return parse_function_declaration()
     else
-      parse_expr
+      return parse_expr()
     end
   end
 
@@ -77,11 +89,11 @@ class Parser
     end
 
     expect(TokenType::ASSIGN)
-    expression = parse_expr
+    expression = parse_expr()
 
     validate_type(expression, type_specifier) # Validate that the type is correct
 
-    VarDeclaration.new(is_const, identifier, type_specifier, expression)
+    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
 
   # Validate that we are trying to assign a correct type to our variable.
@@ -115,6 +127,42 @@ class Parser
         raise InvalidTokenError, "Can't assign none string value to value of type #{type}"
       end
     end
+  end
+
+  #
+  # Parse a function declaration
+  #
+  # @return [FuncDeclaration] The ast node representing a function
+  #
+  def parse_function_declaration
+    expect(TokenType::FUNC) # Eat the func keyword
+
+    type_specifier = nil
+    if at().type == TokenType::VOID
+      type_specifier = expect(TokenType::VOID).value
+    else
+      type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
+    end
+
+    identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
+
+    expect(TokenType::LPAREN) # Start of params
+    # TODO Get all params
+    expect(TokenType::RPAREN) # End of params
+
+    expect(TokenType::LBRACE) # Start of function body
+    body = []
+    body.append(parse_stmt()) while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
+    if type_specifier != 'void'
+      # TODO Parse return statement
+      expect(TokenType::RETURN)
+      return_body = []
+      return_body.append(parse_expr()) while at().type != TokenType::RBRACE
+      body.append(ReturnStmt.new(type_specifier, return_body))
+    end
+    expect(TokenType::RBRACE) # End of function body
+
+    return FuncDeclaration.new(type_specifier, identifier, nil, body)
   end
 
   # Parses conditional statments such as if, else if and else
@@ -170,13 +218,23 @@ class Parser
   # @return [AssignmentExpr] The AST node
   def parse_assignment_stmt
     @logger.debug('Parsing assign expression')
-    identifier = parse_identifier
+    identifier = parse_identifier()
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
       value = parse_expr # Parse the right side
       return AssignmentExpr.new(value, identifier)
+    # elsif at().type == TokenType::LPAREN
+    #   return parse_func_call(identifier)
+    #   # expect(TokenType::LPAREN) # eat the start paren
+
+    #   # # TODO parse any params
+    #   # params = nil
+
+    #   # expect(TokenType::RPAREN) # Find ending paren
+
+    #   # return CallExpr.new(identifier, params)
     end
 
     return identifier
@@ -186,10 +244,26 @@ class Parser
   #
   # @return [Stmt] The AST node matched
   def parse_expr
+    return parse_func_call()
     # case at().type
     # else
-    parse_logical_expr
+    #return parse_logical_expr()
     # end
+  end
+
+  def parse_func_call(identifier = nil)
+    if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
+      identifier = parse_identifier() # Get the identifier
+      expect(TokenType::LPAREN) # eat the start paren
+
+      # TODO parse any params
+      params = nil
+
+      expect(TokenType::RPAREN) # Find ending paren
+      return CallExpr.new(identifier, params)
+    end
+
+    return parse_logical_expr()
   end
 
   # Orders of Precedence (Lowests to highest)
@@ -207,23 +281,23 @@ class Parser
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_logical_expr
-    left = parse_logical_and_expr
+    left = parse_logical_and_expr()
 
     # Check for logical or
     while at.value == :"||"
       eat().value # eat the operator
-      right = parse_logical_and_expr
+      right = parse_logical_and_expr()
       left = LogicalOrExpr.new(left, right)
     end
 
-    left
+    return left
   end
 
   # Parses a logical expression
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_logical_and_expr
-    left = parse_comparison_expr
+    left = parse_comparison_expr()
 
     # Check for logical and
     while at.value == :"&&"
@@ -232,7 +306,7 @@ class Parser
       left = LogicalAndExpr.new(left, right)
     end
 
-    left
+    return left
   end
 
   # Parses a comparison expression
@@ -247,7 +321,7 @@ class Parser
       left = BinaryExpr.new(left, comparetor, right)
     end
 
-    left
+    return left
   end
 
   # Parses a additive expression
@@ -262,7 +336,7 @@ class Parser
       left = BinaryExpr.new(left, operator, right)
     end
 
-    left
+    return left
   end
 
   # Parses a multiplication expression
@@ -277,7 +351,7 @@ class Parser
       left = BinaryExpr.new(left, operator, right)
     end
 
-    left
+    return left
   end
 
   # Parses a unary expression
@@ -302,6 +376,9 @@ class Parser
     tok = at().type
     case tok
     when TokenType::IDENTIFIER
+      if next_token().type == TokenType::LPAREN
+        return parse_func_call()
+      end
       return parse_identifier()
     when TokenType::INTEGER
       return NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
@@ -348,6 +425,10 @@ class Parser
   # @return [Token] What token we have right now
   def at
     return @tokens[0]
+  end
+
+  def next_token
+    return @tokens[1]
   end
 
   # Eat the next token

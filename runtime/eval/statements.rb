@@ -5,7 +5,7 @@ def eval_program(program, env)
 
   program.body.each { |stmt| last_eval = evaluate(stmt, env) }
 
-  last_eval
+  return last_eval
 end
 
 def eval_var_declaration(ast_node, env)
@@ -21,6 +21,10 @@ def eval_var_declaration(ast_node, env)
   end
 
   env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+end
+
+def eval_func_declaration(ast_node, env)
+  env.declare_var(ast_node.identifier, ast_node.body, ast_node.type_specifier, false)
 end
 
 def eval_if_statement(ast_node, env)
@@ -45,6 +49,14 @@ def eval_if_statement(ast_node, env)
     # Eval the body of the else
     ast_node.else_body.each { |stmt| last_eval = evaluate(stmt, env) }
   end
+
+  return last_eval
+end
+
+def eval_return_stmt(ast_node, env)
+  last_eval = NullVal.new
+  puts ast_node
+  ast_node.body.each() { |stmt| last_eval = evaluate(stmt, env)}
 
   return last_eval
 end

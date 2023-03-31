@@ -30,12 +30,14 @@ KEYWORDS = {
   true: TokenType::BOOLEAN,
   false: TokenType::BOOLEAN,
   null: TokenType::NULL,
+  return: TokenType::RETURN,
 
   # Type Specifiers
   int: TokenType::TYPE_SPECIFIER,
   float: TokenType::TYPE_SPECIFIER,
   bool: TokenType::TYPE_SPECIFIER,
-  string: TokenType::TYPE_SPECIFIER
+  string: TokenType::TYPE_SPECIFIER,
+  void: TokenType::VOID
 }.freeze
 
 #
@@ -175,6 +177,20 @@ class Lexer
                # This is a binary operator
                TokenType::BINARYOPERATOR
              end
+
+            #  type = if !previous_token.nil? && (
+            #   # previous_token.type != TokenType::LPAREN ||
+            #   # previous_token.type != TokenType::BINARYOPERATOR
+            #   previous_token.type == TokenType::INTEGER ||
+            #   previous_token.type == TokenType::RPAREN ||
+            #   previous_token.type == TokenType::IDENTIFIER)
+
+            #   # This is a binary operator
+            #   TokenType::BINARYOPERATOR
+            # else
+            #   # This is a unary operator
+            #   TokenType::UNARYOPERATOR
+            # end
     end
 
     token = Token.new(type, match, @line, @column)

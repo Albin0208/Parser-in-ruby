@@ -57,10 +57,15 @@ class TestLexer < Test::Unit::TestCase
   end
 
   def test_tokenize_keywords
-    %w[int float bool].each do |type|
+    %w[int float bool string].each do |type|
       lexer = Lexer.new(type)
       assert_equal(TokenType::TYPE_SPECIFIER, lexer.tokenize[0].type, 'The token was not correctly tokenized')
     end
+
+    input = 'void'
+    lexer = Lexer.new(input)
+
+    assert_equal(TokenType::VOID, lexer.tokenize[0].type, 'The token was not correctly tokenized')
 
     input = 'const'
     lexer = Lexer.new(input)
@@ -91,6 +96,21 @@ class TestLexer < Test::Unit::TestCase
     lexer = Lexer.new(input)
 
     assert_equal(TokenType::BOOLEAN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+
+    input = 'func'
+    lexer = Lexer.new(input)
+
+    assert_equal(TokenType::FUNC, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+
+    input = 'return'
+    lexer = Lexer.new(input)
+
+    assert_equal(TokenType::RETURN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+
+    input = 'null'
+    lexer = Lexer.new(input)
+
+    assert_equal(TokenType::NULL, lexer.tokenize[0].type, 'The token was not correctly tokenized')
   end
 
   def test_tokenize_simple_input

@@ -1,15 +1,7 @@
-int a = 3
-
-a
-
-if a > 4 {
-    a = 94
-} elsif a == 2 {
-    a = -2
-} elsif a < 2 {
-    a = -90
-} else {
-    a = -100
+func int hej() {
+    #int a = 2
+    return 2 + 2
 }
-
-a
+#-3 + 4
+#4 + hej()
+hej() + 4
