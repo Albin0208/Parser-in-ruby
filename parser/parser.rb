@@ -33,9 +33,9 @@ class Parser
     program = Program.new([])
 
     # Parse until end of file
-    program.body.append(parse_stmt) while not_eof
+    program.body.append(parse_stmt()) while not_eof()
 
-    program
+    return program
   end
 
   private
@@ -44,17 +44,19 @@ class Parser
   #
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
-    case at.type
-    when TokenType::CONST, TokenType::TYPE_SPECIFIER
-      @logger.debug("(#{at.value}) matched var declaration")
-      parse_var_declaration
-    when TokenType::IF
-      parse_conditional
-    when TokenType::IDENTIFIER
-      parse_assignment_stmt
-    else
-      parse_expr
-    end
+    return case at().type
+          when TokenType::CONST, TokenType::TYPE_SPECIFIER
+            @logger.debug("(#{at.value}) matched var declaration")
+            parse_var_declaration()
+          when TokenType::IF
+            parse_conditional()
+          when TokenType::IDENTIFIER
+            parse_assignment_stmt()
+          when TokenType::FUNC
+            parse_function_declaration()
+          else
+            parse_expr()
+          end
   end
 
   # Parse a variable declaration
@@ -77,11 +79,11 @@ class Parser
     end
 
     expect(TokenType::ASSIGN)
-    expression = parse_expr
+    expression = parse_expr()
 
     validate_type(expression, type_specifier) # Validate that the type is correct
 
-    VarDeclaration.new(is_const, identifier, type_specifier, expression)
+    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
 
   # Validate that we are trying to assign a correct type to our variable.
@@ -115,6 +117,24 @@ class Parser
         raise InvalidTokenError, "Can't assign none string value to value of type #{type}"
       end
     end
+  end
+
+  def parse_function_declaration
+    expect(TokenType::FUNC) # Eat the func keyword
+
+    identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
+
+    expect(TokenType::LPAREN) # Start of params
+    # TODO Get all params
+    expect(TokenType::RPAREN) # End of params
+
+    expect(TokenType::LBRACE) # Start of function body
+    # TODO Parse function body
+    body = []
+    body.append(parse_stmt()) while at().type != TokenType::RBRACE
+    puts body
+    expect(TokenType::RBRACE) # End of function body
+    return FuncDeclaration.new(identifier, nil, body)
   end
 
   # Parses conditional statments such as if, else if and else

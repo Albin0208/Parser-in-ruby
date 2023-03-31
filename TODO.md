@@ -16,6 +16,8 @@
 - [ ] Functions
     - [ ] Function Declaration
     - [ ] Function calls
+    - [ ] Not allowed to create a function in another function
+    - [ ] Lambda functions?
 - [ ] Classes
     - [ ] Inheritance
 

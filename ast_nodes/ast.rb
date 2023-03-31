@@ -2,6 +2,7 @@ NODE_TYPES = {
   # Statements
   Program: :Program,
   VarDeclaration: :VarDeclaration,
+  FuncDeclaration: :FuncDeclaration,
   IF: :IF,
   ELSIF: :ELSIF,
 
@@ -85,6 +86,28 @@ class VarDeclaration < Stmt
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}: #{@constant} #{@identifier} #{@value_type}"
     @value&.display_info(indent + 2)
+  end
+end
+
+class FuncDeclaration < Stmt
+  attr_reader :identifier, :params, :body
+  def initialize(identifier, params, body)
+    super(NODE_TYPES[:FuncDeclaration])
+    @identifier = identifier
+    @params = params
+    @body = body
+  end
+
+    def to_s
+    "Ident: #{@identifier}, Params: #{@params}, body: #{@body}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * indent} Params:"
+    @params.display_info(indent + 2)
+    puts "#{' ' * indent} Body:"
+    @body.each { |stmt| stmt.display_info(indent + 2) }
   end
 end
 
