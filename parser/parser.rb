@@ -397,8 +397,7 @@ class Parser
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_primary_expr
-    tok = at().type
-    case tok
+    case at().type
     when TokenType::IDENTIFIER
       if next_token().type == TokenType::LPAREN
         return parse_func_call()
