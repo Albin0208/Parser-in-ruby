@@ -18,7 +18,7 @@ TOKEN_TYPES = [
   [:rbrace, /\A\}/],
   [:assign, /\A=/],
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
-  [:separators, /\A,/],
+  [:comma, /\A,/],
 ].to_h.freeze
 
 KEYWORDS = {

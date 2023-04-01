@@ -19,6 +19,8 @@
     - [x] Add void type for functions
     - [x] Return Statments
         - [ ] Checks for type so correct when returning
+    - [x] Parse params
+    - [ ] Evaluate params
     - [ ] Setup new env for a function body
     - [ ] Not allowed to create a function in another function
     - [ ] Lambda functions?

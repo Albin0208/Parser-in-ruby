@@ -110,7 +110,7 @@ class FuncDeclaration < Stmt
     puts "#{' ' * indent} #{self.class.name}"
     puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Params:"
-    @params.display_info(indent + 2) unless @params.nil?
+    @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
   end
@@ -233,7 +233,8 @@ class CallExpr < Expr
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}"
     puts "#{' ' * (indent + 2)} Func name: #{func_name}"
-    #@value.display_info(indent + 2)
+    puts "#{' ' * indent} Params:"
+    @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
   end
 end
 
