@@ -39,7 +39,7 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_instance_of(FuncDeclaration, body)
     assert_equal(body.identifier, 'test')
     assert_equal(body.type_specifier, 'void')
-    assert_nil(body.params)
+    assert_empty(body.params)
     func_body = body.body[0]
     assert_equal(1, func_body.value)
   end
@@ -54,7 +54,7 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_instance_of(FuncDeclaration, body)
     assert_equal(body.identifier, 'test')
     assert_equal(body.type_specifier, 'int')
-    assert_nil(body.params)
+    assert_empty(body.params)
     func_body = body.body[0]
     assert_instance_of(ReturnStmt, func_body)
     return_body = func_body.body[0]
@@ -65,7 +65,6 @@ class TestParserFunctions < Test::Unit::TestCase
   def test_parse_func_call
     ast = @parser.produce_ast('test()')
     body = ast.body[0]
-    puts body
     assert_instance_of(CallExpr, body)
     assert_equal('test', body.func_name.symbol)
     assert_nil(body.params)
