@@ -1,4 +1,6 @@
 func int hej() {
+
+    func void test() {}
     #int a = 2
     return 2 + 2
 }

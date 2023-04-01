@@ -223,18 +223,8 @@ class Parser
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
-      value = parse_expr # Parse the right side
+      value = parse_expr() # Parse the right side
       return AssignmentExpr.new(value, identifier)
-    # elsif at().type == TokenType::LPAREN
-    #   return parse_func_call(identifier)
-    #   # expect(TokenType::LPAREN) # eat the start paren
-
-    #   # # TODO parse any params
-    #   # params = nil
-
-    #   # expect(TokenType::RPAREN) # Find ending paren
-
-    #   # return CallExpr.new(identifier, params)
     end
 
     return identifier
@@ -251,7 +241,7 @@ class Parser
     # end
   end
 
-  def parse_func_call(identifier = nil)
+  def parse_func_call
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
       identifier = parse_identifier() # Get the identifier
       expect(TokenType::LPAREN) # eat the start paren
