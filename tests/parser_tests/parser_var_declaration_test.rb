@@ -12,6 +12,11 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     assert_equal(ast.body[0].value.value, 1)
     assert_equal(ast.body[0].constant, false)
 
+    ast = @parser.produce_ast('int x = 3 + 4')
+    assert_equal(ast.body[0].identifier, 'x')
+    #assert_equal(ast.body[0].value.value, 1)
+    assert_equal(ast.body[0].constant, false)
+
     # Test for declaration of var to value of another var
     ast = @parser.produce_ast('int a = x')
     assert_equal(ast.body[0].identifier, 'a')

@@ -91,7 +91,7 @@ class Parser
     expect(TokenType::ASSIGN)
     expression = parse_expr()
 
-    validate_type(expression, type_specifier) # Validate that the type is correct
+    validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
@@ -100,33 +100,38 @@ class Parser
   #
   # @param [Expr] expression The expression we want to validate
   # @param [String] type What type we are trying to assign to
-  def validate_type(expression, type)
-    if !expression.instance_variables.include?(:@value) && expression.type != NODE_TYPES[:Identifier]
-      @logger.debug('Validating left side of expression')
-      validate_type(expression.left, type)
-      if expression.instance_variables.include?(:@right)
-        @logger.debug('Validating right side of expression')
-        validate_type(expression.left, type)
-      end
-      return # If we get here the type is correct
+  def validate_assignment_type(expression, type)
+    return if expression.type == NODE_TYPES[:Identifier] # The expr is a identifier we can't tell what type from the parser
+
+    if !expression.instance_variables.include?(:@value)
+      @logger.debug("Validating #{type} variable assignment")
+      validate_assignment_type(expression.left, type)
+      validate_assignment_type(expression.right, type) if expression.instance_variables.include?(:@right)
+      return
     end
-    case type
-    when 'int', 'float'
-      # Make sure we either are assigning an integer or a variabel to the integer var
-      if expression.type != NODE_TYPES[:NumericLiteral] && expression.type != NODE_TYPES[:Identifier]
-        raise InvalidTokenError, "Can't assign none numeric value to value of type #{type}"
-      end
-    when 'bool'
-      # Make sure we either are assigning a bool or a variabel to the bool var
-      if expression.type != NODE_TYPES[:Boolean] && expression.type != NODE_TYPES[:Identifier]
-        raise InvalidTokenError, "Can't assign none numeric value to value of type #{type}"
-      end
-    when 'string'
-      # Make sure we either are assigning a string or a variabel to the string var
-      if expression.type != NODE_TYPES[:String] && expression.type != NODE_TYPES[:Identifier]
-        raise InvalidTokenError, "Can't assign none string value to value of type #{type}"
-      end
+
+    unless valid_assignment_type?(expression.type, type)
+      raise InvalidTokenError, "Can't assign #{expression.type.downcase} value to value of type #{type}"
     end
+  end
+
+  # Checks whether a given expression type is valid for a variable of a certain type.
+  #
+  # @param type [String] The type of the variable being assigned
+  # @param type [String] The type of the expression being assigned
+  #
+  # @return [Boolean] true if the expression type is valid for the variable type otherwise false
+  def valid_assignment_type?(expression_type, type)
+    return case type
+          when 'int', 'float'
+            [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
+          when 'bool'
+            [NODE_TYPES[:Boolean], NODE_TYPES[:Identifier]].include?(expression_type)
+          when 'string'
+            [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
+          else
+            false
+          end
   end
 
   #
@@ -137,32 +142,40 @@ class Parser
   def parse_function_declaration
     expect(TokenType::FUNC) # Eat the func keyword
 
-    type_specifier = nil
+    return_type = nil
     if at().type == TokenType::VOID
-      type_specifier = expect(TokenType::VOID).value
+      return_type = expect(TokenType::VOID).value
     else
-      type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
+      return_type = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
     end
 
     identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
 
-    expect(TokenType::LPAREN) # Start of params
-    # TODO Get all params
-    expect(TokenType::RPAREN) # End of params
+    # Parse function parameters
+    expect(TokenType::LPAREN)
+    params = []
+    if at().type != TokenType::RPAREN
+      params << parse_var_declaration()
+      while at().type == TokenType::COMMA
+        expect(TokenType::COMMA)
+        params << parse_var_declaration()
+      end
+    end
+    expect(TokenType::RPAREN)
 
     expect(TokenType::LBRACE) # Start of function body
     body = []
     body.append(parse_stmt()) while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
-    if type_specifier != 'void'
-      # TODO Parse return statement
+    if return_type != 'void'
+      # Parse return statement
       expect(TokenType::RETURN)
       return_body = []
       return_body.append(parse_expr()) while at().type != TokenType::RBRACE
-      body.append(ReturnStmt.new(type_specifier, return_body))
+      body.append(ReturnStmt.new(return_type, return_body))
     end
     expect(TokenType::RBRACE) # End of function body
 
-    return FuncDeclaration.new(type_specifier, identifier, nil, body)
+    return FuncDeclaration.new(return_type, identifier, params, body)
   end
 
   # Parses conditional statments such as if, else if and else
@@ -171,46 +184,60 @@ class Parser
   def parse_conditional
     expect(TokenType::IF) # eat the if token
 
-    conditions = nil
-    while at.type != TokenType::LBRACE # Parse the conditions of the if statment
-      conditions = parse_logical_expr() # Add the condition expr to the conditions array
-    end
-    expect(TokenType::LBRACE) # ea) lbrace token
-    
-    body = []
-    body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the if statment
-    expect(TokenType::RBRACE) # eat the rbrace token
+    # Parse if condition and body
+    if_condition = parse_conditional_condition()
+    if_body = parse_conditional_body()
 
-    # Parse else if
-    elsif_stmt = []
+    # Parse else ifs
+    elsif_stmts = []
     while at().type == TokenType::ELSIF
       expect(TokenType::ELSIF)
 
-      elsif_conditions = nil
-      while at().type != TokenType::LBRACE # Parse the conditions of the elsif statment
-        elsif_conditions = parse_logical_expr() # Add the condition expr to the conditions array
-      end
-      expect(TokenType::LBRACE) # ea) lbrace token
-      
-      elsif_body = []
-      elsif_body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the elsif statment
-      expect(TokenType::RBRACE) # eat the rbrace token
+      # Parse elsif condtion and body
+      elsif_condition = parse_conditional_condition()
+      elsif_body = parse_conditional_body()
 
-      elsif_stmt << ElsifStatement.new(elsif_body, elsif_conditions)
+      elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition)
     end
 
     else_body = nil
     if at.type == TokenType::ELSE
-      else_body = []
-      eat() # eat the Else token
+      expect(TokenType::ELSE) # eat the Else token
       expect(TokenType::LBRACE) # eat lbrace token
-      while at.type != TokenType::RBRACE # Parse the conditions of the if statment
-        else_body.append(parse_stmt) # Add the condition expr to the conditions array
-      end
-      expect(TokenType::RBRACE)
+      else_body = parse_conditional_body()
     end
 
-    return IfStatement.new(body, conditions, else_body, elsif_stmt)
+    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
+  end
+
+  #
+  # Parses the body of a conditional
+  #
+  # @return [Array] The list of all statments inside the body
+  #
+  def parse_conditional_body
+    body = []
+    body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the if statment
+    expect(TokenType::RBRACE) # eat the rbrace token
+
+    return body
+  end
+
+  #
+  # Parses the condition of a if or elsif statement
+  #
+  # @return [Expr] The condition of the statment
+  #
+  def parse_conditional_condition
+    condition = nil
+    if at().type != TokenType::LBRACE
+      condition = parse_logical_expr() 
+    else
+      # TODO Fix error message
+      raise "Conditional statment requires a condition"
+    end
+    expect(TokenType::LBRACE) # eat lbrace token
+    return condition
   end
 
   # Parses a assignment statement
