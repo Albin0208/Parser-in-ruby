@@ -274,7 +274,14 @@ class Parser
       expect(TokenType::LPAREN) # eat the start paren
 
       # TODO parse any params
-      params = nil
+      params = []
+      if at().type != TokenType::RPAREN
+        params << parse_expr()
+        while at().type == TokenType::COMMA
+          expect(TokenType::COMMA)
+          params << parse_expr()
+        end
+      end
 
       expect(TokenType::RPAREN) # Find ending paren
       return CallExpr.new(identifier, params)

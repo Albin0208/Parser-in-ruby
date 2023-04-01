@@ -67,6 +67,6 @@ class TestParserFunctions < Test::Unit::TestCase
     body = ast.body[0]
     assert_instance_of(CallExpr, body)
     assert_equal('test', body.func_name.symbol)
-    assert_nil(body.params)
+    assert_empty(body.params)
   end
 end
