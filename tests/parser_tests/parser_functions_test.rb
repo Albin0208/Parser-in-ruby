@@ -69,4 +69,19 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_equal('test', body.func_name.symbol)
     assert_empty(body.params)
   end
+
+  def test_parse_func_call_with_params
+    ast = @parser.produce_ast('test(bot(), 2)')
+    body = ast.body[0]
+    puts body
+    assert_instance_of(CallExpr, body)
+    assert_equal('test', body.func_name.symbol)
+    params = body.params
+    assert_not_empty(params)
+    assert_equal(2, params.length)
+    assert_instance_of(CallExpr, params[0])
+    assert_equal('bot', params[0].func_name.symbol)
+    assert_empty(params[0].params)
+    assert_equal(2, params[1].value)
+  end
 end
