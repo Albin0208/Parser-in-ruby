@@ -47,12 +47,36 @@ def eval_assignment_expr(ast_node, env)
 end
 
 def eval_call_expr(ast_node, env)
-  #puts ast_node.func_name
-  #p env.variables.keys
-  #puts env.variables.key?(ast_node.func_name)
   last_eval = NullVal.new
-  body = env.lookup_var(ast_node.func_name.symbol)
-  body.each() { |stmt| last_eval = evaluate(stmt, env)}
+  function = env.lookup_var(ast_node.func_name.symbol)
+  # Check that the correct number of params are passed
+  unless function.params.length == ast_node.params.length
+    types = []
+    function.params.each() { |param| types << param.value_type}
+    word = function.params.length < ast_node.params.length ? 'many' : 'few'
+    params = types.join(', ')
+    raise "Error: Too #{word} arguments to function \"#{function.type_specifier} #{function.identifier}(#{params})\". Expected \"#{function.params.length}\" but got \"#{ast_node.params.length}\""
+  end
+
+  # Check that all params are the correct type
+  ast_node.params.each_with_index() { |param, index| 
+    # Convert int and float to numericliteral
+    type = function.params[0].value_type
+    if ['int', 'float'].include?(type)
+      type = :NumericLiteral
+    end
+
+    unless param.type.downcase == type.downcase
+      raise "Error: Missmatched parameter type. Got #{param.type.downcase} expected #{type.downcase}"
+    end
+  }
+
+  # TODO Convert int passed to float and float passed to int
+  # TODO declare var params inside function enviroment
+
+  function.body.each() { |stmt| last_eval = evaluate(stmt, env)}
+
+  # TODO Check that the return value is the same type as the return type of the function
 
   return last_eval
 end

@@ -261,33 +261,35 @@ class Parser
   #
   # @return [Stmt] The AST node matched
   def parse_expr
-    return parse_func_call()
-    # case at().type
-    # else
-    #return parse_logical_expr()
-    # end
+    # return parse_func_call()
+    if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
+      return parse_func_call()
+    else
+      return parse_logical_expr()
+    end
   end
 
+  #
+  # Parses a function call
+  #
+  # @return [Expr] The function call
+  #
   def parse_func_call
-    if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-      identifier = parse_identifier() # Get the identifier
-      expect(TokenType::LPAREN) # eat the start paren
+    identifier = parse_identifier() # Get the identifier
+    expect(TokenType::LPAREN) # eat the start paren
 
-      # TODO parse any params
-      params = []
-      if at().type != TokenType::RPAREN
+    # Parse any params
+    params = []
+    if at().type != TokenType::RPAREN
+      params << parse_expr()
+      while at().type == TokenType::COMMA
+        expect(TokenType::COMMA)
         params << parse_expr()
-        while at().type == TokenType::COMMA
-          expect(TokenType::COMMA)
-          params << parse_expr()
-        end
       end
-
-      expect(TokenType::RPAREN) # Find ending paren
-      return CallExpr.new(identifier, params)
     end
 
-    return parse_logical_expr()
+    expect(TokenType::RPAREN) # Find ending paren
+    return CallExpr.new(identifier, params)
   end
 
   # Orders of Precedence (Lowests to highest)

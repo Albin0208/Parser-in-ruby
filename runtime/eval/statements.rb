@@ -24,7 +24,7 @@ def eval_var_declaration(ast_node, env)
 end
 
 def eval_func_declaration(ast_node, env)
-  env.declare_var(ast_node.identifier, ast_node.body, ast_node.type_specifier, false)
+  env.declare_func(ast_node.identifier, ast_node.body, ast_node.type_specifier, ast_node)
 end
 
 def eval_if_statement(ast_node, env)
