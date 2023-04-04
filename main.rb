@@ -1,9 +1,9 @@
 require_relative 'parser/parser'
 require_relative 'runtime/interpreter'
-require_relative 'runtime/enviroment'
+require_relative 'runtime/environment'
 
 def main
-  env = Enviroment.new
+  env = Environment.new
 
   debugging = ARGV[0] == '-debug'
 

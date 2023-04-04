@@ -47,7 +47,7 @@ def eval_assignment_expr(ast_node, env)
 end
 
 def eval_call_expr(ast_node, call_env)
-  env = Enviroment.new(call_env)
+  env = Environment.new(call_env)
   function = env.lookup_var(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length
@@ -73,7 +73,7 @@ def eval_call_expr(ast_node, call_env)
     end
   }
 
-  # TODO declare var params inside function enviroment
+  # TODO declare var params inside function Environment
 
   function.body.each() { |stmt| evaluate(stmt, env)}
 
