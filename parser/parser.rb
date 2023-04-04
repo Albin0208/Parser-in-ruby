@@ -166,7 +166,12 @@ class Parser
     expect(TokenType::LBRACE) # Start of function body
     return_stmt = nil
     body = []
-    body.append(parse_stmt()) while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
+    while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
+      stmt = parse_stmt()
+      # Don't allow for function declaration inside a function
+      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      body.append(stmt) 
+    end
     if return_type != 'void'
       # Parse return statement
       expect(TokenType::RETURN)

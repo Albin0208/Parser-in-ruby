@@ -1,9 +1,9 @@
 func int hej(int a, int b) {
 
-    func void test() {}
-    #int a = 2
-    return true
+    #func void test() {}
+    int a = 4
+    return a
 }
 #-3 + 4
 #4 + hej()
-hej("hej", 2.3) + 4
+hej(2, 2.3) + 4

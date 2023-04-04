@@ -22,7 +22,7 @@
     - [x] Parse params
     - [ ] Evaluate params
     - [ ] Setup new env for a function body
-    - [ ] Not allowed to create a function in another function
+    - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
 - [ ] Classes
     - [ ] Inheritance
