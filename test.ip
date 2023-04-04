@@ -6,4 +6,4 @@ func int hej(int a, int b) {
 }
 #-3 + 4
 #4 + hej()
-hej(2, 2) + 4
+hej("hej", 2.3) + 4

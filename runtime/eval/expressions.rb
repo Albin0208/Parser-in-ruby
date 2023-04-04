@@ -49,26 +49,29 @@ end
 def eval_call_expr(ast_node, env)
   function = env.lookup_var(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
-  unless function.params.length == ast_node.params.length
-    types = []
-    function.params.each() { |param| types << param.value_type}
-    word = function.params.length < ast_node.params.length ? 'many' : 'few'
-    params = types.join(', ')
-    raise "Error: Too #{word} arguments to function \"#{function.type_specifier} #{function.identifier}(#{params})\". Expected \"#{function.params.length}\" but got \"#{ast_node.params.length}\""
+  if function.params.length != ast_node.params.length
+    types = function.params.map(&:value_type).join(", ")
+    raise "Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{ast_node.params.length}'"
   end
 
   # Check that all params are the correct type
-  ast_node.params.each_with_index() { |param, index| 
+  function.params.zip(ast_node.params) { |func_param, call_param| 
     # Convert int and float to numericliteral
-    type = function.params[0].value_type
-    type = :NumericLiteral if ['int', 'float'].include?(type)
+    type = ['int', 'float'].include?(func_param.value_type) ? :NumericLiteral : func_param.value_type.to_sym
 
-    unless param.type.downcase == type.downcase
-      raise "Error: Missmatched parameter type. Got #{param.type.downcase} expected #{type.downcase}"
+    if call_param.type.downcase != type.downcase
+      raise "Error: Expected parameter '#{func_param.identifier}' to have type '#{type}', but got '#{call_param.type}'"
+    end
+
+    # Convert int passed to float and float passed to int
+    case func_param.value_type
+    when 'int'
+      call_param.value = call_param.value.to_i
+    when 'float'
+      call_param.value = call_param.value.to_f
     end
   }
 
-  # TODO Convert int passed to float and float passed to int
   # TODO declare var params inside function enviroment
 
   function.body.each() { |stmt| evaluate(stmt, env)}
@@ -76,14 +79,8 @@ def eval_call_expr(ast_node, env)
   # Check that the return value is the same type as the return type of the function
   return_value = evaluate(function.return_stmt, env)
 
-  type_matcher = {
-    'int': :number,
-    'float': :number,
-    'bool': :boolean,
-    'string': :boolean,
-  }
-
-  return_type = type_matcher[function.type_specifier.to_sym]
+  # Check return type
+  return_type = { 'int': :number, 'float': :number, 'bool': :boolean, 'string': :boolean }[function.type_specifier.to_sym]
   unless return_value.type == return_type
     raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
   end
