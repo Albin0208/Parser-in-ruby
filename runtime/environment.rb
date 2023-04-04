@@ -1,17 +1,17 @@
 require 'set'
 
 #
-# The representation of an enviroment or scope
+# The representation of an Environment or scope
 #
-class Enviroment
+class Environment
   attr_accessor :variables, :constants, :var_types
 
   #
-  # Creates a new enviroment
+  # Creates a new environment
   #
-  # @param [Enviroment] parent_env The parent enviroment if it exists
+  # @param [Environment] parent_env The parent Environment if it exists
   #
-  def initialize(parent_env: nil)
+  def initialize(parent_env = nil)
     @parent_env = parent_env
     @variables = {}
     @var_types = {}
@@ -19,7 +19,7 @@ class Enviroment
   end
 
   #
-  # Declare a new variable inside this enviroment
+  # Declare a new variable inside this Environment
   #
   # @param [String] varname The name of the variable to be saved
   # @param [String, Int, Float, Boolean] value The value of the variable
@@ -29,10 +29,11 @@ class Enviroment
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #
   def declare_var(varname, value, value_type, is_constant = false)
-    if @variables.key?(varname)
-      # TODO: Create a better error
-      raise "Cannot declare \"#{varname}\" as it is already defined"
-    end
+    # Check if the var is already declared in any scope
+    env = resolve(varname)
+
+    # Raise error if var is already declared
+    raise "Cannot declare \"#{varname}\" as it is already defined" unless env.nil?
 
     @variables[varname] = value
     @var_types[varname] = value_type
@@ -42,7 +43,7 @@ class Enviroment
   end
 
   #
-  # Declare a new variable inside this enviroment
+  # Declare a new variable inside this Environment
   #
   # @param [String] func_name The name of the function to be saved
   # @param [String, Int, Float, Boolean] value The value of the variable
@@ -99,13 +100,12 @@ class Enviroment
   #
   # @param [String] varname The name of the variable
   #
-  # @return [Enviroment] The enviroment that the var exists in
+  # @return [Enviroment | nil] The enviroment that the var exists in or nil if it does not exist
   #
   def resolve(varname)
     return self if @variables.key?(varname)
 
-    # TODO: Create a better error
-    raise "error: \"#{varname}\" was not declared in this scope" if @parent_env.nil?
+    return nil if @parent_env.nil?
 
     return @parent_env.resolve(varname)
   end
@@ -119,6 +119,8 @@ class Enviroment
   #
   def lookup_var(varname)
     env = resolve(varname)
+
+    raise "Error: \"#{varname}\" was not declared in any scope" if env.nil?
 
     return env.variables[varname]
   end

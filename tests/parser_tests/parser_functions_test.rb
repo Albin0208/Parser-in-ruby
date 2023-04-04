@@ -33,6 +33,10 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_raise(RuntimeError) { @parser.produce_ast('func void 123() {}') }
   end
 
+  def test_parse_func_decl_with_func_decl_inside
+    assert_raise(RuntimeError) { @parser.produce_ast('func void test() { func void invalid() {} }') }
+  end
+
   def test_parse_void_function
     ast = @parser.produce_ast('func void test() { 1 }')
     body = ast.body[0]
@@ -55,7 +59,7 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_equal(body.identifier, 'test')
     assert_equal(body.type_specifier, 'int')
     assert_empty(body.params)
-    func_body = body.body[0]
+    assert_empty(body.body)
     return_stmt = body.return_stmt
     assert_instance_of(NumericLiteral, return_stmt.body[0])
     assert_equal(1, return_stmt.body[0].value)
@@ -72,7 +76,6 @@ class TestParserFunctions < Test::Unit::TestCase
   def test_parse_func_call_with_params
     ast = @parser.produce_ast('test(bot(), 2)')
     body = ast.body[0]
-    puts body
     assert_instance_of(CallExpr, body)
     assert_equal('test', body.func_name.symbol)
     params = body.params
