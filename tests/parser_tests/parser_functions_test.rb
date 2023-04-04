@@ -33,6 +33,10 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_raise(RuntimeError) { @parser.produce_ast('func void 123() {}') }
   end
 
+  def test_parse_func_decl_with_func_decl_inside
+    assert_raise(RuntimeError) { @parser.produce_ast('func void test() { func void invalid() {} }') }
+  end
+
   def test_parse_void_function
     ast = @parser.produce_ast('func void test() { 1 }')
     body = ast.body[0]
