@@ -58,12 +58,7 @@ def eval_call_expr(ast_node, env)
     raise "Error: Too #{word} arguments to function \"#{function.type_specifier} #{function.identifier}(#{params})\". Expected \"#{function.params.length}\" but got \"#{ast_node.params.length}\""
   end
 
-  type_matches = {
-    'int': :NumericLiteral,
-    'float': :NumericLiteral,
-  }
-
-  # TODO Check that all params are the correct type
+  # Check that all params are the correct type
   ast_node.params.each_with_index() { |param, index| 
     # Convert int and float to numericliteral
     type = function.params[0].value_type
@@ -75,10 +70,6 @@ def eval_call_expr(ast_node, env)
       raise "Error: Missmatched parameter type. Got #{param.type.downcase} expected #{type.downcase}"
     end
   }
-  # p ast_node.params
-  # puts
-  # p function.params
-  # puts
 
   # TODO Convert int passed to float and float passed to int
   # TODO declare var params inside function enviroment
