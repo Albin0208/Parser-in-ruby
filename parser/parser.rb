@@ -164,6 +164,7 @@ class Parser
     expect(TokenType::RPAREN)
 
     expect(TokenType::LBRACE) # Start of function body
+    return_stmt = nil
     body = []
     body.append(parse_stmt()) while at().type != TokenType::RBRACE && at().type != TokenType::RETURN
     if return_type != 'void'
@@ -171,11 +172,11 @@ class Parser
       expect(TokenType::RETURN)
       return_body = []
       return_body.append(parse_expr()) while at().type != TokenType::RBRACE
-      body.append(ReturnStmt.new(return_type, return_body))
+      return_stmt = ReturnStmt.new(return_type, return_body)
     end
     expect(TokenType::RBRACE) # End of function body
 
-    return FuncDeclaration.new(return_type, identifier, params, body)
+    return FuncDeclaration.new(return_type, identifier, params, body, return_stmt)
   end
 
   # Parses conditional statments such as if, else if and else

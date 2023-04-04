@@ -2,8 +2,8 @@ func int hej(int a, int b) {
 
     func void test() {}
     #int a = 2
-    return 2 + 2
+    return true
 }
 #-3 + 4
 #4 + hej()
-hej(2, "2") + 4
+hej(2, 2) + 4

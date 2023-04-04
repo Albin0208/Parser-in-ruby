@@ -56,10 +56,9 @@ class TestParserFunctions < Test::Unit::TestCase
     assert_equal(body.type_specifier, 'int')
     assert_empty(body.params)
     func_body = body.body[0]
-    assert_instance_of(ReturnStmt, func_body)
-    return_body = func_body.body[0]
-    assert_instance_of(NumericLiteral, return_body)
-    assert_equal(1, return_body.value)
+    return_stmt = body.return_stmt
+    assert_instance_of(NumericLiteral, return_stmt.body[0])
+    assert_equal(1, return_stmt.body[0].value)
   end
 
   def test_parse_func_call

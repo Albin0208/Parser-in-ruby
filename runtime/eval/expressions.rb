@@ -47,7 +47,6 @@ def eval_assignment_expr(ast_node, env)
 end
 
 def eval_call_expr(ast_node, env)
-  last_eval = NullVal.new
   function = env.lookup_var(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
   unless function.params.length == ast_node.params.length
@@ -62,9 +61,7 @@ def eval_call_expr(ast_node, env)
   ast_node.params.each_with_index() { |param, index| 
     # Convert int and float to numericliteral
     type = function.params[0].value_type
-    if ['int', 'float'].include?(type)
-      type = :NumericLiteral
-    end
+    type = :NumericLiteral if ['int', 'float'].include?(type)
 
     unless param.type.downcase == type.downcase
       raise "Error: Missmatched parameter type. Got #{param.type.downcase} expected #{type.downcase}"
@@ -74,9 +71,22 @@ def eval_call_expr(ast_node, env)
   # TODO Convert int passed to float and float passed to int
   # TODO declare var params inside function enviroment
 
-  function.body.each() { |stmt| last_eval = evaluate(stmt, env)}
+  function.body.each() { |stmt| evaluate(stmt, env)}
 
-  # TODO Check that the return value is the same type as the return type of the function
+  # Check that the return value is the same type as the return type of the function
+  return_value = evaluate(function.return_stmt, env)
 
-  return last_eval
+  type_matcher = {
+    'int': :number,
+    'float': :number,
+    'bool': :boolean,
+    'string': :boolean,
+  }
+
+  return_type = type_matcher[function.type_specifier.to_sym]
+  unless return_value.type == return_type
+    raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
+  end
+
+  return return_value
 end

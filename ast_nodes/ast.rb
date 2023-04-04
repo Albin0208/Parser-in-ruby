@@ -92,14 +92,15 @@ class VarDeclaration < Stmt
 end
 
 class FuncDeclaration < Stmt
-  attr_reader :type_specifier, :identifier, :params, :body
+  attr_reader :type_specifier, :identifier, :params, :body, :return_stmt
 
-  def initialize(type_specifier, identifier, params, body)
+  def initialize(type_specifier, identifier, params, body, return_stmt)
     super(NODE_TYPES[:FuncDeclaration])
     @type_specifier = type_specifier
     @identifier = identifier
     @params = params
     @body = body
+    @return_stmt = return_stmt
   end
 
   def to_s
@@ -113,6 +114,8 @@ class FuncDeclaration < Stmt
     @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
+    puts "#{' ' * indent} Return Statement:"
+    @return_stmt.display_info(indent + 2)
   end
 end
 
