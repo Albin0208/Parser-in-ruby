@@ -1,4 +1,4 @@
-require_relative '../enviroment'
+require_relative '../environment'
 
 def eval_program(program, env)
   last_eval = NullVal.new

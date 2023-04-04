@@ -1,4 +1,4 @@
-require_relative '../enviroment'
+require_relative '../environment'
 require_relative '../../ast_nodes/ast'
 
 def eval_identifier(ast_node, env)
@@ -46,7 +46,8 @@ def eval_assignment_expr(ast_node, env)
   env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
 end
 
-def eval_call_expr(ast_node, env)
+def eval_call_expr(ast_node, call_env)
+  env = Enviroment.new(call_env)
   function = env.lookup_var(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length

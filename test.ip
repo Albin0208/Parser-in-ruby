@@ -1,9 +1,15 @@
-func int hej(int a, int b) {
+#int a = 2
+
+func int hej(int d, int b) {
 
     #func void test() {}
     int a = 4
     return a
 }
+
+
 #-3 + 4
 #4 + hej()
+int a = 2
 hej(2, 2.3) + 4
+#a # Should cause error now, not declared

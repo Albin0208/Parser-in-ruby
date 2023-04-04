@@ -4,7 +4,7 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterVar < Test::Unit::TestCase
   def setup
     @interpreter = Interpreter.new
-    @env = Enviroment.new
+    @env = Environment.new
   end
 
   def test_evaluate_var_declaration

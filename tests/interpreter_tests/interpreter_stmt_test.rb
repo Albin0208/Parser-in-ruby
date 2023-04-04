@@ -4,7 +4,7 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterStatement < Test::Unit::TestCase
   def setup
     @interpreter = Interpreter.new
-    @env = Enviroment.new
+    @env = Environment.new
   end
 
   def test_evaluate_if_statment
