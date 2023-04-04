@@ -1,4 +1,4 @@
-func int hej(int a, int v) {
+func int hej(int a, int b) {
 
     func void test() {}
     #int a = 2
@@ -6,4 +6,4 @@ func int hej(int a, int v) {
 }
 #-3 + 4
 #4 + hej()
-hej(3, 4) + 4
+hej(2, "2") + 4

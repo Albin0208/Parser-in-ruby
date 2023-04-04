@@ -42,6 +42,26 @@ class Enviroment
   end
 
   #
+  # Declare a new variable inside this enviroment
+  #
+  # @param [String] func_name The name of the function to be saved
+  # @param [String, Int, Float, Boolean] value The value of the variable
+  # @param [String] value_type What type is this var allowed to store
+  # @param [Boolean] is_constant Is this var a constant variable
+  #
+  # @return [String, Int, Float, Boolean] The value assigned to the var
+  #
+  def declare_func(func_name, value, value_type, node)
+    if @variables.key?(func_name)
+      # TODO: Create a better error
+      raise "Cannot declare \"#{func_name}\" as it is already defined"
+    end
+
+    @variables[func_name] = node
+    @var_types[func_name] = value_type
+  end
+
+  #
   # Assign a new value to a variable
   #
   # @param [String] varname The name of the variable we want to assign to
@@ -85,7 +105,7 @@ class Enviroment
     return self if @variables.key?(varname)
 
     # TODO: Create a better error
-    raise "Cannot assign value to \"#{varname}\" since it is not defined" if @parent_env.nil?
+    raise "error: \"#{varname}\" was not declared in this scope" if @parent_env.nil?
 
     return @parent_env.resolve(varname)
   end
