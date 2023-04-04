@@ -217,9 +217,18 @@ end
 class Expr < Stmt
 end
 
+#
+# The ast node for a call expression to a function
+#
 class CallExpr < Expr
   attr_reader :func_name, :params
 
+  #
+  # Creates the callexpr node
+  #
+  # @param [String] func_name The name of the function to call
+  # @param [Array] params A list of params that should be sent to the function later
+  #
   def initialize(func_name, params)
     super(NODE_TYPES[:CallExpr])
     @func_name = func_name
