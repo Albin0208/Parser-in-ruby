@@ -65,7 +65,7 @@
 - [ ] For loop: for i in 1..5 do puts i end
 ### Test function definition and invocation:
 
-- [ ] Function definition: def add(a,b) a + b end
+- [ ] Function definition: func int add(a,b) { return a + b }
 - [ ] Function invocation: add(2,3)
 ### Test arrays:
 

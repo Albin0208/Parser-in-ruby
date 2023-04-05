@@ -20,5 +20,6 @@ if 3 < 5 {
     qwe
 }
 
+hej(2, 3)
 
 #a # Should cause error now, not declared
