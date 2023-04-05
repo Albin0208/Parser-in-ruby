@@ -21,6 +21,13 @@ NODE_TYPES = {
   Null: :Null
 }.freeze
 
+NODE_TYPES_CONVERTER = {
+  bool: :boolean,
+  int: :number,
+  float: :number,
+  string: :string
+}.freeze
+
 #####################################
 #            Statements             #
 #####################################

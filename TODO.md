@@ -21,7 +21,7 @@
         - [x] Checks for type so correct when returning
     - [x] Parse params
     - [ ] Evaluate params
-    - [ ] Setup new env for a function body
+    - [x] Setup new env for a function body
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
 - [ ] Classes

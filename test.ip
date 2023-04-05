@@ -1,16 +1,20 @@
 #int a = 2
 
-func int hej(int d, int b) {
+func int hej(int d, int c) {
 
     #func void test() {}
-    int a = 4
-    return a
+    #int a = 4
+    return d
 }
 
 
 #-3 + 4
 #4 + hej()
 #int a = 2
-hej(2, 2.3) + 4
-hej = 2
+int b
+b = hej(2, 2.3) + 4
+#hej = 2
+
+b + 2
+
 #a # Should cause error now, not declared
