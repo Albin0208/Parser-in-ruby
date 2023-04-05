@@ -3,6 +3,7 @@
 - [x] Strings
     - [x] Allow escaping a string
 - [x] Elsif
+- [x] Add new env to if statements
 - [ ] Arrays
     - [ ] ArrayLiteral
     - [ ] Array accessor
@@ -13,14 +14,14 @@
 - [ ] Hashmap
     - [ ] HashLiteral
     - [ ] Hash accessor
-- [ ] Functions
+- [x] Functions
     - [x] Function Declaration
     - [x] Function calls
     - [x] Add void type for functions
     - [x] Return Statments
         - [x] Checks for type so correct when returning
     - [x] Parse params
-    - [ ] Evaluate params
+    - [x] Evaluate params
     - [x] Setup new env for a function body
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
@@ -43,6 +44,7 @@
 ## Interpreter tests
 - [x] Test that string evaluates correctly
 - [x] Test Elsif
+- [ ] Test that new environments are correct and that it can access vars int parents but not in other scopes
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3
@@ -63,7 +65,7 @@
 - [ ] For loop: for i in 1..5 do puts i end
 ### Test function definition and invocation:
 
-- [ ] Function definition: def add(a,b) a + b end
+- [ ] Function definition: func int add(a,b) { return a + b }
 - [ ] Function invocation: add(2,3)
 ### Test arrays:
 
