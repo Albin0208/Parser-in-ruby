@@ -145,8 +145,9 @@ class Lexer
     end
 
     # If we get here, no token was matched, so we have an invalid character or token
-    raise InvalidTokenError,
-          "Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}"
+    raise InvalidTokenError.new(
+          "Invalid character or unexpected token at line #{@line}, column #{@column} in #{@current_line}",
+          nil, @current_line, @column, @line, "test")
   end
 
   ##################################################
