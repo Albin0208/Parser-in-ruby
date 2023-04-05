@@ -15,6 +15,10 @@ int b
 b = hej(2, 2.3) + 4
 #hej = 2
 
-b
+if 3 < 5 {
+    int qwe = 2
+    qwe
+}
+
 
 #a # Should cause error now, not declared
