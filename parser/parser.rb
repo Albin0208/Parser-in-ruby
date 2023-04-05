@@ -51,23 +51,34 @@ class Parser
     when TokenType::IF
       return parse_conditional()
     when TokenType::IDENTIFIER
-      if next_token().type == TokenType::LPAREN
-        left = parse_func_call()
-        if at().type == TokenType::BINARYOPERATOR
-          op = eat().value
-          right = parse_expr()
-          return BinaryExpr.new(left, op, right)
-        end
-        return left
-      elsif next_token().type == TokenType::BINARYOPERATOR
-        return parse_expr()
-      else
-        return parse_assignment_stmt()
-      end
+     return parse_identifier()
     when TokenType::FUNC
       return parse_function_declaration()
     else
       return parse_expr()
+    end
+  end
+
+  #
+  # Parses a identifier
+  #
+  # @return [Expr] An expression matching the tokens
+  #
+  def parse_identifier
+    case next_token().type
+    when TokenType::LPAREN
+      left = parse_func_call()
+      if at().type == TokenType::BINARYOPERATOR
+        op = eat().value
+        right = parse_expr()
+        return BinaryExpr.new(left, op, right)
+      end
+      return left
+    when 
+      TokenType::BINARYOPERATOR
+      return parse_expr()
+    else 
+      return parse_assignment_stmt()
     end
   end
 
@@ -267,7 +278,7 @@ class Parser
   # @return [AssignmentExpr] The AST node
   def parse_assignment_stmt
     @logger.debug('Parsing assign expression')
-    identifier = parse_identifier()
+    identifier = Identifier.new(expect(TokenType::IDENTIFIER).value)
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
@@ -297,7 +308,7 @@ class Parser
   # @return [Expr] The function call
   #
   def parse_func_call
-    identifier = parse_identifier() # Get the identifier
+    identifier = Identifier.new(expect(TokenType::IDENTIFIER).value)
     expect(TokenType::LPAREN) # eat the start paren
 
     # Parse any params
@@ -425,7 +436,7 @@ class Parser
       if next_token().type == TokenType::LPAREN
         return parse_func_call()
       end
-      return parse_identifier()
+      return Identifier.new(expect(TokenType::IDENTIFIER).value)
     when TokenType::INTEGER
       return NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
     when TokenType::FLOAT
@@ -445,14 +456,6 @@ class Parser
     else
       raise InvalidTokenError.new("Unexpected token found: #{at()}")
     end
-  end
-
-  # Parse a identifier and create a new identifier node
-  # @return [Identifier] - The identifier node created
-  def parse_identifier
-    id = expect(TokenType::IDENTIFIER) # Make sure we have a identifer
-    @logger.debug("Found identifer: #{id.value}")
-    return Identifier.new(id.value)
   end
 
   ##################################################
