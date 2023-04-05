@@ -15,6 +15,6 @@ int b
 b = hej(2, 2.3) + 4
 #hej = 2
 
-b + 2
+b
 
 #a # Should cause error now, not declared
