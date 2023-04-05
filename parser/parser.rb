@@ -59,6 +59,8 @@ class Parser
           return BinaryExpr.new(left, op, right)
         end
         return left
+      elsif next_token().type == TokenType::BINARYOPERATOR
+        return parse_expr()
       else
         return parse_assignment_stmt()
       end
@@ -80,7 +82,7 @@ class Parser
 
     identifier = expect(TokenType::IDENTIFIER).value
     @logger.debug("Found indentifier from var declaration: #{identifier}")
-
+    
     if at.type != TokenType::ASSIGN
       return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
 
@@ -89,11 +91,23 @@ class Parser
     end
 
     expect(TokenType::ASSIGN)
-    expression = parse_expr()
-
+    expression = parse_func_call_with_binary_operation()
+        
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression)
+  end
+
+  def parse_func_call_with_binary_operation
+    if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
+      expression = parse_func_call()
+      if at().type == TokenType::BINARYOPERATOR
+        op = eat().value
+        right = parse_expr()
+        return BinaryExpr.new(expression, op, right)
+      end
+    end
+    return parse_expr()
   end
 
   # Validate that we are trying to assign a correct type to our variable.
@@ -105,8 +119,10 @@ class Parser
 
     if !expression.instance_variables.include?(:@value)
       @logger.debug("Validating #{type} variable assignment")
-      validate_assignment_type(expression.left, type)
-      validate_assignment_type(expression.right, type) if expression.instance_variables.include?(:@right)
+      if expression.type != NODE_TYPES[:CallExpr]
+        validate_assignment_type(expression.left, type)
+        validate_assignment_type(expression.right, type) if expression.instance_variables.include?(:@right)
+      end
       return
     end
 
@@ -256,7 +272,7 @@ class Parser
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
-      value = parse_expr() # Parse the right side
+      value = parse_func_call_with_binary_operation()
       return AssignmentExpr.new(value, identifier)
     end
 
@@ -390,7 +406,6 @@ class Parser
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_unary_expr
-    # while %i[- + !].include?(at.value)
     if %i[- + !].include?(at.value)
       operator = eat().value # eat the operator
       right = parse_primary_expr()

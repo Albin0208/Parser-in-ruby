@@ -92,9 +92,9 @@ class TestInterpreterStatement < Test::Unit::TestCase
     assert_instance_of(NumberVal, result)
 
     # Check variables
-    assert_equal(7, @env.variables['x'].value)
-    assert_equal(10, @env.variables['y'].value)
-    assert_equal(17, @env.variables['z'].value)
-    assert_equal(34, @env.variables['t'].value)
+    assert_equal(7, @env.identifiers['x'].value)
+    assert_equal(10, @env.identifiers['y'].value)
+    assert_equal(17, @env.identifiers['z'].value)
+    assert_equal(34, @env.identifiers['t'].value)
   end
 end

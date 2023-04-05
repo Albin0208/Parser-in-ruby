@@ -2,7 +2,7 @@ require_relative '../environment'
 require_relative '../../ast_nodes/ast'
 
 def eval_identifier(ast_node, env)
-  env.lookup_var(ast_node.symbol)
+  env.lookup_identifier(ast_node.symbol)
 end
 
 def eval_logical_and_expr(binop, env)
@@ -48,7 +48,7 @@ end
 
 def eval_call_expr(ast_node, call_env)
   env = Environment.new(call_env)
-  function = env.lookup_var(ast_node.func_name.symbol)
+  function = env.lookup_identifier(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length
     types = function.params.map(&:value_type).join(", ")
@@ -57,29 +57,31 @@ def eval_call_expr(ast_node, call_env)
 
   # Check that all params are the correct type
   function.params.zip(ast_node.params) { |func_param, call_param| 
-    # Convert int and float to numericliteral
-    type = ['int', 'float'].include?(func_param.value_type) ? :NumericLiteral : func_param.value_type.to_sym
+    # Get the node_type of the value
+    type = NODE_TYPES_CONVERTER[func_param.value_type.to_sym]
 
-    if call_param.type.downcase != type.downcase
-      raise "Error: Expected parameter '#{func_param.identifier}' to have type '#{type}', but got '#{call_param.type}'"
+    evaled_call_param = evaluate(call_param, call_env)
+
+    if evaled_call_param.type.downcase != type.downcase
+      raise "Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
     end
 
     # Convert int passed to float and float passed to int
     case func_param.value_type
     when 'int'
-      call_param.value = call_param.value.to_i
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_i)
     when 'float'
-      call_param.value = call_param.value.to_f
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_f)
     end
-  }
 
-  # TODO declare var params inside function Environment
+    # Declare any var params
+    env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, false)
+  }
 
   function.body.each() { |stmt| evaluate(stmt, env)}
 
   # Check that the return value is the same type as the return type of the function
   return_value = evaluate(function.return_stmt, env)
-
   # Check return type
   return_type = { 'int': :number, 'float': :number, 'bool': :boolean, 'string': :boolean }[function.type_specifier.to_sym]
   unless return_value.type == return_type

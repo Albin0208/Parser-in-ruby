@@ -24,7 +24,7 @@ def eval_var_declaration(ast_node, env)
 end
 
 def eval_func_declaration(ast_node, env)
-  env.declare_func(ast_node.identifier, ast_node.body, ast_node.type_specifier, ast_node)
+  env.declare_func(ast_node.identifier, ast_node.type_specifier, ast_node)
 end
 
 def eval_if_statement(ast_node, env)
@@ -55,7 +55,6 @@ end
 
 def eval_return_stmt(ast_node, env)
   last_eval = NullVal.new
-  puts ast_node
   ast_node.body.each() { |stmt| last_eval = evaluate(stmt, env)}
 
   return last_eval

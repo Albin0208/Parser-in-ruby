@@ -4,7 +4,7 @@ require 'set'
 # The representation of an Environment or scope
 #
 class Environment
-  attr_accessor :variables, :constants, :var_types
+  attr_reader :identifiers, :constants, :identifiers_type
 
   #
   # Creates a new environment
@@ -13,8 +13,8 @@ class Environment
   #
   def initialize(parent_env = nil)
     @parent_env = parent_env
-    @variables = {}
-    @var_types = {}
+    @identifiers = {}
+    @identifiers_type = {}
     @constants = Set.new
   end
 
@@ -29,37 +29,35 @@ class Environment
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #
   def declare_var(varname, value, value_type, is_constant = false)
-    # Check if the var is already declared in any scope
-    env = resolve(varname)
+    # Check if the var is already declared in the current scope
+    if find_scope(varname)
+      raise "Cannot declare variable '#{varname}' since it is already defined in this scope"
+    end
 
-    # Raise error if var is already declared
-    raise "Cannot declare \"#{varname}\" as it is already defined" unless env.nil?
-
-    @variables[varname] = value
-    @var_types[varname] = value_type
+    @identifiers[varname] = value
+    @identifiers_type[varname] = value_type
     @constants.add(varname) if is_constant
 
     return value
   end
 
   #
-  # Declare a new variable inside this Environment
+  # Declare a new function inside this Environment
   #
   # @param [String] func_name The name of the function to be saved
-  # @param [String, Int, Float, Boolean] value The value of the variable
   # @param [String] value_type What type is this var allowed to store
-  # @param [Boolean] is_constant Is this var a constant variable
+  # @param [FuncDeclaration] node The func declaration node
   #
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #
-  def declare_func(func_name, value, value_type, node)
-    if @variables.key?(func_name)
-      # TODO: Create a better error
-      raise "Cannot declare \"#{func_name}\" as it is already defined"
+  def declare_func(func_name, return_type, node)
+    # Check if the var is already declared in the current scope
+    if find_scope(func_name)
+      raise "Cannot declare function '#{func_name}' since it is already defined in this scope"
     end
 
-    @variables[func_name] = node
-    @var_types[func_name] = value_type
+    @identifiers[func_name] = node
+    @identifiers_type[func_name] = return_type
   end
 
   #
@@ -71,57 +69,61 @@ class Environment
   # @return [String, Int, Float, Boolean] The value we assigned
   #
   def assign_var(varname, value)
-    env = resolve(varname)
+    env = find_scope(varname)
+  
     if env.constants.include?(varname)
-      # TODO: Create better error
       raise "Cannot reassign constant variable \"#{varname}\""
     end
-
-    # If the value is a number, try to convert it to int or float based on the variable type.
-    # Otherwise, check if the value type matches the variable type.
-    if value.type == :number
-      value = case env.var_types[varname]
-              when 'int' then NumberVal.new(value.value.to_i)
-              when 'float' then NumberVal.new(value.value.to_f)
-              end
-    elsif value.type != env.var_types[varname]
-      # Check if the value type matches the variable type.
-      raise "Can't assign a value of type \"#{value.type}\" to a variable of type \"#{env.var_types[varname]}\"."
-      # TODO: Create a more informative error message.
+    
+    if env.identifiers.key?(varname) && env.identifiers[varname].type == NODE_TYPES[:FuncDeclaration]
+      raise "Cannot assign a value to a function \"#{varname}\""
     end
-
-    env.variables[varname] = value
-
+  
+    var_type = env.identifiers_type[varname]
+    
+    if value.type == :number
+      case var_type
+      when 'int'
+        value = NumberVal.new(value.value.to_i)
+      when 'float'
+        value = NumberVal.new(value.value.to_f)
+      end
+    elsif value.type != var_type
+      raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."
+    end
+  
+    env.identifiers[varname] = value
+  
     return value
   end
 
   #
-  # Resolves a var name by finding what scope it exists in
+  # Resolves a identifier name by finding what scope it exists in
   #
-  # @param [String] varname The name of the variable
+  # @param [String] identifier The name of the identifier
   #
-  # @return [Enviroment | nil] The enviroment that the var exists in or nil if it does not exist
+  # @return [Environment | nil] The environment that the identifier exists in or nil if it does not exist
   #
-  def resolve(varname)
-    return self if @variables.key?(varname)
+  def find_scope(identifier)
+    return self if @identifiers.key?(identifier)
 
     return nil if @parent_env.nil?
 
-    return @parent_env.resolve(varname)
+    return @parent_env.find_scope(identifier)
   end
 
   #
-  # Find the var name
+  # Find the value of the identifier
   #
-  # @param [String] varname The name of the variable
+  # @param [String] identifier The name of the identifier
   #
   # @return [String, Int, Float, Boolean] The value of the var
   #
-  def lookup_var(varname)
-    env = resolve(varname)
+  def lookup_identifier(identifier)
+    env = find_scope(identifier)
 
-    raise "Error: \"#{varname}\" was not declared in any scope" if env.nil?
+    raise "Error: \"#{identifier}\" was not declared in any scope" if env.nil?
 
-    return env.variables[varname]
+    return env.identifiers[identifier]
   end
 end
