@@ -2,7 +2,7 @@ require_relative '../environment'
 require_relative '../../ast_nodes/ast'
 
 def eval_identifier(ast_node, env)
-  env.lookup_var(ast_node.symbol)
+  env.lookup_identifier(ast_node.symbol)
 end
 
 def eval_logical_and_expr(binop, env)
@@ -48,7 +48,7 @@ end
 
 def eval_call_expr(ast_node, call_env)
   env = Environment.new(call_env)
-  function = env.lookup_var(ast_node.func_name.symbol)
+  function = env.lookup_identifier(ast_node.func_name.symbol)
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length
     types = function.params.map(&:value_type).join(", ")

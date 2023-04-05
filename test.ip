@@ -12,4 +12,5 @@ func int hej(int d, int b) {
 #4 + hej()
 #int a = 2
 hej(2, 2.3) + 4
-a # Should cause error now, not declared
+hej = 2
+#a # Should cause error now, not declared
