@@ -130,21 +130,20 @@ end
 class ReturnStmt < Stmt
   attr_reader :return_type, :body
 
-  def initialize(return_type, body)
+  def initialize(body)
     super(NODE_TYPES[:ReturnStmt])
-    @return_type = return_type
     @body = body
   end
 
   def to_s
-    "Type: #{@return_type}, Body: #{@body}"
+    "Return Body: #{@body}"
   end
 
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}"
-    puts "#{' ' * indent} Return type: #{@type_specifier}"
+    # puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Body:"
-    @body.each { |stmt| stmt.display_info(indent + 2) }
+    #@body.each { |stmt| stmt.display_info(indent + 2) }
   end
 end
 

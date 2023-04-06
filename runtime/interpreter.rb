@@ -4,7 +4,10 @@ require_relative 'eval/expressions'
 require_relative 'eval/statements'
 
 class Interpreter
-  def initialize; end
+  attr_accessor :func_has_returned
+  def initialize
+    @func_has_returned = false
+  end
 
   def evaluate(ast_node, env)
     case ast_node.type

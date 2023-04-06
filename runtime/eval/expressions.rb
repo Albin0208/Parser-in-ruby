@@ -78,10 +78,26 @@ def eval_call_expr(ast_node, call_env)
     env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, false)
   }
 
-  function.body.each() { |stmt| evaluate(stmt, env)}
+  last_eval = NullVal.new()
+  #p#uts self.get_func
+  p self
+  function.body.each() { |stmt|#p stmt
+    # p env
+    # puts
+    last_eval = evaluate(stmt, env)
+    # puts self.func_has_returned
+    # if self.func_has_returned
+    #   break
+    # end
+  }
 
   # Check that the return value is the same type as the return type of the function
   return_value = evaluate(function.return_stmt, env)
+  # p self.func_has_returned
+  # if @func_has_returned
+  #   return_value = last_eval
+  #   self.func_has_returned = false
+  # end
   # Check return type
   return_type = { 'int': :number, 'float': :number, 'bool': :boolean, 'string': :boolean }[function.type_specifier.to_sym]
   unless return_value.type == return_type
