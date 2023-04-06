@@ -100,6 +100,7 @@ end
 
 class FuncDeclaration < Stmt
   attr_reader :type_specifier, :identifier, :params, :body, :return_stmt
+  attr_accessor :env
 
   def initialize(type_specifier, identifier, params, body, return_stmt)
     super(NODE_TYPES[:FuncDeclaration])

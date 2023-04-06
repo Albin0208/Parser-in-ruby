@@ -4,7 +4,7 @@ require 'set'
 # The representation of an Environment or scope
 #
 class Environment
-  attr_reader :identifiers, :constants, :identifiers_type
+  attr_reader :identifiers, :constants, :identifiers_type, :parent_env
 
   #
   # Creates a new environment
@@ -50,11 +50,12 @@ class Environment
   #
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #
-  def declare_func(func_name, return_type, node)
+  def declare_func(func_name, return_type, node, env)
     # Check if the var is already declared in the current scope
     if find_scope(func_name)
       raise "Cannot declare function '#{func_name}' since it is already defined in this scope"
     end
+    node.env = env
 
     @identifiers[func_name] = node
     @identifiers_type[func_name] = return_type
