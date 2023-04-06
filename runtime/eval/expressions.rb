@@ -47,11 +47,8 @@ def eval_assignment_expr(ast_node, env)
 end
 
 def eval_call_expr(ast_node, call_env)
-  #p call_env
-  puts
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
   env = Environment.new(function.env)
-  p env
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length
     types = function.params.map(&:value_type).join(", ")
