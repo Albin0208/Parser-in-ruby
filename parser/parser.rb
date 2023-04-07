@@ -76,9 +76,9 @@ class Parser
         return BinaryExpr.new(left, op, right)
       end
       return left
-    when 
-      TokenType::BINARYOPERATOR
+    when TokenType::BINARYOPERATOR
       return parse_expr()
+    when 
     else 
       return parse_assignment_stmt()
     end
@@ -205,7 +205,9 @@ class Parser
     body = []
     while at().type != TokenType::RBRACE && at().type #!= TokenType::RETURN
       stmt = parse_stmt()
+      # Don't allow for function declaration inside a function
       raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      
       return_stmt = stmt.instance_of?(ReturnStmt)
       tmp = stmt
       while tmp.instance_variable_defined?(:@body) && !return_stmt
@@ -215,17 +217,10 @@ class Parser
         end
       end
 
-      # Don't allow for function declaration inside a function
       body.append(stmt) 
     end
     if return_type != 'void' && !return_stmt
       raise "Func error: Function of type: '#{return_type}' expects a return statment"
-    #   # Parse return statement
-    #   return_stmt = parse_return()
-    #   # expect(TokenType::RETURN)
-    #   # return_body = []
-    #   # return_body.append(parse_expr()) while at().type != TokenType::RBRACE
-    #   # return_stmt = ReturnStmt.new(return_type, return_body)
     end
     expect(TokenType::RBRACE) # End of function body
 
