@@ -22,8 +22,8 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   assert_nil(test_func.return_stmt)
 
   # Test int function
-  return_stmt = ReturnStmt.new("int", NumericLiteral.new(2))
-  ast = FuncDeclaration.new("int", "test2", [], [], return_stmt)
+  return_stmt = ReturnStmt.new(NumericLiteral.new(2))
+  ast = FuncDeclaration.new("int", "test2", [], [return_stmt], return_stmt)
   @interpreter.evaluate(ast, @env)
   identifiers = @env.identifiers
   assert_equal(2, identifiers.length)
@@ -32,13 +32,13 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   assert_instance_of(FuncDeclaration, test_func)
   assert_equal('int', test_func.type_specifier)
   assert_empty(test_func.params)
-  assert_empty(test_func.body)
+  assert_equal(1, test_func.body.length)
   assert_equal(return_stmt, test_func.return_stmt)
  end
 
  def test_evaluate_func_call
-  return_stmt = ReturnStmt.new("int", [NumericLiteral.new(2)])
-  ast = Program.new([FuncDeclaration.new("int", 'test', [], [], return_stmt), 
+  return_stmt = ReturnStmt.new(NumericLiteral.new(2))
+  ast = Program.new([FuncDeclaration.new("int", 'test', [], [return_stmt], return_stmt), 
          CallExpr.new(Identifier.new('test'), [])])
   result = @interpreter.evaluate(ast, @env)
   assert_instance_of(NumberVal, result)

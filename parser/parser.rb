@@ -201,34 +201,32 @@ class Parser
     expect(TokenType::RPAREN)
 
     expect(TokenType::LBRACE) # Start of function body
-    return_stmt = nil
+    return_stmt = false
     body = []
     while at().type != TokenType::RBRACE && at().type #!= TokenType::RETURN
       stmt = parse_stmt()
+      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      return_stmt = stmt.instance_of?(ReturnStmt)
       tmp = stmt
-      while tmp.instance_variable_defined?(:@body)
-        tmp = tmp.body
-        tmp.each { |s| return_stmt = s if s.instance_of?(ReturnStmt) }
-        p return_stmt
-        p "Test"
-        # if stmt.instance_of?(ReturnStmt)
-        #   p stmt
-        #   return_stmt = stmt
-        # end
+      while tmp.instance_variable_defined?(:@body) && !return_stmt
+        tmp.body.each { |s| return_stmt = s.instance_of?(ReturnStmt) }
+        if return_stmt
+          break
+        end
       end
 
       # Don't allow for function declaration inside a function
-      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
       body.append(stmt) 
     end
-    # if return_type != 'void'
+    if return_type != 'void' && !return_stmt
+      raise "Func error: Function of type: '#{return_type}' expects a return statment"
     #   # Parse return statement
     #   return_stmt = parse_return()
     #   # expect(TokenType::RETURN)
     #   # return_body = []
     #   # return_body.append(parse_expr()) while at().type != TokenType::RBRACE
     #   # return_stmt = ReturnStmt.new(return_type, return_body)
-    # end
+    end
     expect(TokenType::RBRACE) # End of function body
 
     return FuncDeclaration.new(return_type, identifier, params, body, return_stmt)

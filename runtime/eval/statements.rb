@@ -61,8 +61,5 @@ end
 def eval_return_stmt(ast_node, env)
   last_eval = NullVal.new
   last_eval = evaluate(ast_node.body, env) 
-  p self
-  self.func_has_returned = true
-  p self.func_has_returned
-  return last_eval
+  raise ReturnSignal.new(last_eval)
 end

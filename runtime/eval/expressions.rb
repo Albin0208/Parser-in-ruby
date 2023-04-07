@@ -79,26 +79,14 @@ def eval_call_expr(ast_node, call_env)
   }
 
   last_eval = NullVal.new()
-  #p#uts self.get_func
-  p self
-  function.body.each() { |stmt|#p stmt
-    # p env
-    # puts
-    last_eval = evaluate(stmt, env)
-    # puts self.func_has_returned
-    # if self.func_has_returned
-    #   break
-    # end
-  }
+  return_value = nil
+  begin
+    function.body.each() { |stmt| last_eval = evaluate(stmt, env) }
+  rescue ReturnSignal => signal
+    return_value = signal.return_node
+  end
 
   # Check that the return value is the same type as the return type of the function
-  return_value = evaluate(function.return_stmt, env)
-  # p self.func_has_returned
-  # if @func_has_returned
-  #   return_value = last_eval
-  #   self.func_has_returned = false
-  # end
-  # Check return type
   return_type = { 'int': :number, 'float': :number, 'bool': :boolean, 'string': :boolean }[function.type_specifier.to_sym]
   unless return_value.type == return_type
     raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"

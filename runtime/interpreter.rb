@@ -3,12 +3,14 @@ require_relative 'values'
 require_relative 'eval/expressions'
 require_relative 'eval/statements'
 
-class Interpreter
-  attr_accessor :func_has_returned
-  def initialize
-    @func_has_returned = false
+class ReturnSignal < StandardError
+  attr_reader :return_node
+  def initialize(return_node)
+    @return_node = return_node
   end
+end
 
+class Interpreter
   def evaluate(ast_node, env)
     case ast_node.type
     when NODE_TYPES[:NumericLiteral]
