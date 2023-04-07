@@ -44,7 +44,7 @@
 ## Interpreter tests
 - [x] Test that string evaluates correctly
 - [x] Test Elsif
-- [ ] Test that new environments are correct and that it can access vars int parents but not in other scopes
+- [ ] Test that new environments are correct and that it can access vars in parents but not in other scopes
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3
@@ -65,8 +65,8 @@
 - [ ] For loop: for i in 1..5 do puts i end
 ### Test function definition and invocation:
 
-- [ ] Function definition: func int add(a,b) { return a + b }
-- [ ] Function invocation: add(2,3)
+- [x] Function definition: func int add(a,b) { return a + b }
+- [x] Function invocation: add(2,3)
 ### Test arrays:
 
 - [ ] Array creation: int[] arr = [1, 2, 3]
