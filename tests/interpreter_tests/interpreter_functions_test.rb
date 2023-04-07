@@ -73,7 +73,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
  def test_evaluate_recursion
   input = "func int factorial(int a) {
               if a == 0 { return 1 }
-              return a * test(a - 1)
+              return a * factorial(a - 1)
           }
           factorial(3)"
   ast = @parser.produce_ast(input)
