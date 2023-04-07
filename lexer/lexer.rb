@@ -7,7 +7,7 @@ require_relative '../token_type'
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
   [:integer, /\A\d+(\.\d+)?/],
-  [:string, /\A("|')(?:\\.|[^\\"])*("|')/],
+  [:string, /\A("|')(?:\\.|[^\\"])*?("|')/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
   [:unaryOperator, /\A[-+!]/],
   [:binaryoperator, %r{\A[+\-*/%]}],

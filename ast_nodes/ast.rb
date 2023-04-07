@@ -99,16 +99,15 @@ class VarDeclaration < Stmt
 end
 
 class FuncDeclaration < Stmt
-  attr_reader :type_specifier, :identifier, :params, :body, :return_stmt
+  attr_reader :type_specifier, :identifier, :params, :body
   attr_accessor :env
 
-  def initialize(type_specifier, identifier, params, body, return_stmt)
+  def initialize(type_specifier, identifier, params, body)
     super(NODE_TYPES[:FuncDeclaration])
     @type_specifier = type_specifier
     @identifier = identifier
     @params = params
     @body = body
-    @return_stmt = return_stmt
   end
 
   def to_s

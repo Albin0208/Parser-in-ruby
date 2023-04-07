@@ -3,13 +3,15 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterFunctions < Test::Unit::TestCase
   def setup
+    @parser = Parser.new()
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
  def test_evaluate_func_declaration
   # Test void function
-  ast = FuncDeclaration.new("void", "test", [], [], nil)
+  input = "func void test() {}"
+  ast = @parser.produce_ast(input)
   @interpreter.evaluate(ast, @env)
   identifiers = @env.identifiers
   assert_equal(1, identifiers.length)
@@ -19,11 +21,10 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   assert_equal('void', test_func.type_specifier)
   assert_empty(test_func.params)
   assert_empty(test_func.body)
-  assert_nil(test_func.return_stmt)
 
   # Test int function
-  return_stmt = ReturnStmt.new(NumericLiteral.new(2))
-  ast = FuncDeclaration.new("int", "test2", [], [return_stmt], return_stmt)
+  input = "func int test2() { return 2 }"
+  ast = @parser.produce_ast(input)
   @interpreter.evaluate(ast, @env)
   identifiers = @env.identifiers
   assert_equal(2, identifiers.length)
@@ -33,13 +34,12 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   assert_equal('int', test_func.type_specifier)
   assert_empty(test_func.params)
   assert_equal(1, test_func.body.length)
-  assert_equal(return_stmt, test_func.return_stmt)
  end
 
  def test_evaluate_func_call
-  return_stmt = ReturnStmt.new(NumericLiteral.new(2))
-  ast = Program.new([FuncDeclaration.new("int", 'test', [], [return_stmt], return_stmt), 
-         CallExpr.new(Identifier.new('test'), [])])
+  input = "func int test() { return 2 }
+           test()"
+  ast = @parser.produce_ast(input)
   result = @interpreter.evaluate(ast, @env)
   assert_instance_of(NumberVal, result)
   assert_equal(2, result.value)

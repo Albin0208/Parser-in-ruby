@@ -223,7 +223,7 @@ class Parser
     end
     expect(TokenType::RBRACE) # End of function body
 
-    return FuncDeclaration.new(return_type, identifier, params, body, return_stmt)
+    return FuncDeclaration.new(return_type, identifier, params, body)
   end
 
   # Parses conditional statments such as if, else if and else

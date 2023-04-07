@@ -3,18 +3,23 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterExpr < Test::Unit::TestCase
   def setup
+    @parser = Parser.new()
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
   def test_evaluate_numeric_literal
     ast = NumericLiteral.new(42)
+    input = "42"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(42, result.value)
 
     # Test negative number
     ast = NumericLiteral.new(-42)
+    input = "-42"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(-42, result.value)
@@ -22,7 +27,8 @@ class TestInterpreterExpr < Test::Unit::TestCase
   
   def test_evaluate_identifier
     @env.declare_var('x', NumberVal.new(10), 'int', false)
-    ast = Identifier.new('x')
+    input = "x"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(10, result.value)
@@ -30,25 +36,29 @@ class TestInterpreterExpr < Test::Unit::TestCase
 
   def test_evaluate_logical_and
     # Test true && true
-    ast = LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true))
+    input = "true && true"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test true && false
-    ast = LogicalAndExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(false))
+    input = "true && false"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
 
     # Test false && true
-    ast = LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))
+    input = "false && true"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
 
     # Test false && false
-    ast = LogicalAndExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(false))
+    input = "false && false"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
@@ -56,25 +66,29 @@ class TestInterpreterExpr < Test::Unit::TestCase
 
   def test_evaluate_logical_or
     # Test true || true
-    ast = LogicalOrExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(true))
+    input = "true || true"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test true || false
-    ast = LogicalOrExpr.new(BooleanLiteral.new(true), BooleanLiteral.new(false))
+    input = "true || false"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test false || true
-    ast = LogicalOrExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(true))
+    input = "false || true"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test false || false
-    ast = LogicalOrExpr.new(BooleanLiteral.new(false), BooleanLiteral.new(false))
+    input = "false || false"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
@@ -82,84 +96,98 @@ class TestInterpreterExpr < Test::Unit::TestCase
 
   def test_evaluate_unary_expr
     # Test unary minus
-    ast = UnaryExpr.new(NumericLiteral.new(5), :-)
+    input = "-5"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(-5, result.value)
 
     # Test logical negation
-    ast = UnaryExpr.new(BooleanLiteral.new(true), :!)
+    input = "!true"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
   end
 
   def test_evaluate_binary_expr
-    ast = BinaryExpr.new(NumericLiteral.new(3), :-, NumericLiteral.new(10))
+    input = "3 - 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(-7, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :*, NumericLiteral.new(10))
+    input = "3 * 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(30, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3.0), :/, NumericLiteral.new(10))
+    input = "3.0 / 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(0.3, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :%, NumericLiteral.new(2))
+    input = "3 % 2"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(1, result.value)
 
     # Test for precedence
-    ast = BinaryExpr.new(NumericLiteral.new(3), :+,
-                         BinaryExpr.new(NumericLiteral.new(10), :*, NumericLiteral.new(2)))
+    input = "3 + 10 * 2"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(23, result.value)
   end
 
   def test_evaluate_binary_expr_comparison
-    ast = BinaryExpr.new(NumericLiteral.new(3), :<, NumericLiteral.new(10))
+    input = "3 < 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :>, NumericLiteral.new(10))
+    input = "3 > 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3.0), :==, NumericLiteral.new(10))
+    input = "3.0 == 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :"!=", NumericLiteral.new(2))
+    input = "3 != 2"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :>=, NumericLiteral.new(-4))
+    input = "3 >= -4"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :>=, NumericLiteral.new(3))
+    input = "3 >= 3"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :<=, NumericLiteral.new(3))
+    input = "3 <= 3"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(NumericLiteral.new(3), :<=, NumericLiteral.new(10))
+    input = "3 <= 10"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)

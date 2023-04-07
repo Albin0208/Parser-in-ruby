@@ -3,19 +3,22 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterString < Test::Unit::TestCase
   def setup
+    @parser = Parser.new()
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
   def test_evaluate_string_literal
     # Test string literal
-    ast = StringLiteral.new('Hello, world!')
+    input = "'Hello, world!'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(StringVal, result)
     assert_equal('Hello, world!', result.value)
 
     # Test empty string literal
-    ast = StringLiteral.new('')
+    input = "''"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(StringVal, result)
     assert_equal('', result.value)
@@ -23,7 +26,8 @@ class TestInterpreterString < Test::Unit::TestCase
 
   def test_evaluate_string_concatenation
     # Test string concatenation
-    ast = BinaryExpr.new(StringLiteral.new('Hello'), :+, StringLiteral.new('world!'))
+    input = "'Hello' + 'world!'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(StringVal, result)
     assert_equal('Helloworld!', result.value)
@@ -36,7 +40,8 @@ class TestInterpreterString < Test::Unit::TestCase
   end
 
   def test_evaluate_string_multiplication
-    ast = BinaryExpr.new(StringLiteral.new('Hello'), :*, NumericLiteral.new(3))
+    input = "'Hello' * 3"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(StringVal, result)
     assert_equal('HelloHelloHello', result.value)
@@ -44,30 +49,35 @@ class TestInterpreterString < Test::Unit::TestCase
 
   def test_evaluate_string_comparison
     # Test string equality comparison
-    ast = BinaryExpr.new(StringLiteral.new('hello'), :==, StringLiteral.new('hello'))
+    input = "'hello' == 'hello'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(StringLiteral.new('hello'), :==, StringLiteral.new('byeee'))
+    input = "'hello' == 'byeee'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
 
     # Test string inequality comparison
-    ast = BinaryExpr.new(StringLiteral.new('hello'), :!=, StringLiteral.new('world'))
+    input = "'Hello' != 'world!'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(true, result.value)
 
-    ast = BinaryExpr.new(StringLiteral.new('hello'), :!=, StringLiteral.new('hello'))
+    input = "'Hello' != 'Hello'"
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(BooleanVal, result)
     assert_equal(false, result.value)
   end
 
   def test_evaluate_string_with_escape_chars
-    ast = StringLiteral.new('hello \n bye')
+    input = '"hello \\\n bye"'
+    ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(StringVal, result)
     assert_equal('hello \n bye', result.value)
