@@ -69,4 +69,16 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   assert_instance_of(NumberVal, result)
   assert_equal(5, result.value)
  end
+
+ def test_evaluate_recursion
+  input = "func int factorial(int a) {
+              if a == 0 { return 1 }
+              return a * test(a - 1)
+          }
+          factorial(3)"
+  ast = @parser.produce_ast(input)
+  result = @interpreter.evaluate(ast, @env)
+  assert_instance_of(NumberVal, result)
+  assert_equal(6, result.value)
+ end
 end
