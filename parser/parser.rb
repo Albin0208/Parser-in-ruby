@@ -78,7 +78,6 @@ class Parser
       return left
     when TokenType::BINARYOPERATOR
       return parse_expr()
-    when 
     else 
       return parse_assignment_stmt()
     end

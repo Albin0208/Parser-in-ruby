@@ -29,7 +29,6 @@ class TokenType
   FUNC_CALL = :FUNC_CALL
   VOID = :VOID
   RETURN = :RETURN
-  OBJECTACCESSOR = :OBJECTACCESSOR
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze

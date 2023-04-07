@@ -19,7 +19,6 @@ TOKEN_TYPES = [
   [:assign, /\A=/],
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:comma, /\A,/],
-  [:objectAccessor, /\A\./]
 ].to_h.freeze
 
 KEYWORDS = {
