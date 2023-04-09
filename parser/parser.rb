@@ -82,11 +82,14 @@ class Parser
       return left
     when TokenType::BINARYOPERATOR
       return parse_expr()
-    else 
-      return parse_assignment_stmt()
     end
   end
 
+  #
+  # Parses a return statement
+  #
+  # @return [Return] The return statement with the expressions
+  #
   def parse_return()
     expect(TokenType::RETURN)
 
@@ -193,6 +196,53 @@ class Parser
 
     # Parse function parameters
     expect(TokenType::LPAREN)
+    params = parse_function_params()
+    expect(TokenType::RPAREN)
+
+    expect(TokenType::LBRACE) # Start of function body
+    has_return_stmt = false
+    body = []
+    while at().type != TokenType::RBRACE #&& at().type != TokenType::RETURN
+      stmt = parse_stmt()
+      # Don't allow for function declaration inside a function
+      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      
+      has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
+
+      body.append(stmt) 
+    end
+
+    if return_type != 'void' && !has_return_stmt
+      raise "Func error: Function of type: '#{return_type}' expects a return statment"
+    end
+    expect(TokenType::RBRACE) # End of function body
+
+    return FuncDeclaration.new(return_type, identifier, params, body)
+  end
+
+  #
+  # Recursivly check if the statment has any return statments
+  #
+  # @param [Stmt] stmt The statement to check
+  #
+  # @return [Boolean] True if ReturnStmt exits otherwise false
+  #
+  def has_return_statement?(stmt)
+    if stmt.instance_of?(ReturnStmt)
+      return true
+    elsif stmt.instance_variable_defined?(:@body)
+      return stmt.body.any? { |s| has_return_statement?(s) }
+    else
+      return false
+    end
+  end
+
+  #
+  # Parses the functions params
+  #
+  # @return [Array] A list of all the params of the function
+  #
+  def parse_function_params
     params = []
     if at().type != TokenType::RPAREN
       params << parse_var_declaration()
@@ -201,33 +251,8 @@ class Parser
         params << parse_var_declaration()
       end
     end
-    expect(TokenType::RPAREN)
 
-    expect(TokenType::LBRACE) # Start of function body
-    return_stmt = false
-    body = []
-    while at().type != TokenType::RBRACE && at().type #!= TokenType::RETURN
-      stmt = parse_stmt()
-      # Don't allow for function declaration inside a function
-      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
-      
-      return_stmt = stmt.instance_of?(ReturnStmt)
-      tmp = stmt
-      while tmp.instance_variable_defined?(:@body) && !return_stmt
-        tmp.body.each { |s| return_stmt = s.instance_of?(ReturnStmt) }
-        if return_stmt
-          break
-        end
-      end
-
-      body.append(stmt) 
-    end
-    if return_type != 'void' && !return_stmt
-      raise "Func error: Function of type: '#{return_type}' expects a return statment"
-    end
-    expect(TokenType::RBRACE) # End of function body
-
-    return FuncDeclaration.new(return_type, identifier, params, body)
+    return params
   end
 
   # Parses conditional statments such as if, else if and else
