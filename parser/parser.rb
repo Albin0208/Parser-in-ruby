@@ -50,8 +50,12 @@ class Parser
       return parse_var_declaration()
     when TokenType::IF
       return parse_conditional()
-    when TokenType::IDENTIFIER
-     return parse_identifier()
+    when TokenType::IDENTIFIER # Handles an identifier with assign
+      if next_token().type == TokenType::ASSIGN
+        return parse_assignment_stmt()
+      else 
+        return parse_expr()
+      end
     when TokenType::FUNC
       return parse_function_declaration()
     when TokenType::RETURN
@@ -307,7 +311,7 @@ class Parser
 
   # Parses a expression
   #
-  # @return [Stmt] The AST node matched
+  # @return [Expr] The AST node matched
   def parse_expr
     # return parse_func_call()
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
