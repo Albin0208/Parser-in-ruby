@@ -121,8 +121,6 @@ class FuncDeclaration < Stmt
     @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
     puts "#{' ' * indent} Body:"
     @body.each { |stmt| stmt.display_info(indent + 2) }
-    puts "#{' ' * indent} Return Statement:"
-    @return_stmt.display_info(indent + 2)
   end
 end
 

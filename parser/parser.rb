@@ -46,7 +46,7 @@ class Parser
   def parse_stmt
     case at().type
     when TokenType::CONST, TokenType::TYPE_SPECIFIER
-      @logger.debug("(#{at.value}) matched var declaration")
+      @logger.debug("(#{at().value}) matched var declaration")
       return parse_var_declaration()
     when TokenType::IF
       return parse_conditional()
@@ -70,20 +70,20 @@ class Parser
   #
   # @return [Expr] An expression matching the tokens
   #
-  def parse_identifier
-    case next_token().type
-    when TokenType::LPAREN
-      left = parse_func_call()
-      if at().type == TokenType::BINARYOPERATOR
-        op = eat().value
-        right = parse_expr()
-        return BinaryExpr.new(left, op, right)
-      end
-      return left
-    when TokenType::BINARYOPERATOR
-      return parse_expr()
-    end
-  end
+  # def parse_identifier
+  #   case next_token().type
+  #   when TokenType::LPAREN
+  #     left = parse_func_call()
+  #     if at().type == TokenType::BINARYOPERATOR
+  #       op = eat().value
+  #       right = parse_expr()
+  #       return BinaryExpr.new(left, op, right)
+  #     end
+  #     return left
+  #   when TokenType::BINARYOPERATOR
+  #     return parse_expr()
+  #   end
+  # end
 
   #
   # Parses a return statement
@@ -102,7 +102,7 @@ class Parser
   #
   # @return [VarDeclaration] The Vardeclaration AST node
   def parse_var_declaration
-    is_const = at.type == TokenType::CONST # Get if const keyword is present
+    is_const = at().type == TokenType::CONST # Get if const keyword is present
 
     eat() if is_const # eat the const keyword if we have a const
     type_specifier = eat().value # Get what type the var should be
@@ -110,7 +110,7 @@ class Parser
     identifier = expect(TokenType::IDENTIFIER).value
     @logger.debug("Found indentifier from var declaration: #{identifier}")
     
-    if at.type != TokenType::ASSIGN
+    if at().type != TokenType::ASSIGN
       return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
@@ -144,11 +144,11 @@ class Parser
   def validate_assignment_type(expression, type)
     return if expression.type == NODE_TYPES[:Identifier] # The expr is a identifier we can't tell what type from the parser
 
-    if !expression.instance_variables.include?(:@value)
+    if !expression.instance_variable_defined?(:@value)
       @logger.debug("Validating #{type} variable assignment")
       if expression.type != NODE_TYPES[:CallExpr]
         validate_assignment_type(expression.left, type)
-        validate_assignment_type(expression.right, type) if expression.instance_variables.include?(:@right)
+        validate_assignment_type(expression.right, type) if expression.instance_variable_defined?(:@right)
       end
       return
     end
@@ -202,7 +202,7 @@ class Parser
     expect(TokenType::LBRACE) # Start of function body
     has_return_stmt = false
     body = []
-    while at().type != TokenType::RBRACE #&& at().type != TokenType::RETURN
+    while at().type != TokenType::RBRACE
       stmt = parse_stmt()
       # Don't allow for function declaration inside a function
       raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
@@ -278,7 +278,7 @@ class Parser
     end
 
     else_body = nil
-    if at.type == TokenType::ELSE
+    if at().type == TokenType::ELSE
       expect(TokenType::ELSE) # eat the Else token
       expect(TokenType::LBRACE) # eat lbrace token
       else_body = parse_conditional_body()
@@ -338,9 +338,14 @@ class Parser
   #
   # @return [Expr] The AST node matched
   def parse_expr
-    # return parse_func_call()
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-      return parse_func_call()
+      func_call = parse_func_call()
+      if at().type == TokenType::BINARYOPERATOR
+        op = eat().value
+        right = parse_expr()
+        return BinaryExpr.new(func_call, op, right)
+      end
+      return func_call
     else
       return parse_logical_expr()
     end
@@ -387,7 +392,7 @@ class Parser
     left = parse_logical_and_expr()
 
     # Check for logical or
-    while at.value == :"||"
+    while at().value == :"||"
       eat().value # eat the operator
       right = parse_logical_and_expr()
       left = LogicalOrExpr.new(left, right)
@@ -403,7 +408,7 @@ class Parser
     left = parse_comparison_expr()
 
     # Check for logical and
-    while at.value == :"&&"
+    while at().value == :"&&"
       eat().value # eat the operator
       right = parse_comparison_expr()
       left = LogicalAndExpr.new(left, right)
@@ -418,7 +423,7 @@ class Parser
   def parse_comparison_expr
     left = parse_additive_expr()
 
-    while LOGICCOMPARISON.include?(at.value)
+    while LOGICCOMPARISON.include?(at().value)
       comparetor = eat().value # eat the comparetor
       right = parse_additive_expr()
       left = BinaryExpr.new(left, comparetor, right)
@@ -433,7 +438,7 @@ class Parser
   def parse_additive_expr
     left = parse_multiplication_expr()
 
-    while ADD_OPS.include?(at.value)
+    while ADD_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_multiplication_expr()
       left = BinaryExpr.new(left, operator, right)
@@ -448,7 +453,7 @@ class Parser
   def parse_multiplication_expr
     left = parse_unary_expr()
 
-    while MULT_OPS.include?(at.value)
+    while MULT_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_unary_expr()
       left = BinaryExpr.new(left, operator, right)
@@ -461,7 +466,7 @@ class Parser
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_unary_expr
-    if %i[- + !].include?(at.value)
+    if %i[- + !].include?(at().value)
       operator = eat().value # eat the operator
       right = parse_primary_expr()
       return UnaryExpr.new(right, operator)
