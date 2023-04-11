@@ -16,13 +16,8 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-image: ruby:latest
-
 stages:
   - test
-
-variables:
-  RUBY_VERSION: '2.7'
 
 test_ver_2.7:
   stage: test
@@ -32,13 +27,13 @@ test_ver_2.7:
   only:
     - main
 
-test_ver_3:
-  stage: test
-  image: ruby:3
-  script:
-    - rake test
-  only:
-    - main
+# test_ver_3:
+#   stage: test
+#   image: ruby:3
+#   script:
+#     - rake test
+#   only:
+#     - main
 test_ver_latest:
   stage: test
   image: ruby:latest
