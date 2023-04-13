@@ -11,40 +11,56 @@ git clone https://gitlab.liu.se/albda746/tdp019.git
 ```
 
 ## Usage
+To use the parser, navigate to the root directory of the project and run main.rb file. The parser can be used to parse a file or as a REPL.
 
-### Running the parser
-To run the parser, simply execute the following command in your terminal:
+### Run on file
+To run the parser on a file, use the following command:
 
+```bash
+ruby main.rb file_name
+```
+
+### Run as REPL
+To run the parser as a REPL, execute the following command:
 
 ```bash
 ruby main.rb
 ```
 
-### Running the parser in debug mode
-You can also run the parser in debug mode, which will print additional information to the console. To do this, simply pass the ``-debug`` flag when running the parser, like so:
+### Debug mode
+The parser can be run in debug mode, which prints additional information to the console. To run the parser in debug mode, pass the ``-debug`` flag as follows:
 
 ```bash
-ruby main.rb - debug
+ruby main.rb -debug
+```
+
+This can also be done when running on a file. The command would then look like this:
+
+```bash
+ruby main.rb file_name -debug
 ```
 
 ## Generating documentations
-To generate documentation ``yard`` has to be installed.
+To generate documentation for the project, ``yard`` has to be installed. To install ``yard``, run the following command in your terminal:
 
-To generate the documentation run the command:
+```bash
+gem install yard
+```
+
+To generate the documentation, execute the following command:
 
 ```bash
 yardoc ./**/*.rb --private
 ```
 
-## Unit tests
-To run the test, you'll need to have Rake installed on your system. If you don't have Rake you can run the following command int your terminal:
+## Running unit tests
+To run the unit tests, you'll need to have Rake installed on your system. If you don't have Rake, you can run the following command in your terminal:
 
 ```bash
 gem install rake
 ```
 
-### Running the tests
-To run the unit test, simply execute the following command in your terminal:
+To run the unit tests, execute the following command:
 
 ```bash
 rake test
