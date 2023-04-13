@@ -7,7 +7,7 @@ To run this project, you'll need to have Ruby installed on your system. If you d
 Once you have Ruby installed, you can clone this repository using the following command:
 
 ```bash
-git clone https://github.com/Albin0208/Parser-in-ruby.git
+git clone https://gitlab.liu.se/albda746/tdp019.git
 ```
 
 ## Usage
