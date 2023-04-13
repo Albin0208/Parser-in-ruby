@@ -177,20 +177,6 @@ class Lexer
                # This is a binary operator
                TokenType::BINARYOPERATOR
              end
-
-            #  type = if !previous_token.nil? && (
-            #   # previous_token.type != TokenType::LPAREN ||
-            #   # previous_token.type != TokenType::BINARYOPERATOR
-            #   previous_token.type == TokenType::INTEGER ||
-            #   previous_token.type == TokenType::RPAREN ||
-            #   previous_token.type == TokenType::IDENTIFIER)
-
-            #   # This is a binary operator
-            #   TokenType::BINARYOPERATOR
-            # else
-            #   # This is a unary operator
-            #   TokenType::UNARYOPERATOR
-            # end
     end
 
     token = Token.new(type, match, @line, @column)
@@ -223,7 +209,7 @@ class Lexer
   #
   # Handles when we have matched a number
   #
-  # @param [String] match The value of the token we have matched
+  # @param [String] number_str The value of the token we have matched
   #
   # @return [Token] A new number token
   def handle_number_match(number_str)

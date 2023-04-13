@@ -45,8 +45,9 @@ class Environment
   # Declare a new function inside this Environment
   #
   # @param [String] func_name The name of the function to be saved
-  # @param [String] value_type What type is this var allowed to store
+  # @param [String] return_type What type is this function allowed to return
   # @param [FuncDeclaration] node The func declaration node
+  # @param [Environment] env The parent environment of the funcation. Where the function is declared
   #
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #

@@ -160,8 +160,8 @@ class Parser
 
   # Checks whether a given expression type is valid for a variable of a certain type.
   #
-  # @param type [String] The type of the variable being assigned
-  # @param type [String] The type of the expression being assigned
+  # @param type [String] expression_type What type the expression is
+  # @param type [String] type The expected type for the expression
   #
   # @return [Boolean] true if the expression type is valid for the variable type otherwise false
   def valid_assignment_type?(expression_type, type)
