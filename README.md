@@ -27,6 +27,15 @@ You can also run the parser in debug mode, which will print additional informati
 ruby main.rb - debug
 ```
 
+## Generating documentations
+To generate documentation ``yard`` has to be installed.
+
+To generate the documentation run the command:
+
+```bash
+yardoc ./**/*.rb --private
+```
+
 ## Unit tests
 To run the test, you'll need to have Rake installed on your system. If you don't have Rake you can run the following command int your terminal:
 
