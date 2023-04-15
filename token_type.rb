@@ -29,6 +29,8 @@ class TokenType
   FUNC_CALL = :FUNC_CALL
   VOID = :VOID
   RETURN = :RETURN
+  FOR = :FOR
+  WHILE = :WHILE
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze

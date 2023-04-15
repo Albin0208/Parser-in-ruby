@@ -32,6 +32,10 @@ KEYWORDS = {
   null: TokenType::NULL,
   return: TokenType::RETURN,
 
+  # Loops
+  for: TokenType::FOR,
+  while: TokenType::WHILE,
+
   # Type Specifiers
   int: TokenType::TYPE_SPECIFIER,
   float: TokenType::TYPE_SPECIFIER,
