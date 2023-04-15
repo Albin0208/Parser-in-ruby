@@ -1,7 +1,7 @@
 require 'test/unit'
 require_relative '../../runtime/interpreter'
 
-class TestInterpreterExpr < Test::Unit::TestCase
+class TestInterpreterEnv < Test::Unit::TestCase
   def setup
     @parser = Parser.new()
     @interpreter = Interpreter.new
