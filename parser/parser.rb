@@ -56,6 +56,8 @@ class Parser
       else 
         return parse_expr()
       end
+    when TokenType::FOR, TokenType::WHILE
+      return parse_loops()
     when TokenType::FUNC
       return parse_function_declaration()
     when TokenType::RETURN
@@ -63,6 +65,35 @@ class Parser
     else
       return parse_expr()
     end
+  end
+
+  #
+  # Parses loops
+  #
+  # @return [Expr] The loop
+  #
+  def parse_loops
+    case at().type
+    when TokenType::FOR # Parse for statement
+      return parse_for_stmt()
+    when TokenType::WHILE # Parse while statement
+      return parse_while_stmt()
+    end
+  end
+
+  #
+  # Parse a for-loop
+  #
+  # @return [ForStmt] The for statment
+  #
+  def parse_for_stmt
+    expect(TokenType::FOR)
+
+  end
+
+  def parse_while_stmt
+    expect(TokenType::WHILE)
+    parse_conditional_condition()
   end
 
   #
@@ -263,7 +294,9 @@ class Parser
 
     # Parse if condition and body
     if_condition = parse_conditional_condition()
+    expect(TokenType::LBRACE) # eat lbrace token
     if_body = parse_conditional_body()
+    expect(TokenType::RBRACE) # eat the rbrace token
 
     # Parse else ifs
     elsif_stmts = []
@@ -272,7 +305,9 @@ class Parser
 
       # Parse elsif condtion and body
       elsif_condition = parse_conditional_condition()
+      expect(TokenType::LBRACE) # eat lbrace token
       elsif_body = parse_conditional_body()
+      expect(TokenType::RBRACE) # eat the rbrace token
 
       elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition)
     end
@@ -282,6 +317,7 @@ class Parser
       expect(TokenType::ELSE) # eat the Else token
       expect(TokenType::LBRACE) # eat lbrace token
       else_body = parse_conditional_body()
+      expect(TokenType::RBRACE) # eat the rbrace token
     end
 
     return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
@@ -295,7 +331,6 @@ class Parser
   def parse_conditional_body
     body = []
     body.append(parse_stmt()) while at().type != TokenType::RBRACE # Parse the content of the if statment
-    expect(TokenType::RBRACE) # eat the rbrace token
 
     return body
   end
@@ -313,7 +348,7 @@ class Parser
       # TODO Fix error message
       raise "Conditional statment requires a condition"
     end
-    expect(TokenType::LBRACE) # eat lbrace token
+    
     return condition
   end
 
