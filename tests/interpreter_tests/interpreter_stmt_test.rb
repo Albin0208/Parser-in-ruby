@@ -102,18 +102,17 @@ class TestInterpreterStatement < Test::Unit::TestCase
   end
 
   def test_evaluate_while_loop_with_fibonacci
-    first_num = 0
-    second_num = 1
+    # Calculate the 10 first Fibonacci numbers
     fib_nums = []
-    # Calculate the 10 first numbers
+    a = 0
+    b = 1
     10.times do
-      fib_nums << first_num
-      first_num, second_num = second_num, first_num + second_num
+      fib_nums << a
+      a, b = b, a + b
     end
     parser_fib_nums = []
     
     for i in 1..10
-      env = Environment.new()
       input = "int n = #{i}
               int a = 0
               int b = 1
@@ -126,6 +125,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
                 count = count + 1
               }
               a"
+      env = Environment.new()
       ast = @parser.produce_ast(input)
       parser_fib_nums << @interpreter.evaluate(ast, env).value
     end
