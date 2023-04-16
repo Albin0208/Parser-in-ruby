@@ -81,4 +81,23 @@ class TestInterpreterStatement < Test::Unit::TestCase
     assert_equal(17, @env.identifiers['z'].value)
     assert_equal(34, @env.identifiers['t'].value)
   end
+
+  def test_evaluate_while_loop
+    input = 'int i = 0
+             int counter = 0
+             while i < 10 {
+               counter = counter + 1
+               int c = 2
+               i = i + c
+             }
+             counter'
+    ast = @parser.produce_ast(input)
+
+    # Evaluate while
+    result = @interpreter.evaluate(ast, @env)
+    # Check variables
+    assert_equal(10, @env.identifiers['i'].value)
+    assert_equal(5, @env.identifiers['counter'].value)
+    assert_nil(@env.identifiers['c']) # Should not exist outside of the while
+  end
 end

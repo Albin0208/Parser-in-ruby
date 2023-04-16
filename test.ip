@@ -12,8 +12,11 @@ func int test(int a) {
 
 #test(6) + 10 * test(2)
 int i = 0
+int counter = 0
 while i < 10 {
-  i = i + 1
+  counter = counter + 1
+  int c = 2
+  i = i + c
 }
 
-i
+counter
