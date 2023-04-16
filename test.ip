@@ -22,6 +22,7 @@ while count <= n {
   a = b
   b = c
   count = count + 1
+  print(a)
 }
 
 a

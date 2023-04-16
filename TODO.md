@@ -12,6 +12,7 @@
     - [ ] For loop
     - [ ] Loop over containers
     - [ ] Break statement to exit early
+- [ ] Native functions, like print() and so on
 - [ ] Hashmap
     - [ ] HashLiteral
     - [ ] Hash accessor

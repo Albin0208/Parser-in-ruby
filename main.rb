@@ -26,6 +26,8 @@ def main
     program.display_info if debugging
     puts result.to_s
   else
+    puts "Type 'exit' to quit"
+    print ">> "
     while (input = $stdin.gets.chomp) != 'exit'
       program = parser.produce_ast(input)
       puts program.to_s if debugging
@@ -34,6 +36,7 @@ def main
 
       program.display_info if debugging
       puts result.to_s
+      print ">> "
     end
     puts 'Bye!'
   end
