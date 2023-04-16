@@ -48,6 +48,9 @@ end
 
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
+
+  raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
+
   env = Environment.new(function.env)
   # Check that the correct number of params are passed
   if function.params.length != ast_node.params.length

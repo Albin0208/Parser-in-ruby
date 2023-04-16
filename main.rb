@@ -31,10 +31,10 @@ def main
     while (input = $stdin.gets.chomp) != 'exit'
       program = parser.produce_ast(input)
       puts program.to_s if debugging
+      program.display_info if debugging
 
       result = interpreter.evaluate(program, env)
 
-      program.display_info if debugging
       puts result.to_s
       print ">> "
     end
