@@ -100,4 +100,36 @@ class TestInterpreterStatement < Test::Unit::TestCase
     assert_equal(5, @env.identifiers['counter'].value)
     assert_nil(@env.identifiers['c']) # Should not exist outside of the while
   end
+
+  def test_evaluate_while_loop_with_fibonacci
+    first_num = 0
+    second_num = 1
+    fib_nums = []
+    # Calculate the 10 first numbers
+    10.times do
+      fib_nums << first_num
+      first_num, second_num = second_num, first_num + second_num
+    end
+    parser_fib_nums = []
+    
+    for i in 1..10
+      env = Environment.new()
+      input = "int n = #{i}
+              int a = 0
+              int b = 1
+
+              int count = 2
+              while count <= n {
+                int c = a + b
+                a = b
+                b = c
+                count = count + 1
+              }
+              a"
+      ast = @parser.produce_ast(input)
+      parser_fib_nums << @interpreter.evaluate(ast, env).value
+    end
+    
+    assert_equal(fib_nums, parser_fib_nums)
+  end
 end

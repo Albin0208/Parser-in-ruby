@@ -8,9 +8,10 @@
     - [ ] ArrayLiteral
     - [ ] Array accessor
 - [ ] Loops
-    - [ ] While loop
+    - [x] While loop
     - [ ] For loop
     - [ ] Loop over containers
+    - [ ] Break statement to exit early
 - [ ] Hashmap
     - [ ] HashLiteral
     - [ ] Hash accessor
