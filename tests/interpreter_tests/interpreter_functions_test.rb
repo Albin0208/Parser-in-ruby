@@ -90,4 +90,11 @@ class TestInterpreterFunctions < Test::Unit::TestCase
     assert_instance_of(NumberVal, result)
     assert_equal(30, result.value)
   end
+
+  def test_func_call_on_var
+    input = "int a = 2
+             a()"
+    ast = @parser.produce_ast(input)
+    assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
+  end
 end
