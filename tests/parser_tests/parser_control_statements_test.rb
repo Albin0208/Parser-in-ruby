@@ -89,4 +89,22 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_not_nil(ast.body[0].else_body)
     assert_not_nil(ast.body[0].elsif_stmts)
   end
+
+  def test_parse_while_loop
+    ast = @parser.produce_ast('while i < 10 { i = i + 1 }')
+    assert_equal(NODE_TYPES[:WHILE_LOOP], ast.body[0].type)
+    condition = ast.body[0].conditions
+    assert_instance_of(BinaryExpr, condition)
+    assert_equal(:<, condition.op)
+    assert_equal('i', condition.left.symbol)
+    assert_equal(10, condition.right.value)
+    body = ast.body[0].body[0]
+    assert_instance_of(AssignmentExpr, body)
+    assert_equal('i', body.assigne.symbol)
+    assign_expr = body.value
+    assert_instance_of(BinaryExpr, assign_expr)
+    assert_equal(:+, assign_expr.op)
+    assert_equal('i', assign_expr.left.symbol)
+    assert_equal(1, assign_expr.right.value)
+  end 
 end
