@@ -1,4 +1,5 @@
 require 'set'
+require_relative '../runtime/native_functions.rb'
 
 #
 # The representation of an Environment or scope
@@ -16,6 +17,13 @@ class Environment
     @identifiers = {}
     @identifiers_type = {}
     @constants = Set.new
+  end
+
+  def setup_native_functions
+    NativeFunctions::FUNCTIONS.each() { |func_name| 
+                                        @constants.add(func_name)
+                                        @identifiers[func_name] = :native_func
+                                      }
   end
 
   #

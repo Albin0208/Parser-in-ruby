@@ -4,6 +4,7 @@ require_relative 'runtime/environment'
 
 def main
   env = Environment.new
+  env.setup_native_functions()
 
   debugging = ARGV[0] == '-debug'
 

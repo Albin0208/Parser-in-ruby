@@ -48,7 +48,12 @@ end
 
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
-
+  if function == :native_func
+    param_results = []
+    ast_node.params.map() { |param| param_results << evaluate(param, call_env).value}
+    NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
+    return nil
+  end
   raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
   env = Environment.new(function.env)
