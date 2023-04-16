@@ -63,3 +63,13 @@ def eval_return_stmt(ast_node, env)
   last_eval = evaluate(ast_node.body, env) 
   raise ReturnSignal.new(last_eval)
 end
+
+def eval_while_stmt(ast_node, env)
+  last_eval = NullVal.new
+  while evaluate(ast_node.conditions, env).value
+    while_env = Environment.new(env)
+    ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
+  end
+
+  return last_eval
+end

@@ -10,4 +10,10 @@ func int test(int a) {
   #  return a + b
 #}
 
-test(6) + 10 * test(2)
+#test(6) + 10 * test(2)
+int i = 0
+while i < 10 {
+  i = i + 1
+}
+
+i

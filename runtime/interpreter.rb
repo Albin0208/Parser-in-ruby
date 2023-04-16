@@ -39,6 +39,8 @@ class Interpreter
       eval_call_expr(ast_node, env)
     when NODE_TYPES[:ReturnStmt]
       eval_return_stmt(ast_node, env)
+    when NODE_TYPES[:WHILE_LOOP]
+      eval_while_stmt(ast_node, env)
     when NODE_TYPES[:IF]
       eval_if_statement(ast_node, env)
     when NODE_TYPES[:Boolean]
