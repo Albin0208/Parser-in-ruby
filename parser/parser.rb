@@ -108,20 +108,9 @@ class Parser
   #
   # @return [Expr] An expression matching the tokens
   #
-  # def parse_identifier
-  #   case next_token().type
-  #   when TokenType::LPAREN
-  #     left = parse_func_call()
-  #     if at().type == TokenType::BINARYOPERATOR
-  #       op = eat().value
-  #       right = parse_expr()
-  #       return BinaryExpr.new(left, op, right)
-  #     end
-  #     return left
-  #   when TokenType::BINARYOPERATOR
-  #     return parse_expr()
-  #   end
-  # end
+  def parse_identifier
+    return Identifier.new(expect(TokenType::IDENTIFIER).value)
+  end
 
   #
   # Parses a return statement
@@ -364,7 +353,7 @@ class Parser
   # @return [AssignmentExpr] The AST node
   def parse_assignment_stmt
     @logger.debug('Parsing assign expression')
-    identifier = Identifier.new(expect(TokenType::IDENTIFIER).value)
+    identifier = parse_identifier()
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
@@ -399,7 +388,7 @@ class Parser
   # @return [Expr] The function call
   #
   def parse_func_call
-    identifier = Identifier.new(expect(TokenType::IDENTIFIER).value)
+    identifier = parse_identifier()
     expect(TokenType::LPAREN) # eat the start paren
 
     # Parse any params
@@ -527,7 +516,7 @@ class Parser
       if next_token().type == TokenType::LPAREN
         return parse_func_call()
       end
-      return Identifier.new(expect(TokenType::IDENTIFIER).value)
+      return parse_identifier()
     when TokenType::INTEGER
       return NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
     when TokenType::FLOAT
