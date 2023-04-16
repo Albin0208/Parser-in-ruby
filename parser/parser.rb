@@ -93,7 +93,14 @@ class Parser
 
   def parse_while_stmt
     expect(TokenType::WHILE)
-    parse_conditional_condition()
+    condition = parse_conditional_condition() # Parse the loop condition
+
+    # Parse the loop body
+    expect(TokenType::LBRACE)
+    body = parse_conditional_body()
+    expect(TokenType::RBRACE)
+
+    return WhileStmt.new(body, condition)
   end
 
   #
