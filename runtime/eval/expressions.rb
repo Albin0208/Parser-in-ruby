@@ -53,7 +53,7 @@ def eval_method_call_expr(ast_node, call_env)
   unless evaled_expr.class.instance_methods(false).include?(ast_node.method_name.to_sym)
     raise "#{ast_node.method_name} is not defined in #{evaled_expr.class}"
   end
-  # Grab the method
+  # Grab the methods
   method = evaled_expr.method(ast_node.method_name)
 
   args = ast_node.params.map() { |param| evaluate(param, call_env)}

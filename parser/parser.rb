@@ -394,6 +394,7 @@ class Parser
         expr = MethodCallExpr.new(expr, method_name.symbol, params)
       else # Parse a property access
         # TODO Implement property access
+        raise "Properties not implemented yet"
       end
     end
 
