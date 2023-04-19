@@ -109,10 +109,12 @@ class NumberVal < RunTimeVal
   end
 
   def to_int()
+    puts "To int called"
     return NumberVal.new(@value.to_i)
   end
 
   def to_float()
+    puts "To float called"
     return NumberVal.new(@value.to_f)
   end
 end

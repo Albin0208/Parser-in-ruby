@@ -393,7 +393,7 @@ class Parser
         expect(TokenType::RPAREN)
         expr = MethodCallExpr.new(expr, method_name.symbol, params)
       else # Parse a property access
-
+        # TODO Implement property access
       end
     end
 

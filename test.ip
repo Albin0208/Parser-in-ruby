@@ -13,16 +13,4 @@ func int test(int a) {
 #test(6) + 10 * test(2)
 int n = 10
 
-int a = 0
-int b = 1
-
-int count = 2
-while count <= n {
-  int c = a + b
-  a = b
-  b = c
-  count = count + 1
-  print(a)
-}
-
-a
+print(test(2).to_float().to_int().to_s())
