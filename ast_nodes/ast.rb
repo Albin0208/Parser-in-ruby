@@ -9,6 +9,7 @@ NODE_TYPES = {
   WHILE_LOOP: :WHILE_LOOP,
 
   # Expressions
+  MethodCallExpr: :MethodCallExpr,
   CallExpr: :CallExpr,
   AssignmentExpr: :AssignmentExpr,
   LogicalAnd: :LogicalAnd,
@@ -251,6 +252,34 @@ end
 
 # This class represents the ast node for a expression
 class Expr < Stmt
+end
+
+class MethodCallExpr < Expr
+  attr_reader :expr, :method_name, :params
+
+  #
+  # Creates the callexpr node
+  #
+  # @param [String] func_name The name of the function to call
+  # @param [Array] params A list of params that should be sent to the function later
+  #
+  def initialize(expr, method_name, params)
+    super(NODE_TYPES[:MethodCallExpr])
+    @expr = expr
+    @method_name = method_name
+    @params = params
+  end
+
+  def to_s
+    "Method name: #{@method_name}, Params: #{@params}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * (indent + 2)} Method name: #{method_name}"
+    puts "#{' ' * indent} Params:"
+    @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
+  end
 end
 
 #

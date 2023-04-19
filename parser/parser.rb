@@ -68,7 +68,7 @@ class Parser
   end
 
   #
-  # Parses loops
+  # Parse loops
   #
   # @return [Expr] The loop
   #
@@ -369,17 +369,35 @@ class Parser
   #
   # @return [Expr] The AST node matched
   def parse_expr
+    expr = nil
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
       func_call = parse_func_call()
       if at().type == TokenType::BINARYOPERATOR
         op = eat().value
         right = parse_expr()
-        return BinaryExpr.new(func_call, op, right)
+        expr = BinaryExpr.new(func_call, op, right)
+      else
+        expr = func_call
       end
-      return func_call
     else
-      return parse_logical_expr()
+      expr = parse_logical_expr()
     end
+
+    while at().type == TokenType::DOT
+      expect(TokenType::DOT)
+      # Parses a method call
+      if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
+        method_name = parse_identifier()
+        expect(TokenType::LPAREN)
+        params = parse_function_params()
+        expect(TokenType::RPAREN)
+        expr = MethodCallExpr.new(expr, method_name.symbol, params)
+      else # Parse a property access
+
+      end
+    end
+
+    return expr
   end
 
   #
