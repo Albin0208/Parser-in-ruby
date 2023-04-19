@@ -46,6 +46,16 @@ def eval_assignment_expr(ast_node, env)
   env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
 end
 
+def eval_method_call_expr(ast_node, call_env)
+  evaled_expr = evaluate(ast_node.expr, call_env)
+  # TODO Fix another error message
+  # Grab the method
+  method = evaled_expr.method(ast_node.method_name)
+  args = ast_node.params.map() { |param| evaluate(param, call_env)}
+
+  return method.call(*args)
+end
+
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
   if function.instance_of?(Symbol) && function == :native_func

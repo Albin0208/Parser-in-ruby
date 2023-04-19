@@ -35,6 +35,8 @@ class Interpreter
       eval_var_declaration(ast_node, env)
     when NODE_TYPES[:FuncDeclaration]
       eval_func_declaration(ast_node, env)
+    when NODE_TYPES[:MethodCallExpr]
+      eval_method_call_expr(ast_node, env)
     when NODE_TYPES[:CallExpr]
       eval_call_expr(ast_node, env)
     when NODE_TYPES[:ReturnStmt]
