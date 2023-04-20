@@ -149,6 +149,10 @@ class StringVal < RunTimeVal
   def to_float()
     return NumberVal.new(@value.to_f)
   end
+
+  def length
+    return NumberVal.new(@value.length)
+  end
 end
 
 class BooleanVal < RunTimeVal

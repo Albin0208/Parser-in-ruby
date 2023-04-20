@@ -64,10 +64,18 @@ def eval_return_stmt(ast_node, env)
   raise ReturnSignal.new(last_eval)
 end
 
+#
+# Evaluate a while statement
+#
+# @param [WhileStmt] ast_node The while statement
+# @param [Environment] env The current environment
+#
+# @return [RuntimeVal] The result of the evaluation
+#
 def eval_while_stmt(ast_node, env)
   last_eval = NullVal.new
   while eval_condition(ast_node.conditions, env)
-    while_env = Environment.new(env)
+    while_env = Environment.new(env) # Setup a new environment for the while loop
     ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
   end
 
@@ -83,7 +91,6 @@ end
 # @return [Boolean] True or false depinding on the result of the condition
 #
 def eval_condition(condition, env)
-  p condition.class
   evaled_condition = evaluate(condition, env)
 
   if evaled_condition.instance_of?(NullVal)
