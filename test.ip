@@ -13,4 +13,4 @@ func int test(int a) {
 #test(6) + 10 * test(2)
 int n = 10
 
-print(test(2).to_float().to_int().to_s())
+print(test(2).to_float().to_int())

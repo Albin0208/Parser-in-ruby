@@ -57,6 +57,10 @@ class RunTimeVal
   def to_s
     @value
   end
+
+  def type
+    return @type
+  end
 end
 
 class NumberVal < RunTimeVal
