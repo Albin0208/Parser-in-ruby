@@ -13,7 +13,7 @@ class TestInterpreterVar < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['x'])
+    assert_instance_of(IntegerVal, @env.identifiers['x'])
     assert_equal(5, @env.identifiers['x'].value)
 
     # Test empty var declaration
@@ -28,7 +28,7 @@ class TestInterpreterVar < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['t'])
+    assert_instance_of(IntegerVal, @env.identifiers['t'])
     assert_equal(5, @env.identifiers['t'].value)
     assert_true(@env.constants.include?('t'))
 
@@ -36,7 +36,7 @@ class TestInterpreterVar < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5.34, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['y'])
+    assert_instance_of(FloatVal, @env.identifiers['y'])
     assert_equal(5.34, @env.identifiers['y'].value)
 
     input = "bool b = true"
@@ -55,49 +55,49 @@ class TestInterpreterVar < Test::Unit::TestCase
   end
 
   def test_evaluate_retrieval_of_var
-    @env.declare_var('x', NumberVal.new(10), 'int', false) # Declare the var in the env
+    @env.declare_var('x', IntegerVal.new(10), 'int', false) # Declare the var in the env
 
     input = "x"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(10, result.value)
   end
 
   def test_evaluate_var_assignment_expr
-    @env.declare_var('x', NumberVal.new(10), 'int', false)
+    @env.declare_var('x', IntegerVal.new(10), 'int', false)
     input = "x = 5"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['x'])
+    assert_instance_of(IntegerVal, @env.identifiers['x'])
     assert_equal(5, @env.identifiers['x'].value)
   end
 
   def test_evaluate_int_and_float_assignment_conversion
-    @env.declare_var('x', NumberVal.new(10), 'int', false)
+    @env.declare_var('x', IntegerVal.new(10), 'int', false)
     input = "x = 5.3"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['x'])
+    assert_instance_of(IntegerVal, @env.identifiers['x'])
     assert_equal(5, @env.identifiers['x'].value)
 
-    @env.declare_var('y', NumberVal.new(10.3), 'float', false)
+    @env.declare_var('y', IntegerVal.new(10.3), 'float', false)
     input = "y = 5"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_equal(5, result.value)
-    assert_instance_of(NumberVal, @env.identifiers['x'])
+    assert_instance_of(IntegerVal, @env.identifiers['x'])
     assert_equal(5.0, @env.identifiers['x'].value)
   end
 
   def test_evaluate_invalid_var_assignment_expr
-    @env.declare_var('x', NumberVal.new(10), 'int', false)
-    assert_raise(RuntimeError) { @env.declare_var('x', NumberVal.new(10), false, 'int') }
+    @env.declare_var('x', IntegerVal.new(10), 'int', false)
+    assert_raise(RuntimeError) { @env.declare_var('x', IntegerVal.new(10), false, 'int') }
 
     # Test reassign of const value
-    @env.declare_var('c', NumberVal.new(10), 'int', true)
+    @env.declare_var('c', IntegerVal.new(10), 'int', true)
     input = "c = 5"
     ast = @parser.produce_ast(input)
     assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }

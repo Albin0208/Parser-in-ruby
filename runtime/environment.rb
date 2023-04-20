@@ -90,13 +90,13 @@ class Environment
     end
   
     var_type = env.identifiers_type[varname]
-    
-    if value.type == :number
+
+    if value.type == :int || value.type == :float
       case var_type
       when 'int'
-        value = NumberVal.new(value.value.to_i)
+        value = IntegerVal.new(value.value.to_i)
       when 'float'
-        value = NumberVal.new(value.value.to_f)
+        value = FloatVal.new(value.value.to_f)
       end
     elsif value.type != var_type
       raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."

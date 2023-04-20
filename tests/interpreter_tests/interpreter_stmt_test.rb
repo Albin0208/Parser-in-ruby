@@ -13,7 +13,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     input = "if true && true { 3 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(3, result.value)
 
     # Test a if evaling to false
@@ -27,7 +27,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     input = "if 5 > 3 { 3 + 3 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(6, result.value)
   end
 
@@ -36,14 +36,14 @@ class TestInterpreterStatement < Test::Unit::TestCase
     input = "if false { 3 } elsif true { 4 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(4, result.value)
 
     # Test with multiple elsif
     input = "if false && true { 3 } elsif false { 4 } elsif true { 6 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(6, result.value)
   end
 
@@ -52,14 +52,14 @@ class TestInterpreterStatement < Test::Unit::TestCase
     input = "if false { 3 } else { 45 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(45, result.value)
 
     # Test a if evaling to false and else running
     input = "if 5 < 3 {3} elsif false { 4 } elsif 6 > 100 { 10 } else { 2 }"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
     assert_equal(2, result.value)
   end
 
@@ -73,7 +73,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
 
     # Evaluate program
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(IntegerVal, result)
 
     # Check variables
     assert_equal(7, @env.identifiers['x'].value)

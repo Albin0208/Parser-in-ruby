@@ -14,8 +14,8 @@ def eval_var_declaration(ast_node, env)
   unless value.instance_of?(NullVal)
     # Convert to correct data type for int and float calculations
     value = case ast_node.value_type
-            when 'int' then NumberVal.new(value.value.to_i)
-            when 'float' then NumberVal.new(value.value.to_f)
+            when 'int' then IntegerVal.new(value.value.to_i)
+            when 'float' then FloatVal.new(value.value.to_f)
             else value
             end
   end

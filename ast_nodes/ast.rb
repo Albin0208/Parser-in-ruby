@@ -25,8 +25,8 @@ NODE_TYPES = {
 
 NODE_TYPES_CONVERTER = {
   bool: :boolean,
-  int: :number,
-  float: :number,
+  # int: :number,
+  # float: :number,
   string: :string
 }.freeze
 
@@ -419,16 +419,17 @@ end
 
 # This class represents the ast node for a numericliteral
 class NumericLiteral < Expr
-  attr_accessor :value
+  attr_accessor :value, :numeric_type
 
   #
   # Creates a numeric node
   #
   # @param [int, float] value The number the numeric node, can be an int or float
   #
-  def initialize(value)
+  def initialize(value, type)
     super(NODE_TYPES[:NumericLiteral])
     @value = value
+    @numeric_type = type
   end
 
   def to_s

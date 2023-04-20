@@ -25,9 +25,9 @@ def eval_unary_expr(binop, env)
   lhs = evaluate(binop.left, env)
   case binop.op
   when :-
-    NumberVal.new(-lhs.value)
+    return lhs.instance_of?(IntegerVal) ? IntegerVal.new(-lhs.value) : FloatVal.new(-lhs.value)
   when :+
-    NumberVal.new(+lhs.value)
+    return lhs.instance_of?(IntegerVal) ? IntegerVal.new(-lhs.value) : FloatVal.new(-lhs.value)
   when :!
     BooleanVal.new(!lhs.value)
   end
@@ -65,10 +65,6 @@ end
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
   if function.instance_of?(Symbol) && function == :native_func
-    # p ast_node.func_name.symbol
-    # p ast_node.params
-    # p evaluate(ast_node.params[0], call_env)
-    # puts 
     param_results = []
     ast_node.params.map() { |param| 
       evaled = evaluate(param, call_env)
@@ -89,6 +85,9 @@ def eval_call_expr(ast_node, call_env)
   function.params.zip(ast_node.params) { |func_param, call_param| 
     # Get the node_type of the value
     type = NODE_TYPES_CONVERTER[func_param.value_type.to_sym]
+    if type == nil
+      type = func_param.value_type.to_sym
+    end
 
     evaled_call_param = evaluate(call_param, call_env)
 
@@ -99,9 +98,9 @@ def eval_call_expr(ast_node, call_env)
     # Convert int passed to float and float passed to int
     case func_param.value_type
     when 'int'
-      evaled_call_param = NumberVal.new(evaled_call_param.value.to_i)
+      evaled_call_param = IntegerVal.new(evaled_call_param.value.to_i)
     when 'float'
-      evaled_call_param = NumberVal.new(evaled_call_param.value.to_f)
+      evaled_call_param = FloatVal.new(evaled_call_param.value.to_f)
     end
 
     # Declare any var params
@@ -117,7 +116,7 @@ def eval_call_expr(ast_node, call_env)
   end
 
   # Check that the return value is the same type as the return type of the function
-  return_type = { 'int': :number, 'float': :number, 'bool': :boolean, 'string': :boolean }[function.type_specifier.to_sym]
+  return_type = {'bool': :boolean, 'string': :boolean }.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
   unless return_value.type == return_type
     raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
   end

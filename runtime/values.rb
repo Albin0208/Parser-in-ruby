@@ -68,25 +68,25 @@ class NumberVal < RunTimeVal
     super(value, :number)
   end
 
-  def +(other)
-    NumberVal.new(@value + other.value)
-  end
+  # def +(other)
+  #   NumberVal.new(@value + other.value)
+  # end
 
-  def -(other)
-    NumberVal.new(@value - other.value)
-  end
+  # def -(other)
+  #   NumberVal.new(@value - other.value)
+  # end
 
-  def *(other)
-    NumberVal.new(@value * other.value)
-  end
+  # def *(other)
+  #   NumberVal.new(@value * other.value)
+  # end
 
-  def /(other)
-    NumberVal.new(@value / other.value)
-  end
+  # def /(other)
+  #   NumberVal.new(@value / other.value)
+  # end
 
-  def %(other)
-    NumberVal.new(@value % other.value)
-  end
+  # def %(other)
+  #   NumberVal.new(@value % other.value)
+  # end
 
   def <(other)
     BooleanVal.new(@value < other.value)
@@ -113,11 +113,64 @@ class NumberVal < RunTimeVal
   end
 
   def to_int()
-    return NumberVal.new(@value.to_i)
+    return IntegerVal.new(@value.to_i)
   end
 
   def to_float()
-    return NumberVal.new(@value.to_f)
+    return FloatVal.new(@value.to_f)
+  end
+end
+
+class IntegerVal < NumberVal
+  def initialize(value)
+    super(value)
+    @type = :int
+  end
+
+  def +(other)
+    IntegerVal.new(@value + other.value)
+  end
+
+  def -(other)
+    IntegerVal.new(@value - other.value)
+  end
+
+  def *(other)
+    IntegerVal.new(@value * other.value)
+  end
+
+  def /(other)
+    IntegerVal.new(@value / other.value)
+  end
+
+  def %(other)
+    IntegerVal.new(@value % other.value)
+  end
+end
+class FloatVal < NumberVal
+  def initialize(value)
+    super(value)
+    @type = :float
+  end
+
+  def +(other)
+    FloatVal.new(@value + other.value)
+  end
+
+  def -(other)
+    FloatVal.new(@value - other.value)
+  end
+
+  def *(other)
+    FloatVal.new(@value * other.value)
+  end
+
+  def /(other)
+    FloatVal.new(@value / other.value)
+  end
+
+  def %(other)
+    FloatVal.new(@value % other.value)
   end
 end
 
@@ -143,15 +196,15 @@ class StringVal < RunTimeVal
   end
 
   def to_int()
-    return NumberVal.new(@value.to_i)
+    return IntegerVal.new(@value.to_i)
   end
 
   def to_float()
-    return NumberVal.new(@value.to_f)
+    return FloatVal.new(@value.to_f)
   end
 
   def length
-    return NumberVal.new(@value.length)
+    return IntegerVal.new(@value.length)
   end
 end
 

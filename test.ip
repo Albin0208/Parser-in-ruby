@@ -22,3 +22,10 @@ print(1 + "hej".length() + ("hej".length() + "h".length()))
 
 test(0) + 2 + "hej".length()
 
+func bool boolean() {
+  return false
+}
+
+print(boolean().type())
+print(1.0.to_int() + 4)
+print(1.type())
