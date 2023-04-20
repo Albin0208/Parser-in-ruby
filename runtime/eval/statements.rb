@@ -77,7 +77,7 @@ end
 #
 # Evaluates a condition, For example for a if statement
 #
-# @param [<Type>] condition The condition to be evaluated
+# @param [Expr | NullLiteral] condition The condition to be evaluated
 # @param [Environment] env The current environment
 #
 # @return [Boolean] True or false depinding on the result of the condition
