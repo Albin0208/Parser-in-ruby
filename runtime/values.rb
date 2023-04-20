@@ -1,5 +1,5 @@
 class RunTimeVal
-  attr_reader :value, :type
+  attr_reader :value#, :type
 
   def initialize(value, type)
     @value = value
@@ -47,11 +47,11 @@ class RunTimeVal
   end
 
   def !=(other)
-    raise TypeError, "unsupported operand types for !=: #{@type} and #{other.type}"
+    BooleanVal.new(@value == other.value && @type == other.type)
   end
 
   def ==(other)
-    @value == other.value && @type == other.type
+    BooleanVal.new(@value == other.value && @type == other.type)
   end
 
   def to_s
@@ -113,12 +113,10 @@ class NumberVal < RunTimeVal
   end
 
   def to_int()
-    puts "To int called"
     return NumberVal.new(@value.to_i)
   end
 
   def to_float()
-    puts "To float called"
     return NumberVal.new(@value.to_f)
   end
 end
@@ -142,6 +140,14 @@ class StringVal < RunTimeVal
 
   def ==(other)
     BooleanVal.new(@value == other.value)
+  end
+
+  def to_int()
+    return NumberVal.new(@value.to_i)
+  end
+
+  def to_float()
+    return NumberVal.new(@value.to_f)
   end
 end
 

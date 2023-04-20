@@ -14,3 +14,9 @@ func int test(int a) {
 int n = 10
 
 print(test(2).to_float().to_int())
+
+if null {
+  print(3)
+} else {
+  print(5)
+}

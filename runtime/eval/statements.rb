@@ -31,7 +31,7 @@ def eval_if_statement(ast_node, env)
   last_eval = NullVal.new
 
   # Check if the conditions of the statement is evaled to true
-  if evaluate(ast_node.conditions, env).value
+  if eval_condition(ast_node.conditions, env)
     # Set up new env for if so vars die after if is done
     if_env = Environment.new(env)
     # Eval the body of the if
@@ -40,7 +40,7 @@ def eval_if_statement(ast_node, env)
   end
   if !ast_node.elsif_stmts.nil?
     ast_node.elsif_stmts.each do |stmt|
-      if evaluate(stmt.conditions, env).value
+      if eval_condition(stmt.conditions, env)
         # Set up new env for if so vars die after if is done
         elsif_env = Environment.new(env)
         stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
@@ -66,10 +66,19 @@ end
 
 def eval_while_stmt(ast_node, env)
   last_eval = NullVal.new
-  while evaluate(ast_node.conditions, env).value
+  while eval_condition(ast_node.conditions, env)
     while_env = Environment.new(env)
     ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
   end
 
   return last_eval
+end
+
+def eval_condition(condition, env)
+  evaled_condition = evaluate(condition, env)
+
+  if evaled_condition.instance_of?(NullVal)
+    return false
+  end
+    return evaled_condition.value
 end
