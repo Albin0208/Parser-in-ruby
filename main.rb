@@ -21,10 +21,10 @@ def main
   if !file.nil?
     program = parser.produce_ast(File.read(file))
     puts program.to_s if debugging
+    program.display_info if debugging
 
     result = interpreter.evaluate(program, env)
 
-    program.display_info if debugging
     puts result.to_s
   else
     puts "Type 'exit' to quit"

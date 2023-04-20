@@ -65,8 +65,14 @@ end
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
   if function.instance_of?(Symbol) && function == :native_func
+    # p ast_node.func_name.symbol
+    # p ast_node.params
+    # p evaluate(ast_node.params[0], call_env)
+    # puts 
     param_results = []
-    ast_node.params.map() { |param| param_results << evaluate(param, call_env).value}
+    ast_node.params.map() { |param| 
+      evaled = evaluate(param, call_env)
+      param_results.push(evaled.instance_variable_defined?(:@value) ? evaled.value : evaled) }
     NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
     return nil
   end

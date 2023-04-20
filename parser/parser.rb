@@ -371,34 +371,81 @@ class Parser
   def parse_expr
     expr = nil
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-      func_call = parse_func_call()
-      if at().type == TokenType::BINARYOPERATOR
-        op = eat().value
-        right = parse_expr()
-        expr = BinaryExpr.new(func_call, op, right)
-      else
-        expr = func_call
-      end
+      expr = parse_func_call()
+      # if at().type == TokenType::BINARYOPERATOR
+      #   op = eat().value
+      #   right = parse_expr()
+      #   expr = BinaryExpr.new(expr, op, right)
+      # # else
+      # #   expr = func_call
+      # end
     else
       expr = parse_logical_expr()
     end
 
     while at().type == TokenType::DOT
       expect(TokenType::DOT)
-      # Parses a method call
-      if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-        method_name = parse_identifier()
-        expect(TokenType::LPAREN)
-        params = parse_function_params()
-        expect(TokenType::RPAREN)
-        expr = MethodCallExpr.new(expr, method_name.symbol, params)
-      else # Parse a property access
-        # TODO Implement property access
-        raise "Properties not implemented yet"
-      end
+      expr = parse_method_and_property_call(expr)
+
+      # if at().type == TokenType::BINARYOPERATOR
+      #   op = eat().value
+      #   right = parse_expr()
+      #   expr = BinaryExpr.new(expr, op, right)
+      # end
+    end
+
+    if at().type == TokenType::BINARYOPERATOR
+      op = eat().value
+      right = parse_expr()
+      expr = BinaryExpr.new(expr, op, right)
     end
 
     return expr
+  end
+
+  #
+  # Parses a method or property call
+  #
+  # @param [Expr] expr The expression
+  #
+  # @return [Expr] A MethodCallExpr, PropertyCallExpr
+  #
+  def parse_method_and_property_call(expr)
+    identifier = parse_identifier()
+    # Parses a method call
+    if at().type == TokenType::LPAREN
+      return parse_method_call(expr, identifier)
+    else # Parse a property access
+      return parse_property_access(expr, identifier)
+    end
+  end
+
+  #
+  # Parse a method call
+  #
+  # @param [Expr] expr The expression the method is called on
+  # @param [Identifier] method_name The name of the method
+  #
+  # @return [MethodCallExpr] The method call
+  #
+  def parse_method_call(expr, method_name)
+    expect(TokenType::LPAREN)
+    params = parse_function_params()
+    expect(TokenType::RPAREN)
+    return MethodCallExpr.new(expr, method_name.symbol, params)
+  end
+  
+  #
+  # Parse a property call
+  #
+  # @param [Expr] expr The expression the property is called on
+  # @param [Identifier] property_name The name of the property
+  #
+  # @return [PropertyCallExpr] The property call
+  #
+  def parse_property_access(expr, property_name)
+    # TODO Implement property access
+    raise "Properties not implemented yet"
   end
 
   #
@@ -423,17 +470,6 @@ class Parser
     expect(TokenType::RPAREN) # Find ending paren
     return CallExpr.new(identifier, params)
   end
-
-  # Orders of Precedence (Lowests to highest)
-  # AssignmentExpr
-  # MemberExpr
-  # FunctionCall
-  # Logical
-  # Comparison
-  # AdditiveExpr
-  # MultiplyExpr
-  # UnaryExpr
-  # PrimaryExpr
 
   # Parses a logical expression
   #
@@ -530,20 +566,22 @@ class Parser
   #
   # @return [Expr] The AST node matching the parsed expr
   def parse_primary_expr
+    expr = nil
     case at().type
     when TokenType::IDENTIFIER
       if next_token().type == TokenType::LPAREN
-        return parse_func_call()
+        expr = parse_func_call()
+      else
+        expr = parse_identifier()
       end
-      return parse_identifier()
     when TokenType::INTEGER
-      return NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
+      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i)
     when TokenType::FLOAT
-      return NumericLiteral.new(expect(TokenType::FLOAT).value.to_f)
+      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f)
     when TokenType::BOOLEAN
-      return BooleanLiteral.new(eat().value == "true")
+      expr = BooleanLiteral.new(eat().value == "true")
     when TokenType::STRING
-      return StringLiteral.new(expect(TokenType::STRING).value.to_s)
+      expr = StringLiteral.new(expect(TokenType::STRING).value.to_s)
     when TokenType::LPAREN
       expect(TokenType::LPAREN) # Eat opening paren
       value = parse_expr()
@@ -555,7 +593,21 @@ class Parser
     else
       raise InvalidTokenError.new("Unexpected token found: #{at()}")
     end
+
+    while at().type == TokenType::DOT
+      expect(TokenType::DOT)
+      expr = parse_method_and_property_call(expr)
+
+      if at().type == TokenType::BINARYOPERATOR
+        op = eat().value
+        right = parse_expr()
+        expr = BinaryExpr.new(expr, op, right)
+      end
+    end
+
+    return expr
   end
+
 
   ##################################################
   # 				Helper functions				 #
