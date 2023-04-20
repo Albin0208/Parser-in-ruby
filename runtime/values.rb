@@ -64,29 +64,29 @@ class RunTimeVal
 end
 
 class NumberVal < RunTimeVal
-  def initialize(value)
-    super(value, :number)
+  def initialize(value, type)
+    super(value, type)
   end
 
-  # def +(other)
-  #   NumberVal.new(@value + other.value)
-  # end
+  def +(other)
+    NumberVal.new(@value + other.value, type)
+  end
 
-  # def -(other)
-  #   NumberVal.new(@value - other.value)
-  # end
+  def -(other)
+    NumberVal.new(@value - other.value, type)
+  end
 
-  # def *(other)
-  #   NumberVal.new(@value * other.value)
-  # end
+  def *(other)
+    NumberVal.new(@value * other.value, type)
+  end
 
-  # def /(other)
-  #   NumberVal.new(@value / other.value)
-  # end
+  def /(other)
+    NumberVal.new(@value / other.value, type)
+  end
 
-  # def %(other)
-  #   NumberVal.new(@value % other.value)
-  # end
+  def %(other)
+    NumberVal.new(@value % other.value, type)
+  end
 
   def <(other)
     BooleanVal.new(@value < other.value)
@@ -113,66 +113,66 @@ class NumberVal < RunTimeVal
   end
 
   def to_int()
-    return IntegerVal.new(@value.to_i)
+    return NumberVal.new(@value.to_i, :int)
   end
 
   def to_float()
-    return FloatVal.new(@value.to_f)
+    return NumberVal.new(@value.to_f, :float)
   end
 end
 
-class IntegerVal < NumberVal
-  def initialize(value)
-    super(value)
-    @type = :int
-  end
+# class IntegerVal < NumberVal
+#   def initialize(value)
+#     super(value)
+#     @type = :int
+#   end
 
-  def +(other)
-    IntegerVal.new(@value + other.value)
-  end
+#   def +(other)
+#     IntegerVal.new(@value + other.value)
+#   end
 
-  def -(other)
-    IntegerVal.new(@value - other.value)
-  end
+#   def -(other)
+#     IntegerVal.new(@value - other.value)
+#   end
 
-  def *(other)
-    IntegerVal.new(@value * other.value)
-  end
+#   def *(other)
+#     IntegerVal.new(@value * other.value)
+#   end
 
-  def /(other)
-    IntegerVal.new(@value / other.value)
-  end
+#   def /(other)
+#     IntegerVal.new(@value / other.value)
+#   end
 
-  def %(other)
-    IntegerVal.new(@value % other.value)
-  end
-end
-class FloatVal < NumberVal
-  def initialize(value)
-    super(value)
-    @type = :float
-  end
+#   def %(other)
+#     IntegerVal.new(@value % other.value)
+#   end
+# end
+# class FloatVal < NumberVal
+#   def initialize(value)
+#     super(value)
+#     @type = :float
+#   end
 
-  def +(other)
-    FloatVal.new(@value + other.value)
-  end
+#   def +(other)
+#     FloatVal.new(@value + other.value)
+#   end
 
-  def -(other)
-    FloatVal.new(@value - other.value)
-  end
+#   def -(other)
+#     FloatVal.new(@value - other.value)
+#   end
 
-  def *(other)
-    FloatVal.new(@value * other.value)
-  end
+#   def *(other)
+#     FloatVal.new(@value * other.value)
+#   end
 
-  def /(other)
-    FloatVal.new(@value / other.value)
-  end
+#   def /(other)
+#     FloatVal.new(@value / other.value)
+#   end
 
-  def %(other)
-    FloatVal.new(@value % other.value)
-  end
-end
+#   def %(other)
+#     FloatVal.new(@value % other.value)
+#   end
+# end
 
 class StringVal < RunTimeVal
   def initialize(value)
@@ -195,16 +195,8 @@ class StringVal < RunTimeVal
     BooleanVal.new(@value == other.value)
   end
 
-  def to_int()
-    return IntegerVal.new(@value.to_i)
-  end
-
-  def to_float()
-    return FloatVal.new(@value.to_f)
-  end
-
   def length
-    return IntegerVal.new(@value.length)
+    return NumberVal.new(@value.length, :int)
   end
 end
 

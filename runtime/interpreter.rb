@@ -14,12 +14,7 @@ class Interpreter
   def evaluate(ast_node, env)
     case ast_node.type
     when NODE_TYPES[:NumericLiteral]
-      case ast_node.numeric_type
-      when TokenType::FLOAT
-        FloatVal.new(ast_node.value)
-      when TokenType::INTEGER
-        IntegerVal.new(ast_node.value)
-      end
+      NumberVal.new(ast_node.value, ast_node.numeric_type)
     when NODE_TYPES[:String]
       StringVal.new(ast_node.value)
     when NODE_TYPES[:Identifier]

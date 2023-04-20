@@ -25,9 +25,9 @@ def eval_unary_expr(binop, env)
   lhs = evaluate(binop.left, env)
   case binop.op
   when :-
-    return lhs.instance_of?(IntegerVal) ? IntegerVal.new(-lhs.value) : FloatVal.new(-lhs.value)
+    return NumberVal.new(-lhs.value, lhs.type)
   when :+
-    return lhs.instance_of?(IntegerVal) ? IntegerVal.new(-lhs.value) : FloatVal.new(-lhs.value)
+    return NumberVal.new(-lhs.value, lhs.type)
   when :!
     BooleanVal.new(!lhs.value)
   end
@@ -98,9 +98,9 @@ def eval_call_expr(ast_node, call_env)
     # Convert int passed to float and float passed to int
     case func_param.value_type
     when 'int'
-      evaled_call_param = IntegerVal.new(evaled_call_param.value.to_i)
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_i, :int)
     when 'float'
-      evaled_call_param = FloatVal.new(evaled_call_param.value.to_f)
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_f, :float)
     end
 
     # Declare any var params

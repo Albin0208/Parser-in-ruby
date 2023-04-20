@@ -575,9 +575,9 @@ class Parser
         expr = parse_identifier()
       end
     when TokenType::INTEGER
-      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, TokenType::INTEGER)
+      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int)
     when TokenType::FLOAT
-      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, TokenType::FLOAT)
+      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float)
     when TokenType::BOOLEAN
       expr = BooleanLiteral.new(eat().value == "true")
     when TokenType::STRING
