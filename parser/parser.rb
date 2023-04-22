@@ -136,7 +136,7 @@ class Parser
     
     # Parse all key value pairs
     while at().type != TokenType::RBRACE
-      key = expect(TokenType::STRING).value
+      key = StringLiteral.new(expect(TokenType::STRING).value.to_s) # TODO Maybe only have value and not string literal
       # Check if key allready has been defined
       if keys.include?(key)
         raise "Error: Key: '#{key}' already exists in hash"
@@ -471,6 +471,15 @@ class Parser
       # # else
       # #   expr = func_call
       # end
+    elsif at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LBRACKET # Parse array and hash access
+      identifier = parse_identifier()
+      expect(TokenType::LBRACKET)
+
+      access_key = parse_expr()
+
+      expect(TokenType::RBRACKET)
+
+      expr = ContainerAccessor.new(identifier, access_key)
     else
       expr = parse_logical_expr()
     end

@@ -12,6 +12,7 @@ NODE_TYPES = {
   # Expressions
   MethodCallExpr: :MethodCallExpr,
   CallExpr: :CallExpr,
+  ContainerAccessor: :ContainerAccessor,
   AssignmentExpr: :AssignmentExpr,
   LogicalAnd: :LogicalAnd,
   LogicalOr: :LogicalOr,
@@ -346,6 +347,24 @@ class CallExpr < Expr
     puts "#{' ' * (indent + 2)} Func name: #{func_name}"
     puts "#{' ' * indent} Params:"
     @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
+  end
+end
+
+class ContainerAccessor < Expr
+  def initialize(identifier, access_key)
+    super(NODE_TYPES[:ContainerAccessor])
+    @identifier = identifier
+    @access_key = access_key
+  end
+
+  def to_s
+    "Identifier: #{@identifier}, Key: #{@access_key}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    puts "#{' ' * (indent + 2)} Identifier: #{@identifier}"
+    puts "#{' ' * (indent + 2)} Key: #{@access_key}"
   end
 end
 

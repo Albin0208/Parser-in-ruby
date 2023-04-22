@@ -16,6 +16,8 @@ TOKEN_TYPES = [
   [:rparen, /\A\)/],
   [:lbrace, /\A\{/],
   [:rbrace, /\A\}/],
+  [:lbracket, /\A\[/],
+  [:rbracket, /\A\]/],
   [:assign, /\A=/],
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:comma, /\A,/],

@@ -14,7 +14,7 @@
     - [ ] Break statement to exit early
 - [x] Native functions, like print() and so on
 - [ ] Hashmap
-    - [ ] HashLiteral
+    - [x] HashLiteral
     - [ ] Hash accessor
 - [x] Functions
     - [x] Function Declaration
