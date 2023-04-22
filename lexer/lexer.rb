@@ -32,6 +32,7 @@ KEYWORDS = {
   false: TokenType::BOOLEAN,
   null: TokenType::NULL,
   return: TokenType::RETURN,
+  Hash: TokenType::HASH,
 
   # Loops
   for: TokenType::FOR,

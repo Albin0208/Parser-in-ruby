@@ -29,3 +29,5 @@ func bool boolean() {
 print(boolean().type())
 print(1.0.to_int() + 4)
 print(1.type())
+
+int a = test(5)

@@ -2,6 +2,7 @@ NODE_TYPES = {
   # Statements
   Program: :Program,
   VarDeclaration: :VarDeclaration,
+  HashDeclaration: :HashDeclaration,
   FuncDeclaration: :FuncDeclaration,
   ReturnStmt: :ReturnStmt,
   IF: :IF,
@@ -18,6 +19,7 @@ NODE_TYPES = {
   BinaryExpr: :BinaryExpr,
   Identifier: :Identifier,
   NumericLiteral: :NumericLiteral,
+  HashLiteral: :HashLiteral,
   Boolean: :Boolean,
   String: :String,
   Null: :Null
@@ -96,6 +98,40 @@ class VarDeclaration < Stmt
 
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}: #{@constant} #{@identifier} #{@value_type}"
+    @value&.display_info(indent + 2)
+  end
+end
+
+class HashDeclaration < Stmt
+  attr_reader :value, :identifier, :constant, :key_type, :value_type
+
+  #
+  # Creates an hash declaration node
+  #
+  # @param [Boolean] constant If this var should be a constant
+  # @param [Identifier] identifier The identifier for the var
+  # @param [string] key_type What type the key has
+  # @param [string] value_type What type the value is
+  # @param [Expr] value The value that should be assigned or nil if only declaring
+  #
+  def initialize(constant, identifier, key_type, value_type, value = nil)
+    super(NODE_TYPES[:HashDeclaration])
+    @constant = constant
+    @identifier = identifier
+    @key_type = key_type
+    @value_type = value_type
+    @value = value
+  end
+
+  def to_s
+    "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}: #{@constant} #{@identifier}"
+    puts "#{' ' * (indent + 2)} Key type: #{@key_type}"
+    puts "#{' ' * (indent + 2)} Value type: #{@value_type}"
+    puts "#{' ' * (indent + 2)} Value:"
     @value&.display_info(indent + 2)
   end
 end
@@ -505,6 +541,29 @@ class NullLiteral < Expr
 
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}: #{@value}"
+  end
+end
+
+class HashLiteral < Expr
+  attr_reader :key_value_pairs
+
+  #
+  # Create a new HashLiteral
+  #
+  # @param [Array] key_value_pairs The list of all key value pairs
+  #
+  def initialize(key_value_pairs)
+    super(NODE_TYPES[:HashLiteral])
+    @key_value_pairs = key_value_pairs
+  end
+
+  def to_s
+    "HashLiteral"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+    @key_value_pairs.each() { |pair| puts "#{' ' * (indent + 2)} Key: #{pair[:key]} Value: #{pair[:value]}" }
   end
 end
 

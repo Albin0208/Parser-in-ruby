@@ -60,11 +60,84 @@ class Parser
       return parse_loops()
     when TokenType::FUNC
       return parse_function_declaration()
+    when TokenType::HASH
+      return parse_hash_declaration()
     when TokenType::RETURN
       return parse_return()
     else
       return parse_expr()
     end
+  end
+
+  def parse_hash_declaration
+    is_const = at().type == TokenType::CONST # Get if const keyword is present
+
+    eat() if is_const # eat the const keyword if we have a const
+
+    expect(TokenType::HASH)
+    p at().value == :<
+    if at().value != :<
+      raise "Error: Invalid Hash declaration expected starting <"
+    end
+    eat()
+    p at()
+    key_type = expect(TokenType::TYPE_SPECIFIER).value
+    
+    expect(TokenType::COMMA)
+    
+    value_type = expect(TokenType::TYPE_SPECIFIER).value
+    if at().value != :>
+      raise "Error: Invalid Hash declaration expected ending >"
+    end
+    eat()
+
+    identifier = parse_identifier().symbol
+
+    if at().type != TokenType::ASSIGN
+      return HashDeclaration.new(is_const, identifier, key_type, value_type, nil) unless is_const
+
+      @logger.error('Found Uninitialized constant')
+      raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
+    end
+
+    expect(TokenType::ASSIGN)
+
+    # Only allowed to have a func call or a Hash literal
+    # Check for identifier then we have a func call
+    expression = nil
+
+    if at().type == TokenType::IDENTIFIER
+      expression = parse_func_call()
+    else # Else we want a hash literal
+      expect(TokenType::LBRACE) # Get the opening brace
+      key_value_pairs = []
+
+      keys = [] # All keys found
+      
+      # Parse all key value pairs
+      while at().type != TokenType::RBRACE
+        key = expect(TokenType::STRING).value
+        # Check if key allready has been defined
+        if keys.include?(key)
+          raise "Error: Key: '#{key}' already exists in hash"
+        end
+        expect(TokenType::ASSIGN)
+        value = parse_expr()
+        key_value_pairs << { key: key, value: value} # Create a new pair
+
+        keys << key # Add the key
+        eat() if at().type == TokenType::COMMA # The comma token
+      end
+
+      expect(TokenType::RBRACE) # Get the closing brace
+
+      expression = HashLiteral.new(key_value_pairs)
+    end
+    #expression = parse_func_call_with_binary_operation()
+        
+    #validate_assignment_type(expression, type_specifier) # Validate that the type is correct
+
+    return HashDeclaration.new(is_const, identifier, key_type, value_type, expression)
   end
 
   #
@@ -132,9 +205,9 @@ class Parser
     is_const = at().type == TokenType::CONST # Get if const keyword is present
 
     eat() if is_const # eat the const keyword if we have a const
-    type_specifier = eat().value # Get what type the var should be
+    type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Get what type the var should be
 
-    identifier = expect(TokenType::IDENTIFIER).value
+    identifier = parse_identifier().symbol
     @logger.debug("Found indentifier from var declaration: #{identifier}")
     
     if at().type != TokenType::ASSIGN
@@ -160,6 +233,7 @@ class Parser
         right = parse_expr()
         return BinaryExpr.new(expression, op, right)
       end
+      return expression
     end
     return parse_expr()
   end

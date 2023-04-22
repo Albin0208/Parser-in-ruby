@@ -16,6 +16,8 @@
                     | <type_specifier> <identifier> <var_declaration_tail>
                     | "const" <array_type_specifier> <identifier> <array_declaration_tail>
                     | <array_type_specifier> <identifier> <array_declaration_tail>
+                    | "const" <hash_type_specifier> <identifier> <hash_declaration_tail>
+                    | <hash_type_specifier> <identifier> <hash_declaration_tail>
 
 <var_declaration_tail> ::= "=" <expr>
                          | empty
@@ -27,6 +29,15 @@
                   | "[" "]"
 
 <array_literal_tail> ::= "," <expr> <array_literal_tail>
+                       | empty
+
+<hash_declaration_tail> ::= "=" <hash_literal>
+                           | empty
+
+<hash_literal> ::= "{" <identifier> "=" <expr> <hash_literal_tail> "}"
+                  | "{" "}"
+
+<hash_literal_tail> ::= "," <identifier> "=" <expr>  <hash_literal_tail>
                        | empty
 
 <class_declaration> ::= "Class" <identifier> "{" <class_members> "}"
@@ -49,6 +60,8 @@
 <type_specifier> ::= "int" | "float" | "bool" | "string" | <array_type_specifier>
 
 <array_type_specifier> ::= <type_specifier> "[]"
+
+<hash_type_specifier> ::= "Hash<" <type_specifier> "," <type_specifier | array_type_specifier> ">"
 
 <conditional> ::= "if" <expr> "{" <stmt_list> "}" <elsif_block> <else_block>
 
@@ -92,6 +105,7 @@
 
 <primary_expr> ::= <identifier> 
                  | <array_access>
+                 | <hash_access>
                  | <numeric_literal> 
                  | <boolean_literal>
                  | "(" <expr> ")"
@@ -102,6 +116,8 @@
                    | <identifier> "." "new" "(" <func_call_params> ")"
 
 <array_access> ::= <identifier> "[" <expr> "]"
+
+<hash_access> ::= <identifier> "[" <expr> "]"
 
 <identifier> ::= /[a-zA-Z_][a-zA-Z0-9_]*/
 

@@ -30,6 +30,7 @@ class TokenType
   RETURN = :RETURN
   FOR = :FOR
   WHILE = :WHILE
+  HASH = :HASH
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze
