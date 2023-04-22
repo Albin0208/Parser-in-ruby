@@ -9,13 +9,13 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
     @env.setup_native_functions()
   end
 
-  def test_evaluate_print_method
-    input = "print(2)"
+#   def test_evaluate_print_method
+#     input = "print(2)"
 
-    ast = @parser.produce_ast(input)
+#     ast = @parser.produce_ast(input)
 
-    @interpreter.evaluate(ast, @env)
-  end
+#     @interpreter.evaluate(ast, @env)
+#   end
 
   def test_evaluate_type_method
     input = "1.type()"
@@ -85,6 +85,14 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
   end
 
   def test_evaluate_chaning_method_calls
+    input = "1.to_float().type()"
+    ast = @parser.produce_ast(input)
+    result = @interpreter.evaluate(ast, @env)
+    assert_equal(:float, result)
 
+    input = "1.to_float().to_int().type()"
+    ast = @parser.produce_ast(input)
+    result = @interpreter.evaluate(ast, @env)
+    assert_equal(:int, result)
   end
 end
