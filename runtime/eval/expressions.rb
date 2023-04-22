@@ -116,7 +116,7 @@ def eval_call_expr(ast_node, call_env)
   end
 
   # Check that the return value is the same type as the return type of the function
-  return_type = {'bool': :boolean, 'string': :boolean }.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
+  return_type = {'bool': :boolean}.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
   if return_type == :void
     return NullVal.new()
   end
@@ -147,6 +147,7 @@ end
 
 def eval_container_accessor(ast_node, env)
   container = env.lookup_identifier(ast_node.identifier.symbol)
-  value = container.value[ast_node.access_key.value]
+  access_key = evaluate(ast_node.access_key, env)
+  value = container.value[access_key.value]
   return value ? value : NullVal.new()
 end
