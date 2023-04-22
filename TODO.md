@@ -13,9 +13,9 @@
     - [ ] Loop over containers
     - [ ] Break statement to exit early
 - [x] Native functions, like print() and so on
-- [ ] Hashmap
+- [x] Hashmap
     - [x] HashLiteral
-    - [ ] Hash accessor
+    - [x] Hash accessor
 - [x] Functions
     - [x] Function Declaration
     - [x] Function calls

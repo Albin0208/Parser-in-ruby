@@ -136,6 +136,7 @@ def eval_hash_literal(ast_node, env)
     value = evaluate(pair[:value], env)
 
     # Check if the key type is correct
+    # TODO Improve error message
     raise "Error: Key type is incorrect" if key.type != ast_node.key_type
     raise "Error: Value type is incorrect" if value.type != ast_node.value_type
 
