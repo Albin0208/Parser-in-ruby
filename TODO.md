@@ -27,6 +27,7 @@
     - [x] Setup new env for a function body
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
+- [ ] Don't allow returns outside functions
 - [ ] Classes
     - [ ] Inheritance
 
@@ -63,7 +64,7 @@
 - [x] If-else statement: if 5 < 3 { 5 + 3} else { 5 - 3}
 ### Test loops:
 
-- [ ] While loop: i = 1; while i <= 5 do puts i; i += 1; end
+- [x] While loop: i = 1; while i <= 5 do puts i; i += 1; end
 - [ ] For loop: for i in 1..5 do puts i end
 ### Test function definition and invocation:
 
@@ -77,8 +78,8 @@
 - [ ] Array iteration: arr.each {|a| puts a}
 ### Test hashes:
 
-- [ ] Hash creation: Hash<string, int> h = { "one" => 1, "two" => 2 }
-- [ ] Hash retrieval: h["one"]
+- [x] Hash creation: Hash<string, int> h = { "one" = 1, "two" = 2 }
+- [x] Hash retrieval: h["one"]
 - [ ] Hash iteration: h.each {|key, value| puts "#{key} is #{value}"}
 ### Test exceptions:
 - [ ] Zero division error: 10/0

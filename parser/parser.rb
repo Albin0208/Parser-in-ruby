@@ -17,6 +17,7 @@ class Parser
   def initialize(logging = false)
     @tokens = []
     @logging = logging
+    @parsing_function = false # Flag to keep track of function parsing
 
     @logger = Logger.new($stdout)
     @logger.level = logging ? Logger::DEBUG : Logger::FATAL
@@ -211,6 +212,8 @@ class Parser
   # @return [Return] The return statement with the expressions
   #
   def parse_return()
+    raise "Error: Unexpected return encountered. Returns are not allowed outside of functions" unless @parsing_function
+
     expect(TokenType::RETURN)
 
     expr = parse_expr()
@@ -305,6 +308,7 @@ class Parser
   #
   def parse_function_declaration
     expect(TokenType::FUNC) # Eat the func keyword
+    @parsing_function = true
 
     return_type = nil
     if at().type == TokenType::VOID
@@ -337,7 +341,7 @@ class Parser
       raise "Func error: Function of type: '#{return_type}' expects a return statment"
     end
     expect(TokenType::RBRACE) # End of function body
-
+    @parsing_function = false
     return FuncDeclaration.new(return_type, identifier, params, body)
   end
 
