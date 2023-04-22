@@ -351,6 +351,8 @@ class CallExpr < Expr
 end
 
 class ContainerAccessor < Expr
+  attr_reader :identifier, :access_key
+
   def initialize(identifier, access_key)
     super(NODE_TYPES[:ContainerAccessor])
     @identifier = identifier
@@ -564,16 +566,18 @@ class NullLiteral < Expr
 end
 
 class HashLiteral < Expr
-  attr_reader :key_value_pairs
+  attr_reader :key_value_pairs, :key_type, :value_type
 
   #
   # Create a new HashLiteral
   #
   # @param [Array] key_value_pairs The list of all key value pairs
   #
-  def initialize(key_value_pairs)
+  def initialize(key_value_pairs, key_type, value_type)
     super(NODE_TYPES[:HashLiteral])
     @key_value_pairs = key_value_pairs
+    @key_type = key_type
+    @value_type = value_type
   end
 
   def to_s

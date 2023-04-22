@@ -112,7 +112,7 @@ class Parser
     if at().type == TokenType::IDENTIFIER
       expression = parse_func_call()
     else # Else we want a hash literal
-      expression = parse_hash_literal(value_type)
+      expression = parse_hash_literal(key_type, value_type)
     end
     #expression = parse_func_call_with_binary_operation()
         
@@ -128,7 +128,7 @@ class Parser
   #
   # @return [HashLiteral] The hashliteral with all the key-value pairs
   #
-  def parse_hash_literal(value_type)
+  def parse_hash_literal(key_type, value_type)
     expect(TokenType::LBRACE) # Get the opening brace
     key_value_pairs = []
 
@@ -136,11 +136,13 @@ class Parser
     
     # Parse all key value pairs
     while at().type != TokenType::RBRACE
-      key = StringLiteral.new(expect(TokenType::STRING).value.to_s) # TODO Maybe only have value and not string literal
+      key = parse_expr()
+
       # Check if key allready has been defined
-      if keys.include?(key)
+      if key.type != NODE_TYPES[:Identifier] && keys.include?(key)
         raise "Error: Key: '#{key}' already exists in hash"
       end
+      validate_assignment_type(key, key_type) # Validate that the type is correct
 
       expect(TokenType::ASSIGN)
       value = parse_expr()
@@ -155,7 +157,7 @@ class Parser
 
     expect(TokenType::RBRACE) # Get the closing brace
 
-    return HashLiteral.new(key_value_pairs)
+    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type.to_sym)
   end
 
   #

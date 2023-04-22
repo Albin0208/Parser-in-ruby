@@ -127,6 +127,25 @@ def eval_call_expr(ast_node, call_env)
   return return_value
 end
 
+def eval_hash_literal(ast_node, env)
+  key_values = ast_node.key_value_pairs
+  value_hash = {}
+
+  key_values.map() { |pair| 
+    key = evaluate(pair[:key], env)
+    value = evaluate(pair[:value], env)
+
+    # Check if the key type is correct
+    raise "Error: Key type is incorrect" if key.type != ast_node.key_type
+    raise "Error: Value type is incorrect" if value.type != ast_node.value_type
+
+    value_hash[key.value] = value
+  }
+
+  return HashVal.new(value_hash)
+end
+
 def eval_container_accessor(ast_node, env)
-  p ast_node
+  container = env.lookup_identifier(ast_node.identifier.symbol)
+  return container.value[ast_node.access_key.value]
 end

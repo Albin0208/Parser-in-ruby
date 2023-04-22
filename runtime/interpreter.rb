@@ -52,12 +52,7 @@ class Interpreter
     when NODE_TYPES[:Boolean]
       BooleanVal.new(ast_node.value)
     when NODE_TYPES[:HashLiteral]
-      key_values = ast_node.key_value_pairs
-      value_hash = {}
-
-      key_values.map() { |pair| value_hash[pair[:key]] = evaluate(pair[:value], env)}
-
-      HashVal.new(value_hash)
+      eval_hash_literal(ast_node, env)
     when NODE_TYPES[:Null]
       NullVal.new
     else
