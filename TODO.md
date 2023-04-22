@@ -13,9 +13,10 @@
     - [ ] Loop over containers
     - [ ] Break statement to exit early
 - [x] Native functions, like print() and so on
-- [x] Hashmap
+- [ ] Hashmap
     - [x] HashLiteral
     - [x] Hash accessor
+    - [ ] Hashes has to be type specified ( Hash<int, int> a = Hash<int, int>{ "hej" = 3.0, "hejs" = test()} )
 - [x] Functions
     - [x] Function Declaration
     - [x] Function calls
@@ -80,6 +81,14 @@
 
 - [x] Hash creation: Hash<string, int> h = { "one" = 1, "two" = 2 }
 - [x] Hash retrieval: h["one"]
+- [ ] Hash retrieval with func calls h[key_gen()]
 - [ ] Hash iteration: h.each {|key, value| puts "#{key} is #{value}"}
+- [ ] Invalid hashes raises error
+- [ ] Missmatched types raises errors
 ### Test exceptions:
 - [ ] Zero division error: 10/0
+
+### TEST
+- [ ] Ensure return outside of function raises error
+- [ ] Test break statements
+- [ ] 
