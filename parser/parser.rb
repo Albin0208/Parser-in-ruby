@@ -69,6 +69,11 @@ class Parser
     end
   end
 
+  #
+  # Parse a hash declaration
+  #
+  # @return [HashDeclaration] The hash
+  #
   def parse_hash_declaration
     is_const = at().type == TokenType::CONST # Get if const keyword is present
 
@@ -107,39 +112,50 @@ class Parser
     if at().type == TokenType::IDENTIFIER
       expression = parse_func_call()
     else # Else we want a hash literal
-      expect(TokenType::LBRACE) # Get the opening brace
-      key_value_pairs = []
-
-      keys = [] # All keys found
-      
-      # Parse all key value pairs
-      while at().type != TokenType::RBRACE
-        key = expect(TokenType::STRING).value
-        # Check if key allready has been defined
-        if keys.include?(key)
-          raise "Error: Key: '#{key}' already exists in hash"
-        end
-
-        expect(TokenType::ASSIGN)
-        value = parse_expr()
-
-        validate_assignment_type(value, value_type) # Validate that the type is correct
-        
-        key_value_pairs << { key: key, value: value} # Create a new pair
-
-        keys << key # Add the key
-        eat() if at().type == TokenType::COMMA # The comma token
-      end
-
-      expect(TokenType::RBRACE) # Get the closing brace
-
-      expression = HashLiteral.new(key_value_pairs)
+      expression = parse_hash_literal(value_type)
     end
     #expression = parse_func_call_with_binary_operation()
         
     #validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return HashDeclaration.new(is_const, identifier, key_type, value_type, expression)
+  end
+
+  #
+  # Parse an hash literal
+  #
+  # @param [String] value_type What type the values are expected to be
+  #
+  # @return [HashLiteral] The hashliteral with all the key-value pairs
+  #
+  def parse_hash_literal(value_type)
+    expect(TokenType::LBRACE) # Get the opening brace
+    key_value_pairs = []
+
+    keys = [] # All keys found
+    
+    # Parse all key value pairs
+    while at().type != TokenType::RBRACE
+      key = expect(TokenType::STRING).value
+      # Check if key allready has been defined
+      if keys.include?(key)
+        raise "Error: Key: '#{key}' already exists in hash"
+      end
+
+      expect(TokenType::ASSIGN)
+      value = parse_expr()
+
+      validate_assignment_type(value, value_type) # Validate that the type is correct
+      
+      key_value_pairs << { key: key, value: value} # Create a new pair
+
+      keys << key # Add the key
+      eat() if at().type == TokenType::COMMA # The comma token
+    end
+
+    expect(TokenType::RBRACE) # Get the closing brace
+
+    return HashLiteral.new(key_value_pairs)
   end
 
   #
