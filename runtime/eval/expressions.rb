@@ -117,6 +117,9 @@ def eval_call_expr(ast_node, call_env)
 
   # Check that the return value is the same type as the return type of the function
   return_type = {'bool': :boolean, 'string': :boolean }.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
+  if return_type == :void
+    return NullVal.new()
+  end
   unless return_value.type == return_type
     raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
   end

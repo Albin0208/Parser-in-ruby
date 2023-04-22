@@ -25,7 +25,7 @@ def main
 
     result = interpreter.evaluate(program, env)
 
-    puts result.to_s
+    #puts result.to_s
   else
     puts "Type 'exit' to quit"
     print ">> "

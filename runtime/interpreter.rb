@@ -33,6 +33,8 @@ class Interpreter
       eval_program(ast_node, env)
     when NODE_TYPES[:VarDeclaration]
       eval_var_declaration(ast_node, env)
+    when NODE_TYPES[:HashDeclaration]
+      eval_hash_declaration(ast_node, env)
     when NODE_TYPES[:FuncDeclaration]
       eval_func_declaration(ast_node, env)
     when NODE_TYPES[:MethodCallExpr]
@@ -47,6 +49,13 @@ class Interpreter
       eval_if_statement(ast_node, env)
     when NODE_TYPES[:Boolean]
       BooleanVal.new(ast_node.value)
+    when NODE_TYPES[:HashLiteral]
+      key_values = ast_node.key_value_pairs
+      value_hash = {}
+
+      key_values.map() { |pair| value_hash[pair[:key]] = evaluate(pair[:value], env)}
+
+      HashVal.new(value_hash)
     when NODE_TYPES[:Null]
       NullVal.new
     else

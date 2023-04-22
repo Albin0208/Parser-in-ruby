@@ -121,58 +121,25 @@ class NumberVal < RunTimeVal
   end
 end
 
-# class IntegerVal < NumberVal
-#   def initialize(value)
-#     super(value)
-#     @type = :int
-#   end
+class HashVal < RunTimeVal
+  #
+  # Create a Hash Value
+  #
+  # @param [Hash] value A Hash
+  #
+  def initialize(value)
+    super(value, :hash)
+  end
 
-#   def +(other)
-#     IntegerVal.new(@value + other.value)
-#   end
+  def keys
+    # TODO Change to return custom array with keys
+    return @value.keys
+  end
 
-#   def -(other)
-#     IntegerVal.new(@value - other.value)
-#   end
-
-#   def *(other)
-#     IntegerVal.new(@value * other.value)
-#   end
-
-#   def /(other)
-#     IntegerVal.new(@value / other.value)
-#   end
-
-#   def %(other)
-#     IntegerVal.new(@value % other.value)
-#   end
-# end
-# class FloatVal < NumberVal
-#   def initialize(value)
-#     super(value)
-#     @type = :float
-#   end
-
-#   def +(other)
-#     FloatVal.new(@value + other.value)
-#   end
-
-#   def -(other)
-#     FloatVal.new(@value - other.value)
-#   end
-
-#   def *(other)
-#     FloatVal.new(@value * other.value)
-#   end
-
-#   def /(other)
-#     FloatVal.new(@value / other.value)
-#   end
-
-#   def %(other)
-#     FloatVal.new(@value % other.value)
-#   end
-# end
+  def length
+    return NumberVal.new(@value.length(), :int)
+  end
+end
 
 class StringVal < RunTimeVal
   def initialize(value)

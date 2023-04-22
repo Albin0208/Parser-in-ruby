@@ -75,12 +75,10 @@ class Parser
     eat() if is_const # eat the const keyword if we have a const
 
     expect(TokenType::HASH)
-    p at().value == :<
     if at().value != :<
       raise "Error: Invalid Hash declaration expected starting <"
     end
     eat()
-    p at()
     key_type = expect(TokenType::TYPE_SPECIFIER).value
     
     expect(TokenType::COMMA)
