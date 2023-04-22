@@ -147,5 +147,6 @@ end
 
 def eval_container_accessor(ast_node, env)
   container = env.lookup_identifier(ast_node.identifier.symbol)
-  return container.value[ast_node.access_key.value]
+  value = container.value[ast_node.access_key.value]
+  return value ? value : NullVal.new()
 end
