@@ -50,7 +50,7 @@ class Parser
       @logger.debug("(#{at().value}) matched var declaration")
       return parse_var_declaration()
     when TokenType::IF
-      return parse_conditional()
+      return parse_if_statement()
     when TokenType::IDENTIFIER # Handles an identifier with assign
       if next_token().type == TokenType::ASSIGN
         return parse_assignment_stmt()
@@ -215,7 +215,6 @@ class Parser
     raise "Error: Unexpected return encountered. Returns are not allowed outside of functions" unless @parsing_function
 
     expect(TokenType::RETURN)
-
     expr = parse_expr()
 
     return ReturnStmt.new(expr)
@@ -310,12 +309,7 @@ class Parser
     expect(TokenType::FUNC) # Eat the func keyword
     @parsing_function = true
 
-    return_type = nil
-    if at().type == TokenType::VOID
-      return_type = expect(TokenType::VOID).value
-    else
-      return_type = expect(TokenType::TYPE_SPECIFIER).value # Expect a type specificer for the function
-    end
+    return_type = expect(TokenType::VOID, TokenType::TYPE_SPECIFIER).value
 
     identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
 
@@ -325,17 +319,7 @@ class Parser
     expect(TokenType::RPAREN)
 
     expect(TokenType::LBRACE) # Start of function body
-    has_return_stmt = false
-    body = []
-    while at().type != TokenType::RBRACE
-      stmt = parse_stmt()
-      # Don't allow for function declaration inside a function
-      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
-      
-      has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
-
-      body.append(stmt) 
-    end
+    body, has_return_stmt = parse_function_body()
 
     if return_type != 'void' && !has_return_stmt
       raise "Func error: Function of type: '#{return_type}' expects a return statment"
@@ -343,6 +327,27 @@ class Parser
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
     return FuncDeclaration.new(return_type, identifier, params, body)
+  end
+
+  #
+  # Parses a function body and gets if it has a return statement
+  #
+  # @return [Array & Boolean] Return the list of all statments and if the body has a return statment
+  #
+  def parse_function_body
+    body = []
+    has_return_stmt = false
+    while at().type != TokenType::RBRACE
+      stmt = parse_stmt()
+      # Don't allow for function declaration inside a function
+      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      
+      has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
+
+      body << stmt
+    end
+
+    return body, has_return_stmt
   end
 
   #
@@ -383,29 +388,46 @@ class Parser
   # Parses conditional statments such as if, else if and else
   #
   # @return [IfStatement] The If statement AST node
-  def parse_conditional
+  #
+  def parse_if_statement
     expect(TokenType::IF) # eat the if token
 
-    # Parse if condition and body
-    if_condition = parse_conditional_condition()
+    if_condition = parse_conditional_condition() # Parses the if condition
     expect(TokenType::LBRACE) # eat lbrace token
-    if_body = parse_conditional_body()
+    if_body = parse_conditional_body() # parses the if body
     expect(TokenType::RBRACE) # eat the rbrace token
 
-    # Parse else ifs
+    elsif_stmts = parse_elsif_statements() # Parse else ifs
+    else_body = parse_else_statement() # Parse Else
+
+    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
+  end
+
+  #
+  # Parses all elsif statments
+  #
+  # @return [Array] A list of all the elsifs found
+  #
+  def parse_elsif_statements
     elsif_stmts = []
     while at().type == TokenType::ELSIF
       expect(TokenType::ELSIF)
-
-      # Parse elsif condtion and body
-      elsif_condition = parse_conditional_condition()
+      elsif_condition = parse_conditional_condition() # Parse elsif condition
       expect(TokenType::LBRACE) # eat lbrace token
-      elsif_body = parse_conditional_body()
+      elsif_body = parse_conditional_body() # Parse elsif body
       expect(TokenType::RBRACE) # eat the rbrace token
-
       elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition)
     end
 
+    return elsif_stmts
+  end
+
+  #
+  # Parses a else statment
+  #
+  # @return [Array] The list of all the staments inside the else
+  #
+  def parse_else_statement
     else_body = nil
     if at().type == TokenType::ELSE
       expect(TokenType::ELSE) # eat the Else token
@@ -414,7 +436,7 @@ class Parser
       expect(TokenType::RBRACE) # eat the rbrace token
     end
 
-    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
+    return else_body
   end
 
   #
@@ -470,22 +492,8 @@ class Parser
     expr = nil
     if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
       expr = parse_func_call()
-      # if at().type == TokenType::BINARYOPERATOR
-      #   op = eat().value
-      #   right = parse_expr()
-      #   expr = BinaryExpr.new(expr, op, right)
-      # # else
-      # #   expr = func_call
-      # end
     elsif at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LBRACKET # Parse array and hash access
-      identifier = parse_identifier()
-      expect(TokenType::LBRACKET)
-
-      access_key = parse_expr()
-
-      expect(TokenType::RBRACKET)
-
-      expr = ContainerAccessor.new(identifier, access_key)
+      expr = parse_accessor()
     else
       expr = parse_logical_expr()
     end
@@ -493,12 +501,6 @@ class Parser
     while at().type == TokenType::DOT
       expect(TokenType::DOT)
       expr = parse_method_and_property_call(expr)
-
-      # if at().type == TokenType::BINARYOPERATOR
-      #   op = eat().value
-      #   right = parse_expr()
-      #   expr = BinaryExpr.new(expr, op, right)
-      # end
     end
 
     if at().type == TokenType::BINARYOPERATOR
@@ -508,6 +510,19 @@ class Parser
     end
 
     return expr
+  end
+
+  #
+  # Parses an accessor for a array or hash
+  #
+  # @return [ContainerAccessor] The accessor for a container
+  #
+  def parse_accessor
+    identifier = parse_identifier()
+    expect(TokenType::LBRACKET)
+    access_key = parse_expr()
+    expect(TokenType::RBRACKET)
+    return ContainerAccessor.new(identifier, access_key)
   end
 
   #
@@ -691,12 +706,11 @@ class Parser
       expr = StringLiteral.new(expect(TokenType::STRING).value.to_s)
     when TokenType::LPAREN
       expect(TokenType::LPAREN) # Eat opening paren
-      value = parse_expr()
+      expr = parse_expr()
       expect(TokenType::RPAREN) # Eat closing paren
-      return value
     when TokenType::NULL
       expect(TokenType::NULL)
-      return NullLiteral.new()
+      expr = NullLiteral.new()
     else
       raise InvalidTokenError.new("Unexpected token found: #{at()}")
     end
@@ -717,7 +731,7 @@ class Parser
 
 
   ##################################################
-  # 				Helper functions				 #
+  # 				       Helper functions				         #
   ##################################################
 
   # Check if we are not at the end of file
@@ -751,10 +765,12 @@ class Parser
   # @param [String] token_type What type of token we are expecting
   #
   # @return [Token] Returns the expected token
-  def expect(token_type)
-    prev = eat()
-    raise "Parse error: Expected #{token_type} but got #{prev.type}" if !prev || prev.type != token_type
+  def expect(*token_types)
+    token = eat() # Get the token
 
-    return prev
+    if token_types.include?(token.type)
+      return token
+    end
+    raise "Error: Expected token of type #{token_types.join(' or ')}, but found #{token.type} instead"
   end
 end
