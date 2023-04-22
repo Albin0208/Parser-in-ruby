@@ -1,0 +1,18 @@
+
+func int test(int b) {
+  int index = 0
+  while index < 100 {
+    if index == b {
+      return b
+    }
+    index = index + 1
+  }
+  return 0
+}
+#Hash<int, int> a = Hash<int, int>{ "hej" = 3.0, "hejs" = test()}
+Hash<string, int> a = { "st" = 3, "hejs" = 2}
+#print(a.keys())
+
+#print(a[test()])
+
+print(test(2))
