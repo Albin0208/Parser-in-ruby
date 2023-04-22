@@ -126,3 +126,7 @@ def eval_call_expr(ast_node, call_env)
 
   return return_value
 end
+
+def eval_container_accessor(ast_node, env)
+  p ast_node
+end

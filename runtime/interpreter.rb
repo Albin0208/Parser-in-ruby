@@ -47,6 +47,8 @@ class Interpreter
       eval_while_stmt(ast_node, env)
     when NODE_TYPES[:IF]
       eval_if_statement(ast_node, env)
+    when NODE_TYPES[:ContainerAccessor]
+      eval_container_accessor(ast_node, env)
     when NODE_TYPES[:Boolean]
       BooleanVal.new(ast_node.value)
     when NODE_TYPES[:HashLiteral]
