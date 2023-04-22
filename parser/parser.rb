@@ -121,8 +121,12 @@ class Parser
         if keys.include?(key)
           raise "Error: Key: '#{key}' already exists in hash"
         end
+
         expect(TokenType::ASSIGN)
         value = parse_expr()
+
+        validate_assignment_type(value, value_type) # Validate that the type is correct
+        
         key_value_pairs << { key: key, value: value} # Create a new pair
 
         keys << key # Add the key
