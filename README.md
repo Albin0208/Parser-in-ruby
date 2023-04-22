@@ -66,7 +66,7 @@ To run the unit tests, execute the following command:
 rake test
 ```
 
-***Note***: The interpreter test assuemses that all the parser test and lexer test works correcly since it uses those for its tests
+***Note***: The interpreter test assumes that all the parser test and lexer test works correctly since it uses those for its tests
 
 ## License
 This project is released under the MIT License. See the [LICENSE](https://github.com/Albin0208/Parser-in-ruby/blob/master/LICENSE) file for details.
