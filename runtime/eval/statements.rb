@@ -82,7 +82,11 @@ def eval_while_stmt(ast_node, env)
   last_eval = NullVal.new
   while eval_condition(ast_node.conditions, env)
     while_env = Environment.new(env) # Setup a new environment for the while loop
-    ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
+    begin
+      ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
+    rescue BreakSignal
+      break
+    end
   end
 
   return last_eval
@@ -102,9 +106,12 @@ def eval_for_stmt(ast_node, env)
   evaluate(ast_node.var_dec, cond_env)
   while eval_condition(ast_node.condition, cond_env)
     for_env = Environment.new(cond_env) # Setup a new environment for the while loop
-    ast_node.body.each { |stmt| last_eval = evaluate(stmt, for_env) }
-
-    evaluate(ast_node.expr, cond_env)
+    begin
+      ast_node.body.each { |stmt| last_eval = evaluate(stmt, for_env) }
+      evaluate(ast_node.expr, cond_env)
+    rescue BreakSignal
+      break
+    end
   end
 
   return last_eval

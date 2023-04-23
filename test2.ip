@@ -25,6 +25,9 @@ int c = test(2) + test2(30) * 3
 
 print(c)
 
-for int i = 0, i <= 10, i = i+2 {
+for int i = 0, i <= 10, i = i+1 {
   print(i)
+  if i == 6 {
+    break
+  }
 }

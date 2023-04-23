@@ -5,6 +5,7 @@ NODE_TYPES = {
   HashDeclaration: :HashDeclaration,
   FuncDeclaration: :FuncDeclaration,
   ReturnStmt: :ReturnStmt,
+  BreakStmt: :BreakStmt,
   IF: :IF,
   ELSIF: :ELSIF,
   WHILE_LOOP: :WHILE_LOOP,
@@ -181,6 +182,20 @@ class ReturnStmt < Stmt
     # puts "#{' ' * indent} Return type: #{@type_specifier}"
     puts "#{' ' * indent} Body:"
     #@body.each { |stmt| stmt.display_info(indent + 2) }
+  end
+end
+
+class BreakStmt < Stmt
+  def initialize
+    super(NODE_TYPES[:BreakStmt])
+  end
+
+  def to_s
+    "Break Stmt"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
   end
 end
 

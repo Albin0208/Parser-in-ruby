@@ -33,6 +33,7 @@ class TokenType
   FOR = :FOR
   WHILE = :WHILE
   HASH = :HASH
+  BREAK = :BREAK
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze
