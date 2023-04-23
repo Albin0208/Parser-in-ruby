@@ -109,7 +109,7 @@ class Parser
     if at().type == TokenType::IDENTIFIER
       expression = parse_func_call()
     else # Else we want a hash literal
-      expression = parse_hash_literal(key_type, value_type)
+      expression = parse_hash_literal()
     end
 
     return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, expression)
@@ -118,11 +118,9 @@ class Parser
   #
   # Parse an hash literal
   #
-  # @param [String] value_type What type the values are expected to be
-  #
   # @return [HashLiteral] The hashliteral with all the key-value pairs
   #
-  def parse_hash_literal(key_type, value_type)
+  def parse_hash_literal
     key_type, value_type = parse_hash_type_specifier()
 
     expect(TokenType::LBRACE) # Get the opening brace
