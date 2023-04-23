@@ -143,7 +143,7 @@ def eval_hash_literal(ast_node, env)
     value_hash[key.value] = value
   }
 
-  return HashVal.new(value_hash)
+  return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type)
 end
 
 def eval_container_accessor(ast_node, env)

@@ -89,20 +89,7 @@ class Parser
 
     eat() if is_const # eat the const keyword if we have a const
 
-    expect(TokenType::HASH)
-    if at().value != :<
-      raise "Error: Invalid Hash declaration expected starting <"
-    end
-    eat()
-    key_type = expect(TokenType::TYPE_SPECIFIER).value
-    
-    expect(TokenType::COMMA)
-    
-    value_type = expect(TokenType::TYPE_SPECIFIER).value
-    if at().value != :>
-      raise "Error: Invalid Hash declaration expected ending >"
-    end
-    eat()
+    key_type, value_type = parse_hash_type_specifier()
 
     identifier = parse_identifier().symbol
 
@@ -125,7 +112,7 @@ class Parser
       expression = parse_hash_literal(key_type, value_type)
     end
 
-    return HashDeclaration.new(is_const, identifier, key_type, value_type, expression)
+    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, expression)
   end
 
   #
@@ -136,6 +123,8 @@ class Parser
   # @return [HashLiteral] The hashliteral with all the key-value pairs
   #
   def parse_hash_literal(key_type, value_type)
+    key_type, value_type = parse_hash_type_specifier()
+
     expect(TokenType::LBRACE) # Get the opening brace
     key_value_pairs = []
 
@@ -164,6 +153,30 @@ class Parser
     expect(TokenType::RBRACE) # Get the closing brace
 
     return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type.to_sym)
+  end
+
+  #
+  # Parses the hash_type specifier
+  #
+  # @return [String & String] The key and value types
+  #
+  def parse_hash_type_specifier
+    expect(TokenType::HASH)
+    if at().value != :<
+      raise "Error: Invalid Hash declaration expected starting <"
+    end
+    eat()
+    key_type = expect(TokenType::TYPE_SPECIFIER).value
+    
+    expect(TokenType::COMMA)
+    
+    value_type = expect(TokenType::TYPE_SPECIFIER).value
+    if at().value != :>
+      raise "Error: Invalid Hash declaration expected ending >"
+    end
+    eat()
+
+    return key_type, value_type
   end
 
   #

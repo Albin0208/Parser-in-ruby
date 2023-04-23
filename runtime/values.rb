@@ -122,13 +122,17 @@ class NumberVal < RunTimeVal
 end
 
 class HashVal < RunTimeVal
+  attr_reader :key_type, :value_type
+
   #
   # Create a Hash Value
   #
   # @param [Hash] value A Hash
   #
-  def initialize(value)
+  def initialize(value, key_type, value_type)
     super(value, :hash)
+    @key_type = key_type
+    @value_type = value_type
   end
 
   def keys

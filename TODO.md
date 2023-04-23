@@ -18,7 +18,7 @@
 - [ ] Hashmap
     - [x] HashLiteral
     - [x] Hash accessor
-    - [ ] Hashes has to be type specified ( Hash<int, int> a = Hash<int, int>{ "hej" = 3.0, "hejs" = test()} )
+    - [ ] Hashes has to be type specified ( Hash<int, int> a = Hash<string, int>{ "hej" = 3.0, "hejs" = test()} )
 - [x] Functions
     - [x] Function Declaration
     - [x] Function calls
@@ -82,9 +82,9 @@
 - [ ] Array iteration: arr.each {|a| puts a}
 ### Test hashes:
 
-- [x] Hash creation: Hash<string, int> h = { "one" = 1, "two" = 2 }
+- [x] Hash creation: Hash<string, int> h = Hash<string, int>{ "one" = 1, "two" = 2 }
 - [x] Hash retrieval: h["one"]
-- [ ] Hash retrieval with func calls h[key_gen()]
+- [x] Hash retrieval with func calls h[key_gen()]
 - [ ] Hash iteration: h.each {|key, value| puts "#{key} is #{value}"}
 - [ ] Invalid hashes raises error
 - [x] Missmatched types raises errors

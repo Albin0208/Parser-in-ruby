@@ -25,6 +25,10 @@ end
 
 def eval_hash_declaration(ast_node, env)
   value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
+  # Check if key and value types match the type of the assigned hash
+  if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
+    raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"
+  end
 
   env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
 end
