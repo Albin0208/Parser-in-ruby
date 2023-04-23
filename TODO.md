@@ -31,6 +31,7 @@
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
 - [x] Don't allow returns outside functions
+- [ ] Fixa så att continue och break inte finns utanför loopar
 - [ ] Classes
     - [ ] Inheritance
 

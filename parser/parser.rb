@@ -17,7 +17,8 @@ class Parser
   def initialize(logging = false)
     @tokens = []
     @logging = logging
-    @parsing_function = false # Flag to keep track of function parsing
+    @parsing_function = false # Flag to keep track of function parsing. Use for not allowing return outside functions
+    @parsing_loop = false # Flag to keep track of loop parsing. Use for not allowing break and continue outside loops
 
     @logger = Logger.new($stdout)
     @logger.level = logging ? Logger::DEBUG : Logger::FATAL
@@ -66,9 +67,11 @@ class Parser
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
+      raise "Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
       return BreakStmt.new()
     when TokenType::CONTINUE
+      raise "Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
       return ContinueStmt.new()
     else
@@ -183,6 +186,7 @@ class Parser
   # @return [ForStmt] The for statment
   #
   def parse_for_stmt
+    @parsing_loop = true
     expect(TokenType::FOR)
     var_dec = parse_var_declaration()
     raise "Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
@@ -199,10 +203,12 @@ class Parser
     body = parse_conditional_body()
     expect(TokenType::RBRACE)
 
+    @parsing_loop = false
     return ForStmt.new(body, condition, var_dec, expr)
   end
 
   def parse_while_stmt
+    @parsing_loop = true
     expect(TokenType::WHILE)
     condition = parse_conditional_condition() # Parse the loop condition
 
@@ -211,6 +217,7 @@ class Parser
     body = parse_conditional_body()
     expect(TokenType::RBRACE)
 
+    @parsing_loop = false
     return WhileStmt.new(body, condition)
   end
 
