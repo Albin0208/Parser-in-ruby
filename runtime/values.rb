@@ -147,8 +147,6 @@ class HashVal < RunTimeVal
   end
 
   def !=(other)
-    p self == other
-
     return BooleanVal.new(!(self == other).value)
   end
 
