@@ -107,7 +107,9 @@ class Parser
     expression = nil
 
     if at().type == TokenType::IDENTIFIER
-      expression = parse_func_call()
+      p "Pars"
+      expression = parse_expr()
+      # expression = parse_func_call()
     else # Else we want a hash literal
       expression = parse_hash_literal()
     end
