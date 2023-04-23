@@ -146,7 +146,6 @@ class Parser
       value = parse_expr()
 
       validate_assignment_type(value, value_type) # Validate that the type is correct
-      
       key_value_pairs << { key: key, value: value} # Create a new pair
 
       keys << key # Add the key
@@ -179,7 +178,18 @@ class Parser
   #
   def parse_for_stmt
     expect(TokenType::FOR)
+    var_dec = parse_var_declaration()
+    raise "Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
+    expect(TokenType::COMMA)
+    condition = parse_conditional_condition() # Parse the loop condition
+    expect(TokenType::COMMA)
+    expr = parse_stmt()
 
+    expect(TokenType::LBRACE)
+    body = parse_conditional_body()
+    expect(TokenType::RBRACE)
+
+    return ForStmt.new(body, condition, var_dec, expr)
   end
 
   def parse_while_stmt

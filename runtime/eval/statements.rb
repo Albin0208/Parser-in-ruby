@@ -89,6 +89,28 @@ def eval_while_stmt(ast_node, env)
 end
 
 #
+# Evaluate a for statement
+#
+# @param [ForStmt] ast_node The for statement
+# @param [Environment] env The current environment
+#
+# @return [RuntimeVal] The result of the evaluation
+#
+def eval_for_stmt(ast_node, env)
+  last_eval = NullVal.new
+  cond_env = Environment.new(env)
+  evaluate(ast_node.var_dec, cond_env)
+  while eval_condition(ast_node.condition, cond_env)
+    for_env = Environment.new(cond_env) # Setup a new environment for the while loop
+    ast_node.body.each { |stmt| last_eval = evaluate(stmt, for_env) }
+
+    evaluate(ast_node.expr, cond_env)
+  end
+
+  return last_eval
+end
+
+#
 # Evaluates a condition, For example for a if statement
 #
 # @param [Expr | NullLiteral] condition The condition to be evaluated

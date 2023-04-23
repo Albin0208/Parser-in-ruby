@@ -9,6 +9,10 @@ func int test(int b) {
   }
   return 0
 }
+
+func int test2(int b){
+  return b
+}
 #Hash<int, int> a = Hash<int, int>{ "hej" = 3.0, "hejs" = test()}
 Hash<string, int> a = { "st" = 3, "hejs" = 2}
 #print(a.keys())
@@ -17,6 +21,10 @@ Hash<string, int> a = { "st" = 3, "hejs" = 2}
 
 print(test(2))
 
-int c = test(2) + test(30) * 3
+int c = test(2) + test2(30) * 3
 
 print(c)
+
+for int i = 0, i <= 10, i = i+2 {
+  print(i)
+}
