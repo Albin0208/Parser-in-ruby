@@ -135,6 +135,26 @@ class HashVal < RunTimeVal
     @value_type = value_type
   end
 
+  def ==(other)
+    return BooleanVal.new(false) if @value.length != other.value.length
+    return BooleanVal.new(false) if @value.keys != other.value.keys
+    has_mismatch = false
+
+    @value.each() {|key, val| has_mismatch ||= val.value != other.value[key].value}
+
+    return BooleanVal.new(!has_mismatch)
+  end
+
+  def !=(other)
+    return BooleanVal.new(true) if @value.length != other.value.length
+    return BooleanVal.new(true) if @value.keys != other.value.keys
+    has_mismatch = false
+
+    @value.each() {|key, val| has_mismatch ||= val.value != other.value[key].value}
+
+    return BooleanVal.new(has_mismatch)
+  end
+
   def keys
     # TODO Change to return custom array with keys
     return @value.keys

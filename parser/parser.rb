@@ -739,6 +739,8 @@ class Parser
       expr = BooleanLiteral.new(eat().value == "true")
     when TokenType::STRING
       expr = StringLiteral.new(expect(TokenType::STRING).value.to_s)
+    when TokenType::HASH
+      expr = parse_hash_literal()
     when TokenType::LPAREN
       expect(TokenType::LPAREN) # Eat opening paren
       expr = parse_expr()
