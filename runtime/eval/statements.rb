@@ -111,6 +111,9 @@ def eval_for_stmt(ast_node, env)
       evaluate(ast_node.expr, cond_env)
     rescue BreakSignal
       break
+    rescue ContinueSignal
+      #next
+      evaluate(ast_node.expr, cond_env)
     end
   end
 

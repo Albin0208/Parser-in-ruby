@@ -68,9 +68,9 @@ class Parser
     when TokenType::BREAK
       expect(TokenType::BREAK)
       return BreakStmt.new()
-    # when TokenType::CONTINUE
-    #   expect(TokenType::CONTINUE)
-    #   return ContinueStmt.new()
+    when TokenType::CONTINUE
+      expect(TokenType::CONTINUE)
+      return ContinueStmt.new()
     else
       return parse_expr()
     end

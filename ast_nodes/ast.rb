@@ -6,6 +6,7 @@ NODE_TYPES = {
   FuncDeclaration: :FuncDeclaration,
   ReturnStmt: :ReturnStmt,
   BreakStmt: :BreakStmt,
+  ContinueStmt: :ContinueStmt,
   IF: :IF,
   ELSIF: :ELSIF,
   WHILE_LOOP: :WHILE_LOOP,
@@ -192,6 +193,20 @@ class BreakStmt < Stmt
 
   def to_s
     "Break Stmt"
+  end
+
+  def display_info(indent = 0)
+    puts "#{' ' * indent} #{self.class.name}"
+  end
+end
+
+class ContinueStmt < Stmt
+  def initialize
+    super(NODE_TYPES[:ContinueStmt])
+  end
+
+  def to_s
+    "Continue Stmt"
   end
 
   def display_info(indent = 0)

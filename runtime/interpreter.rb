@@ -11,6 +11,8 @@ class ReturnSignal < StandardError
 end
 class BreakSignal < StandardError
 end
+class ContinueSignal < StandardError
+end
 
 class Interpreter
   def evaluate(ast_node, env)
@@ -47,6 +49,8 @@ class Interpreter
       eval_return_stmt(ast_node, env)
     when NODE_TYPES[:BreakStmt]
       raise BreakSignal
+    when NODE_TYPES[:ContinueStmt]
+      raise ContinueSignal
     when NODE_TYPES[:WHILE_LOOP]
       eval_while_stmt(ast_node, env)
     when NODE_TYPES[:FOR_LOOP]
