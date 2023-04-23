@@ -25,10 +25,10 @@ int c = test(2) + test2(30) * 3
 
 print(c)
 
-for int i = 0, i <= 10, i = i+1 {
+for int i = test(7), i <= 10, i = i+1 {
   if i % 2 == 0 {
-    print("Continue")
-    continue
+    #print("Continue")
+    #continue
   }
   print(i)
 }

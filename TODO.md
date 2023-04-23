@@ -30,7 +30,7 @@
     - [x] Setup new env for a function body
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
-- [ ] Don't allow returns outside functions
+- [x] Don't allow returns outside functions
 - [ ] Classes
     - [ ] Inheritance
 
@@ -86,11 +86,11 @@
 - [ ] Hash retrieval with func calls h[key_gen()]
 - [ ] Hash iteration: h.each {|key, value| puts "#{key} is #{value}"}
 - [ ] Invalid hashes raises error
-- [ ] Missmatched types raises errors
+- [x] Missmatched types raises errors
 ### Test exceptions:
 - [ ] Zero division error: 10/0
 
 ### TEST
 - [ ] Ensure return outside of function raises error
 - [ ] Test break statements
-- [ ] 
+- [ ] Test Continue statements

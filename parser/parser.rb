@@ -190,6 +190,10 @@ class Parser
     condition = parse_conditional_condition() # Parse the loop condition
     expect(TokenType::COMMA)
     expr = parse_stmt()
+    # TODO Don't allow for every stmt, only assignstatement and expressions
+    unless expr.is_a?(Expr) || expr.is_a?(AssignmentExpr)
+      raise "Error: Wrong type of expression given"
+    end
 
     expect(TokenType::LBRACE)
     body = parse_conditional_body()
