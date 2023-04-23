@@ -36,6 +36,7 @@ KEYWORDS = {
   return: TokenType::RETURN,
   Hash: TokenType::HASH,
   break: TokenType::BREAK,
+  continue: TokenType::CONTINUE
 
   # Loops
   for: TokenType::FOR,

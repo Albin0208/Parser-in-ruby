@@ -34,6 +34,7 @@ class TokenType
   WHILE = :WHILE
   HASH = :HASH
   BREAK = :BREAK
+  CONTINUE = :CONTINUE
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze
