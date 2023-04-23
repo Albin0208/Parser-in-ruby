@@ -16,3 +16,7 @@ Hash<string, int> a = { "st" = 3, "hejs" = 2}
 #print(a[test()])
 
 print(test(2))
+
+int c = test(2) + test(30) * 3
+
+print(c)

@@ -115,9 +115,6 @@ class Parser
     else # Else we want a hash literal
       expression = parse_hash_literal(key_type, value_type)
     end
-    #expression = parse_func_call_with_binary_operation()
-        
-    #validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return HashDeclaration.new(is_const, identifier, key_type, value_type, expression)
   end
@@ -240,25 +237,25 @@ class Parser
     end
 
     expect(TokenType::ASSIGN)
-    expression = parse_func_call_with_binary_operation()
-        
+    expression = parse_expr()
+
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
 
-  def parse_func_call_with_binary_operation
-    if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-      expression = parse_func_call()
-      if at().type == TokenType::BINARYOPERATOR
-        op = eat().value
-        right = parse_expr()
-        return BinaryExpr.new(expression, op, right)
-      end
-      return expression
-    end
-    return parse_expr()
-  end
+  # def parse_func_call_with_binary_operation
+  #   if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
+  #     expression = parse_func_call()
+  #     if at().type == TokenType::BINARYOPERATOR
+  #       op = eat().value
+  #       right = parse_expr()
+  #       return BinaryExpr.new(expression, op, right)
+  #     end
+  #     return expression
+  #   end
+  #   return parse_expr()
+  # end
 
   # Validate that we are trying to assign a correct type to our variable.
   #
@@ -478,7 +475,7 @@ class Parser
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
-      value = parse_func_call_with_binary_operation()
+      value = parse_expr()
       return AssignmentExpr.new(value, identifier)
     end
 
