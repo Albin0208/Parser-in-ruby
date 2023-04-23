@@ -86,6 +86,8 @@ def eval_while_stmt(ast_node, env)
       ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
     rescue BreakSignal
       break
+    rescue ContinueSignal
+      next
     end
   end
 
@@ -112,7 +114,6 @@ def eval_for_stmt(ast_node, env)
     rescue BreakSignal
       break
     rescue ContinueSignal
-      #next
       evaluate(ast_node.expr, cond_env)
     end
   end
