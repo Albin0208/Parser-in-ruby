@@ -129,13 +129,14 @@ class HashVal < RunTimeVal
   #
   # @param [Hash] value A Hash
   #
-  def initialize(value, key_type, value_type)
-    super(value, :hash)
+  def initialize(value, key_type, value_type, type)
+    super(value, type)
     @key_type = key_type
     @value_type = value_type
   end
 
   def ==(other)
+    return BooleanVal.new(false) if @type != other.type
     return BooleanVal.new(false) if @value.length != other.value.length
     return BooleanVal.new(false) if @value.keys != other.value.keys
     has_mismatch = false
@@ -146,13 +147,9 @@ class HashVal < RunTimeVal
   end
 
   def !=(other)
-    return BooleanVal.new(true) if @value.length != other.value.length
-    return BooleanVal.new(true) if @value.keys != other.value.keys
-    has_mismatch = false
+    p self == other
 
-    @value.each() {|key, val| has_mismatch ||= val.value != other.value[key].value}
-
-    return BooleanVal.new(has_mismatch)
+    return BooleanVal.new(!(self == other).value)
   end
 
   def keys

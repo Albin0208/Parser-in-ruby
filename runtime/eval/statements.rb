@@ -30,8 +30,9 @@ def eval_hash_declaration(ast_node, env)
   if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
     raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"
   end
+  type_specifier = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
 
-  env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+  env.declare_var(ast_node.identifier, value, type_specifier, ast_node.constant)
 end
 
 def eval_func_declaration(ast_node, env)
