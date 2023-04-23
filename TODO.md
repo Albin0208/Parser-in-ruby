@@ -10,8 +10,10 @@
 - [ ] Loops
     - [x] While loop
     - [ ] For loop
+        - [ ] Fix so not every stmt are ok to have in the expr part
     - [ ] Loop over containers
-    - [ ] Break statement to exit early
+    - [x] Break statement to exit early
+    - [x] Continue statement to continue next iteration instead
 - [x] Native functions, like print() and so on
 - [ ] Hashmap
     - [x] HashLiteral
