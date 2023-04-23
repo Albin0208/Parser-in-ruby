@@ -9,8 +9,8 @@
     - [ ] Array accessor
 - [ ] Loops
     - [x] While loop
-    - [ ] For loop
-        - [ ] Fix so not every stmt are ok to have in the expr part
+    - [x] For loop
+        - [x] Fix so not every stmt are ok to have in the expr part
     - [ ] Loop over containers
     - [x] Break statement to exit early
     - [x] Continue statement to continue next iteration instead
