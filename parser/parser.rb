@@ -510,8 +510,11 @@ class Parser
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
-      expect(TokenType::ASSIGN)
+      token = expect(TokenType::ASSIGN).value
       value = parse_expr()
+      if token.length == 2
+        value = BinaryExpr.new(left, token[0], value)
+      end
       return AssignmentStmt.new(value, left)
     end
 

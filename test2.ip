@@ -40,3 +40,9 @@ print(a != Hash<string, int>{ "hej" = 1 + 3, "hejs" = test(2)})
 #Hash<string, int> b = Hash<string, int>{ "hej" = 4, "hejs" = test(2)}
 Hash<int, int> c
 #print(b)
+
+int as = 2
+
+as -= 45
+
+print(as)
