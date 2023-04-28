@@ -107,4 +107,20 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal('i', assign_expr.left.symbol)
     assert_equal(1, assign_expr.right.value)
   end 
+
+  def test_invalid_return_placement
+    input = "int a = 2
+             return a"
+    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+  end
+  def test_invalid_continue_placement
+    input = "int a = 2
+             continue"
+    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+  end
+  def test_invalid_break_placement
+    input = "int a = 2
+             break"
+    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+  end
 end

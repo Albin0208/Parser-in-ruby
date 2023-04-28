@@ -15,10 +15,10 @@
     - [x] Break statement to exit early
     - [x] Continue statement to continue next iteration instead
 - [x] Native functions, like print() and so on
-- [ ] Hashmap
+- [x] Hashmap
     - [x] HashLiteral
     - [x] Hash accessor
-    - [ ] Hashes has to be type specified ( Hash<int, int> a = Hash<string, int>{ "hej" = 3.0, "hejs" = test()} )
+    - [x] Hashes has to be type specified ( Hash<int, int> a = Hash<string, int>{ "hej" = 3.0, "hejs" = test()} )
 - [x] Functions
     - [x] Function Declaration
     - [x] Function calls
@@ -31,7 +31,7 @@
     - [x] Not allowed to create a function in another function
     - [ ] Lambda functions?
 - [x] Don't allow returns outside functions
-- [ ] Fixa så att continue och break inte finns utanför loopar
+- [x] Fixa så att continue och break inte finns utanför loopar
 - [ ] Classes
     - [ ] Inheritance
 
@@ -92,6 +92,6 @@
 - [ ] Zero division error: 10/0
 
 ### TEST
-- [ ] Ensure return outside of function raises error
+- [x] Ensure return outside of function raises error
 - [ ] Test break statements
 - [ ] Test Continue statements
