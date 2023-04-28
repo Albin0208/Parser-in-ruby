@@ -93,5 +93,5 @@
 
 ### TEST
 - [x] Ensure return outside of function raises error
-- [ ] Test break statements
-- [ ] Test Continue statements
+- [x] Test break statements
+- [x] Test Continue statements
