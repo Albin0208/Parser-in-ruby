@@ -30,6 +30,22 @@ class ContinueSignal < StandardError
 end
 
 class Interpreter
+  include StatementEvaluator
+  include ExpressionsEvaluator
+
+  #
+  # Evaluates an AST node in the given environment.
+  #
+  # @param ast_node [Stmt] the AST node to evaluate
+  # @param env [Environment] the environment in which to evaluate the AST node
+  #
+  # @raise [RuntimeError] if the type of the AST node is not recognized
+  # @raise [NotImplementedError] if the current ast_node is not implemented
+  # @raise [BreakSignal] if a 'break' statement is encountered
+  # @raise [ContinueSignal] if a 'continue' statement is encountered
+  #
+  # @return [RunTimeVal] the value of evaluating the AST node
+  #
   def evaluate(ast_node, env)
     case ast_node.type
     when NODE_TYPES[:NumericLiteral]
