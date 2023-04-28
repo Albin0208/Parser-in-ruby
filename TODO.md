@@ -32,6 +32,7 @@
     - [ ] Lambda functions?
 - [x] Don't allow returns outside functions
 - [x] Fixa så att continue och break inte finns utanför loopar
+- [ ] Property access for objects (Probably best to implement classes first)
 - [ ] Classes
     - [ ] Inheritance
 
