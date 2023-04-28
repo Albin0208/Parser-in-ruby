@@ -1,6 +1,12 @@
 require_relative '../environment'
 require_relative '../../ast_nodes/nodes'
 
+#
+# ExpressionsEvaluator defines a set of methods that can evaluate
+# different types of AST nodes representing expressions in a programming language.
+#
+# The module includes methods for evaluating identifiers, 
+# binary expressions, unary expressions and more.
 module ExpressionsEvaluator
 
   def eval_identifier(ast_node, env)
@@ -174,6 +180,13 @@ module ExpressionsEvaluator
     return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
   end
 
+  # Evaluate a container accessor expression and return its value.
+  #
+  # @param ast_node [Stmt] the AST node representing the container accessor expression
+  # @param env [Environment] the environment to evaluate the expression in
+  # @return [RunTimeVal] the value of the container accessor expression
+  # @raise [NameError] if the container identifier is not found in the environment
+  #
   def eval_container_accessor(ast_node, env)
     container = env.lookup_identifier(ast_node.identifier.symbol)
     access_key = evaluate(ast_node.access_key, env)

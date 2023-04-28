@@ -1,8 +1,11 @@
 require_relative '../environment'
 
 #
-# Module for Statments evaling
+# StatementEvaluator defines a set of methods that can evaluate
+# different types of AST nodes representing statements in a programming language.
 #
+# The module includes methods for evaluating variable declarations, function declarations, control flow
+# statements such as if and while, and more.
 module StatementEvaluator
 
   # Evaluates the statements in the given program's body in the given environment.
