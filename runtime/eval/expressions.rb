@@ -75,37 +75,8 @@ def eval_call_expr(ast_node, call_env)
   raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
   env = Environment.new(function.env)
-  # Check that the correct number of params are passed
-  if function.params.length != ast_node.params.length
-    types = function.params.map(&:value_type).join(", ")
-    raise "Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{ast_node.params.length}'"
-  end
-
-  # Check that all params are the correct type
-  function.params.zip(ast_node.params) { |func_param, call_param| 
-    # Get the node_type of the value
-    type = NODE_TYPES_CONVERTER[func_param.value_type.to_sym]
-    if type == nil
-      type = func_param.value_type.to_sym
-    end
-
-    evaled_call_param = evaluate(call_param, call_env)
-
-    if evaled_call_param.type.downcase != type.downcase
-      raise "Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
-    end
-
-    # Convert int passed to float and float passed to int
-    case func_param.value_type
-    when 'int'
-      evaled_call_param = NumberVal.new(evaled_call_param.value.to_i, :int)
-    when 'float'
-      evaled_call_param = NumberVal.new(evaled_call_param.value.to_f, :float)
-    end
-
-    # Declare any var params
-    env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, false)
-  }
+  validate_params(function, ast_node.params, call_env)
+  declare_params(function, ast_node.params, call_env, env)
 
   last_eval = NullVal.new()
   return_value = nil
@@ -125,6 +96,55 @@ def eval_call_expr(ast_node, call_env)
   end
 
   return return_value
+end
+
+#
+# Validate the params to the function. Raises error if not valid params
+#
+# @param [FuncDeclaration] function The declaration of the function called
+# @param [Array] call_params A list of all the params passed to the function
+# @param [Environment] call_env Where the function was called
+#
+def validate_params(function, call_params, call_env)
+  unless function.params.length == call_params.length
+    types = function.params.map(&:value_type).join(", ")
+    raise "Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
+  end
+
+  function.params.zip(call_params) { |func_param, call_param| 
+    # Grab the converter if it exits else convert to symbol
+    type = NODE_TYPES_CONVERTER[func_param.value_type.to_sym] || func_param.value_type.to_sym
+    evaled_call_param = evaluate(call_param, call_env)
+
+    unless evaled_call_param.type.downcase == type.downcase
+      raise "Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
+    end
+  }
+end
+
+#
+# Declares all params passed to a function
+#
+# @param [FuncDeclaration] function The declaration of the function called
+# @param [Array] call_params A list of all the params passed to the function
+# @param [Environment] call_env Where the function was called
+# @param [Environment] env The environment for the current call of the function
+#
+def declare_params(function, call_params, call_env, env)
+  function.params.zip(call_params) { |func_param, call_param| 
+    evaled_call_param = evaluate(call_param, call_env)
+    
+    # Convert int passed to float and float passed to int
+    case func_param.value_type
+    when 'int'
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_i, :int)
+    when 'float'
+      evaled_call_param = NumberVal.new(evaled_call_param.value.to_f, :float)
+    end
+
+    # Declare any var params
+    env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, false)
+  }
 end
 
 def eval_hash_literal(ast_node, env)
