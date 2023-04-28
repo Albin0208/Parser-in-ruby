@@ -54,6 +54,18 @@ class TestLexer < Test::Unit::TestCase
     lexer = Lexer.new('{}')
     assert_equal(TokenType::LBRACE, lexer.tokenize[0].type, 'The token was not correctly tokenized')
     assert_equal(TokenType::RBRACE, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+    lexer = Lexer.new('[]')
+    assert_equal(TokenType::LBRACKET, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(TokenType::RBRACKET, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+
+    lexer = Lexer.new('=')
+    assert_equal(TokenType::ASSIGN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+
+    lexer = Lexer.new('aas')
+    assert_equal(TokenType::IDENTIFIER, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    lexer = Lexer.new(',.')
+    assert_equal(TokenType::COMMA, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(TokenType::DOT, lexer.tokenize[1].type, 'The token was not correctly tokenized')
   end
 
   def test_tokenize_keywords
