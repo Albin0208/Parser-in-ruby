@@ -132,4 +132,54 @@ class TestInterpreterStatement < Test::Unit::TestCase
     
     assert_equal(fib_nums, parser_fib_nums)
   end
+
+  def test_evaluate_for_loop
+    input = 'int counter = 0
+             for int i = 0, i < 4, i = i + 1 {
+              counter = counter + 1
+              int c = 2
+             }
+             counter'
+    ast = @parser.produce_ast(input)
+
+    # Evaluate for
+    result = @interpreter.evaluate(ast, @env)
+    # Check variables
+    assert_equal(4, @env.identifiers['counter'].value)
+    assert_nil(@env.identifiers['c']) # Should not exist outside of the while
+  end
+
+  def test_evaluate_loop_with_break
+    input = 'int counter = 0
+            for int i = 1, i <= 4, i = i + 1 {
+              counter = counter + 1
+              if i == 2 {
+                break
+              }
+            }
+            counter'
+    ast = @parser.produce_ast(input)
+
+    # Evaluate while
+    result = @interpreter.evaluate(ast, @env)
+    # Check variables
+    assert_equal(2, @env.identifiers['counter'].value)
+  end
+
+  def test_evaluate_loop_with_continue
+    input = 'int counter = 0
+            for int i = 0, i <= 10, i = i + 1 {
+              if i % 2 == 0 {
+                continue
+              }
+              counter = counter + 1
+            }
+            counter'
+    ast = @parser.produce_ast(input)
+
+    # Evaluate while
+    result = @interpreter.evaluate(ast, @env)
+    # Check variables
+    assert_equal(5, @env.identifiers['counter'].value)
+  end
 end

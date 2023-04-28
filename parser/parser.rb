@@ -57,21 +57,10 @@ class Parser
       return parse_if_statement()
     when TokenType::IDENTIFIER # Handles an identifier with assign
       return parse_assignment_stmt()
-      # if next_token().type == TokenType::ASSIGN
-      # else 
-      #   return parse_expr()
-      # end
     when TokenType::FOR, TokenType::WHILE
       return parse_loops()
-    # when TokenType::ASSIGN
-    #   expect(TokenType::ASSIGN)
-    #   prev = @ast.pop()
-    #   p prev
-    #   return AssignmentStmt.new(parse_expr(), prev)
     when TokenType::FUNC
       return parse_function_declaration()
-    # when TokenType::HASH
-    #   return parse_hash_declaration()
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
