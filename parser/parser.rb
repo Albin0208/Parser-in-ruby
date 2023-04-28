@@ -47,8 +47,10 @@ class Parser
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
     case at().type
-    when TokenType::CONST, TokenType::TYPE_SPECIFIER
-      @logger.debug("(#{at().value}) matched var declaration")
+    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH
+      if at().type == TokenType::HASH || next_token().type == TokenType::HASH
+        return parse_hash_declaration()
+      end
       return parse_var_declaration()
     when TokenType::IF
       return parse_if_statement()
@@ -62,8 +64,8 @@ class Parser
       return parse_loops()
     when TokenType::FUNC
       return parse_function_declaration()
-    when TokenType::HASH
-      return parse_hash_declaration()
+    # when TokenType::HASH
+    #   return parse_hash_declaration()
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
@@ -94,7 +96,7 @@ class Parser
     identifier = parse_identifier().symbol
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier, key_type, value_type, nil) unless is_const
+      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
       raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
