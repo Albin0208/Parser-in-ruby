@@ -50,10 +50,12 @@ module StatementEvaluator
   # @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
   def eval_hash_declaration(ast_node, env)
     value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
-    raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got #{value.class}" if value.class != HashVal
-    # Check if key and value types match the type of the assigned hash
-    if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
-      raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"
+    unless value.instance_of?(NullVal)
+      raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got #{value.class}" if value.class != HashVal
+      # Check if key and value types match the type of the assigned hash
+      if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
+        raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"
+      end
     end
     type_specifier = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
 

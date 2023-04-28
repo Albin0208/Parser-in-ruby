@@ -38,20 +38,5 @@ print(a == Hash<string, int>{ "hej" = 1 + 2, "hejs" = test(2)})
 print("")
 print(a != Hash<string, int>{ "hej" = 1 + 3, "hejs" = test(2)})
 #Hash<string, int> b = Hash<string, int>{ "hej" = 4, "hejs" = test(2)}
-Hash<int, int> c = Hash<int, int>{}
-
+Hash<int, int> c
 #print(b)
-
-#a = b
-
-print(a == c)
-
-print(test2(7))
-
-c[1] = 2
-print(c)
-c[3 + 5] = 1.0
-
-
-
-print(c.length())
