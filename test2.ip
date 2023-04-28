@@ -12,6 +12,7 @@ func int test(int b) {
 
 func int test2(int b){
   return b
+  print("hEEEEEEEJ")
 }
 Hash<string, int> a = Hash<string, int>{ "hej" = 3, "hejs" = test(2)}
 #Hash<string, int> a = { "st" = 3, "hejs" = 2}
@@ -45,4 +46,4 @@ Hash<int, int> c = Hash<int, int>{}
 
 print(a == c)
 
-print(test(4))
+print(test2(7))

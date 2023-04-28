@@ -1,5 +1,10 @@
 require_relative '../environment'
 
+# Evaluates the statements in the given program's body in the given environment.
+#
+# @param program [Program] the program node to evaluate
+# @param env [Environment] the environment to use for evaluation
+# @return [RunTimeVal] the result of evaluating the last statement in the program's body
 def eval_program(program, env)
   last_eval = NullVal.new
 
@@ -8,6 +13,11 @@ def eval_program(program, env)
   return last_eval
 end
 
+# Evaluates a variable declaration AST node and declares the variable in the environment.
+#
+# @param ast_node [VarDeclaration] The variable declaration AST node to evaluate.
+# @param env [Environment] The environment to declare the variable in.
+# @return [RunTimeVal] The evaluated value of the variable declaration.
 def eval_var_declaration(ast_node, env)
   value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
 
@@ -21,8 +31,15 @@ def eval_var_declaration(ast_node, env)
   end
 
   env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
+  return value
 end
 
+# Evaluates a hash declaration AST node and declares a new variable in the given environment.
+#
+# @param ast_node [HashDeclaration] the hash declaration node to evaluate
+# @param env [Environment] the environment in which to declare the new variable
+# 
+# @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
 def eval_hash_declaration(ast_node, env)
   value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
   raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type}> but got #{value.class}" if value.class != HashVal
@@ -35,10 +52,20 @@ def eval_hash_declaration(ast_node, env)
   env.declare_var(ast_node.identifier, value, type_specifier, ast_node.constant)
 end
 
+# Evaluates a function declaration and adds it to the current environment.
+#
+# @param ast_node [FuncDeclaration] The AST node representing the function declaration to be evaluated.
+# @param env [Environment] The current environment.
+#
 def eval_func_declaration(ast_node, env)
   env.declare_func(ast_node.identifier, ast_node.type_specifier, ast_node, env)
 end
 
+# Evaluates an if statement AST node
+#
+# @param ast_node [IfStatement] the AST node to evaluate
+# @param env [Environment] the current execution environment
+# @return [RunTimeVal] the result of the last evaluated statement in the if statement
 def eval_if_statement(ast_node, env)
   last_eval = NullVal.new
 
@@ -70,10 +97,17 @@ def eval_if_statement(ast_node, env)
   return last_eval
 end
 
+# Evaluate a return statement by evaluating its body expression and raising a ReturnSignal
+# with the resulting value to indicate that a return statement has been encountered.
+#
+# @param ast_node [ReturnStmt] The AST node representing the return statement
+# @param env [Environment] The environment in which the statement is being evaluated
+#
+# @raise [ReturnSignal] The raised signal contains the value of the last evaluated expression
+#   and is caught by the calling function to return this value from the current function.
 def eval_return_stmt(ast_node, env)
-  last_eval = NullVal.new
-  last_eval = evaluate(ast_node.body, env) 
-  raise ReturnSignal.new(last_eval)
+  result = evaluate(ast_node.body, env) 
+  raise ReturnSignal.new(result)
 end
 
 #

@@ -62,13 +62,21 @@ def eval_method_call_expr(ast_node, call_env)
   return method.call(*args)
 end
 
+# Evaluates a call expression in the specified environment.
+#
+# @param ast_node [CallExpr] the call expression node to evaluate
+# @param call_env [Environment] the environment to evaluate the call expression in
+# @raise [RuntimeError] if the specified function is not defined in the current environment
+# @raise [RuntimeError] if the return value of the function is not of the expected type
+#
+# @return [NullVal] A null value if the function is of type void
+# @return [RunTimeVal] the return value of the evaluated call expression
 def eval_call_expr(ast_node, call_env)
   function = call_env.lookup_identifier(ast_node.func_name.symbol)
   if function.instance_of?(Symbol) && function == :native_func
-    param_results = []
-    ast_node.params.map() { |param| 
+    param_results = ast_node.params.map() { |param| 
       evaled = evaluate(param, call_env)
-      param_results.push(evaled.instance_variable_defined?(:@value) ? evaled.value : evaled) }
+      evaled.instance_variable_defined?(:@value) ? evaled.value : evaled }
     NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
     return nil
   end
@@ -78,20 +86,17 @@ def eval_call_expr(ast_node, call_env)
   validate_params(function, ast_node.params, call_env)
   declare_params(function, ast_node.params, call_env, env)
 
-  last_eval = NullVal.new()
   return_value = nil
   begin
-    function.body.each() { |stmt| last_eval = evaluate(stmt, env) }
+    function.body.each() { |stmt| evaluate(stmt, env) }
   rescue ReturnSignal => signal
     return_value = signal.return_node
   end
 
   # Check that the return value is the same type as the return type of the function
-  return_type = {'bool': :boolean}.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
-  if return_type == :void
-    return NullVal.new()
-  end
-  unless return_value.type == return_type
+  expected_return_type = {'bool': :boolean}.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
+  return NullVal.new() if expected_return_type == :void
+  unless return_value.type == expected_return_type
     raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
   end
 

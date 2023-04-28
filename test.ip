@@ -6,6 +6,10 @@ func int test(int a) {
     return a * test(a - 1)
 }
 
+func void testing(int b) {
+  print(b)
+}
+
 #func int add(int a, int b) {
   #  return a + b
 #}
@@ -31,3 +35,5 @@ print(1.0.to_int() + 4)
 print(1.type())
 
 int a = test(5)
+
+testing(5)
