@@ -1,4 +1,4 @@
-require_relative '../ast_nodes/ast'
+require_relative '../ast_nodes/nodes'
 require_relative '../lexer/lexer'
 require_relative '../token_type'
 require_relative '../errors/errors'
@@ -208,7 +208,7 @@ class Parser
     expect(TokenType::COMMA)
     expr = parse_stmt()
     # TODO Don't allow for every stmt, only assignstatement and expressions
-    unless expr.is_a?(Expr) || expr.is_a?(AssignmentExpr)
+    unless expr.is_a?(Expr) || expr.is_a?(AssignmentStmt)
       raise "Error: Wrong type of expression given"
     end
 
@@ -320,12 +320,12 @@ class Parser
 
   # Checks whether a given expression type is valid for a variable of a certain type.
   #
-  # @param type [String] expression_type What type the expression is
-  # @param type [String] type The expected type for the expression
+  # @param expression_type [String] What type the expression is
+  # @param expected_type [String] The expected type for the expression
   #
   # @return [Boolean] true if the expression type is valid for the variable type otherwise false
-  def valid_assignment_type?(expression_type, type)
-    return case type
+  def valid_assignment_type?(expression_type, expected_type)
+    return case expected_type
           when 'int', 'float'
             [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
           when 'bool'
@@ -516,7 +516,7 @@ class Parser
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
       value = parse_expr()
-      return AssignmentExpr.new(value, identifier)
+      return AssignmentStmt.new(value, identifier)
     end
 
     return identifier
@@ -801,7 +801,7 @@ class Parser
 
   # Eat the next token and make sure we have eaten the correct type
   #
-  # @param [String] token_type What type of token we are expecting
+  # @param token_types [Array] A list of token which we can expect
   #
   # @return [Token] Returns the expected token
   def expect(*token_types)

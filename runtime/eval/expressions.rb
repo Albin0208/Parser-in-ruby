@@ -1,5 +1,5 @@
 require_relative '../environment'
-require_relative '../../ast_nodes/ast'
+require_relative '../../ast_nodes/nodes'
 
 module ExpressionsEvaluator
 

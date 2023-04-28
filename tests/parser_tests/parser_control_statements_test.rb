@@ -99,7 +99,7 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal('i', condition.left.symbol)
     assert_equal(10, condition.right.value)
     body = ast.body[0].body[0]
-    assert_instance_of(AssignmentExpr, body)
+    assert_instance_of(AssignmentStmt, body)
     assert_equal('i', body.assigne.symbol)
     assign_expr = body.value
     assert_instance_of(BinaryExpr, assign_expr)

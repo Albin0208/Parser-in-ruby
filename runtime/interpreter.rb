@@ -1,4 +1,4 @@
-require_relative '../ast_nodes/ast'
+require_relative '../ast_nodes/nodes'
 require_relative 'values'
 require_relative 'eval/expressions'
 require_relative 'eval/statements'
