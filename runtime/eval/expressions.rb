@@ -49,7 +49,30 @@ module ExpressionsEvaluator
   end
 
   def eval_assignment_expr(ast_node, env)
-    raise 'Cannot assign to none Identifier type' if ast_node.assigne.type != NODE_TYPES[:Identifier]
+    if ast_node.assigne.type == :ContainerAccessor
+      container_accessor = ast_node.assigne
+      container_accessor.identifier.symbol
+      
+      access_key = container_accessor.access_key
+      access_key = evaluate(access_key, env)
+      container = env.lookup_identifier(container_accessor.identifier.symbol)
+      raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
+
+      value = evaluate(ast_node.value, env)
+
+      if container.value_type == :int && value.type == :float
+        value = NumberVal.new(value.value.to_i, :int)
+      elsif container.value_type == :float && value.type == :int
+        value = NumberVal.new(value.value.to_f, :float)
+      end
+
+      raise "Error: Expected value type to be #{container.value_type} but got #{value.type}" unless container.value_type == value.type
+      
+      container.value[access_key.value] = value
+      return container
+    else
+      raise 'Cannot assign to none Identifier type' if ast_node.assigne.type != NODE_TYPES[:Identifier]
+    end
 
     env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
   end
@@ -191,6 +214,7 @@ module ExpressionsEvaluator
     container = env.lookup_identifier(ast_node.identifier.symbol)
     access_key = evaluate(ast_node.access_key, env)
     value = container.value[access_key.value]
+    raise "Error: Key: #{access_key} does not exist in container" if value.nil?
     return value ? value : NullVal.new()
   end
 end

@@ -19,6 +19,7 @@ class Parser
     @logging = logging
     @parsing_function = false # Flag to keep track of function parsing. Use for not allowing return outside functions
     @parsing_loop = false # Flag to keep track of loop parsing. Use for not allowing break and continue outside loops
+    @ast = []
 
     @logger = Logger.new($stdout)
     @logger.level = logging ? Logger::DEBUG : Logger::FATAL
@@ -31,12 +32,12 @@ class Parser
   # @return [Program] Return the top node in the AST
   def produce_ast(source_code)
     @tokens = Lexer.new(source_code, @logging).tokenize
-    puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list
-    program = Program.new([])
-
+    puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list 
     # Parse until end of file
-    program.body.append(parse_stmt()) while not_eof()
+    @ast.append(parse_stmt()) while not_eof()
 
+    program = Program.new(@ast)
+    @ast = []
     return program
   end
 
@@ -55,13 +56,18 @@ class Parser
     when TokenType::IF
       return parse_if_statement()
     when TokenType::IDENTIFIER # Handles an identifier with assign
-      if next_token().type == TokenType::ASSIGN
-        return parse_assignment_stmt()
-      else 
-        return parse_expr()
-      end
+      return parse_assignment_stmt()
+      # if next_token().type == TokenType::ASSIGN
+      # else 
+      #   return parse_expr()
+      # end
     when TokenType::FOR, TokenType::WHILE
       return parse_loops()
+    # when TokenType::ASSIGN
+    #   expect(TokenType::ASSIGN)
+    #   prev = @ast.pop()
+    #   p prev
+    #   return AssignmentStmt.new(parse_expr(), prev)
     when TokenType::FUNC
       return parse_function_declaration()
     # when TokenType::HASH
@@ -109,7 +115,6 @@ class Parser
     expression = nil
 
     if at().type == TokenType::IDENTIFIER
-      p "Pars"
       expression = parse_expr()
       # expression = parse_func_call()
     else # Else we want a hash literal
@@ -511,17 +516,17 @@ class Parser
   #
   # @return [AssignmentExpr] The AST node
   def parse_assignment_stmt
-    @logger.debug('Parsing assign expression')
-    identifier = parse_identifier()
+    # @logger.debug('Parsing assign expression')
+    left = parse_expr()
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
       expect(TokenType::ASSIGN)
       value = parse_expr()
-      return AssignmentStmt.new(value, identifier)
+      return AssignmentStmt.new(value, left)
     end
 
-    return identifier
+    return left
   end
 
   # Parses a expression
