@@ -86,7 +86,7 @@
 - [x] Hash retrieval: h["one"]
 - [x] Hash retrieval with func calls h[key_gen()]
 - [ ] Hash iteration: h.each {|key, value| puts "#{key} is #{value}"}
-- [ ] Invalid hashes raises error
+- [x] Invalid hashes raises error
 - [x] Missmatched types raises errors
 ### Test exceptions:
 - [ ] Zero division error: 10/0
