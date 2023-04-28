@@ -143,7 +143,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
 
     # Evaluate for
-    result = @interpreter.evaluate(ast, @env)
+    @interpreter.evaluate(ast, @env)
     # Check variables
     assert_equal(4, @env.identifiers['counter'].value)
     assert_nil(@env.identifiers['c']) # Should not exist outside of the while
@@ -161,7 +161,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
 
     # Evaluate while
-    result = @interpreter.evaluate(ast, @env)
+    @interpreter.evaluate(ast, @env)
     # Check variables
     assert_equal(2, @env.identifiers['counter'].value)
   end
@@ -178,7 +178,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
 
     # Evaluate while
-    result = @interpreter.evaluate(ast, @env)
+    @interpreter.evaluate(ast, @env)
     # Check variables
     assert_equal(5, @env.identifiers['counter'].value)
   end

@@ -108,6 +108,21 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal(1, assign_expr.right.value)
   end 
 
+  def test_parse_for_loop
+    ast = @parser.produce_ast('for int i = 0, i < 10, i = i + 1 { 1 }')
+    assert_equal(NODE_TYPES[:FOR_LOOP], ast.body[0].type)
+    node = ast.body[0]
+    condition = node.condition
+    assert_instance_of(BinaryExpr, condition)
+    assert_equal(:<, condition.op)
+    assert_equal('i', condition.left.symbol)
+    assert_equal(10, condition.right.value)
+    assert_instance_of(AssignmentStmt, node.expr)
+    assert_equal('i', node.expr.assigne.symbol)
+    body = ast.body[0].body[0]
+    assert_instance_of(NumericLiteral, body)
+  end 
+
   def test_invalid_return_placement
     input = "int a = 2
              return a"

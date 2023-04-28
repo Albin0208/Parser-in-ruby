@@ -69,7 +69,7 @@
 ### Test loops:
 
 - [x] While loop: i = 1; while i <= 5 do puts i; i += 1; end
-- [ ] For loop: for i in 1..5 do puts i end
+- [x] For loop: for i in 1..5 do puts i end
 ### Test function definition and invocation:
 
 - [x] Function definition: func int add(a,b) { return a + b }
