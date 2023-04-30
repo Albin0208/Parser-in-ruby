@@ -633,8 +633,7 @@ class Parser
   # @return [PropertyCallExpr] The property call
   #
   def parse_property_access(expr, property_name)
-    # TODO Implement property access
-    raise "Properties not implemented yet"
+    return PropertyCallExpr.new(expr, property_name.symbol)
   end
 
   #

@@ -20,6 +20,7 @@ NODE_TYPES = {
   
     # Expressions
     MethodCallExpr: :MethodCallExpr,
+    PropertyCallExpr: :PropertyCallExpr,
     CallExpr: :CallExpr,
     ContainerAccessor: :ContainerAccessor,
     AssignmentExpr: :AssignmentExpr,
