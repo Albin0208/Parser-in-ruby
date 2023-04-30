@@ -43,6 +43,13 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     assert_equal(ast.body[0].value_type, 'float')
   end
 
+  def test_parse_class_declaration
+    ast = @parser.produce_ast('Test x = new Test')
+    assert_equal('x', ast.body[0].identifier)
+    assert_equal('Test', ast.body[0].value.value.symbol)
+    assert_equal(ast.body[0].constant, false)
+  end
+
   def test_parse_constant_declaration
     ast = @parser.produce_ast('const int x = 1')
     assert_equal(ast.body[0].identifier, 'x')
@@ -78,5 +85,35 @@ class TestParserVarDeclarations < Test::Unit::TestCase
   def test_parse_declaring_with_invalid_var_names
     assert_raise(RuntimeError) { @parser.produce_ast('int if = 4') }
     assert_raise(RuntimeError) { @parser.produce_ast('int 123 = 4') }
+  end
+
+  def test_parse_class
+    input = "class Test {
+                int var = 1
+                int var2 = 100
+
+                func void hello() {
+                  print('Hello world')
+                }
+             }"
+
+    ast = @parser.produce_ast(input)
+    class_decl = ast.body[0]
+
+    assert_instance_of(ClassDeclaration, class_decl)
+    assert_equal('Test', class_decl.class_name.symbol)
+    member_vars = class_decl.member_variables
+    member_func = class_decl.member_functions
+    assert_equal(2, member_vars.length)
+    assert_equal(1, member_func.length)
+    assert_instance_of(VarDeclaration, member_vars[0])
+    assert_equal('var', member_vars[0].identifier)
+    assert_equal(1, member_vars[0].value.value)
+    assert_instance_of(VarDeclaration, member_vars[1])
+    assert_equal('var2', member_vars[1].identifier)
+    assert_equal(100, member_vars[1].value.value)
+
+    assert_instance_of(FuncDeclaration, member_func[0])
+    assert_equal('hello', member_func[0].identifier)   
   end
 end
