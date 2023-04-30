@@ -21,7 +21,6 @@ TOKEN_TYPES = [
   [:lbracket, /\A\[/],
   [:rbracket, /\A\]/],
   [:array_type, /\A.*?\[\]/], # array_type
-  # [:class_type, /\A[A-Z][a-zA-Z0-9_]*/], # class_type or class name
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:comma, /\A,/],
   [:dot, /\A\./],

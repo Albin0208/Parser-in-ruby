@@ -53,7 +53,7 @@ class Parser
         return parse_hash_declaration()
       end
       if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::IDENTIFIER
-        return parse_var_class()
+        return parse_var_declaration()
       elsif at().type == TokenType::IDENTIFIER
         return parse_assignment_stmt()
       end
@@ -83,33 +83,9 @@ class Parser
     end
   end
 
-  def parse_var_class
-    is_const = at().type == TokenType::CONST # Get if const keyword is present
-
-    eat() if is_const # eat the const keyword if we have a const
-    type_specifier = expect(TokenType::IDENTIFIER).value # Get what type the var should be
-
-    identifier = parse_identifier().symbol
-    @logger.debug("Found indentifier from var declaration: #{identifier}")
-    
-    if at().type != TokenType::ASSIGN
-      return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
-
-      @logger.error('Found Uninitialized constant')
-      raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
-    end
-
-    expect(TokenType::ASSIGN)
-    expression = parse_expr()
-
-    # p type_specifier == expression.value.symbol
-
-    # TODO fix validate maybe for classes
-    validate_assignment_type(expression, type_specifier) # Validate that the type is correct
-
-    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
-  end
-
+  # Parses a class declaration and returns a ClassDeclaration AST node.
+  #
+  # @return [ClassDeclaration] The ClassDeclaration AST node.
   def parse_class_declaration 
     expect(TokenType::CLASS)
 
@@ -117,8 +93,12 @@ class Parser
     member_variables = []
     member_functions = []
     expect(TokenType::LBRACE)
+
+    # Parse all class members
     while at().type != TokenType::RBRACE
       stmt = parse_stmt()
+
+      # Check if the stmt is a func- or varDeclaration
       case stmt.type
       when :FuncDeclaration
         member_functions << stmt
@@ -239,6 +219,9 @@ class Parser
   #
   # @return [ForStmt] The for statment
   #
+  # @raise [RuntimeError] If the variable in the for-loop is not initialized.
+  # @raise [RuntimeError] If the expression given is not an Expr or AssignmentStmt.
+  #
   def parse_for_stmt
     @parsing_loop = true
     expect(TokenType::FOR)
@@ -248,7 +231,7 @@ class Parser
     condition = parse_conditional_condition() # Parse the loop condition
     expect(TokenType::COMMA)
     expr = parse_stmt()
-    # TODO Don't allow for every stmt, only assignstatement and expressions
+    # Don't allow for every stmt, only assignstatement and expressions
     unless expr.is_a?(Expr) || expr.is_a?(AssignmentStmt)
       raise "Error: Wrong type of expression given"
     end
@@ -261,6 +244,10 @@ class Parser
     return ForStmt.new(body, condition, var_dec, expr)
   end
 
+  # Parses a while loop statement.
+  #
+  # @return [WhileStmt] The WhileStmt AST node.
+  #
   def parse_while_stmt
     @parsing_loop = true
     expect(TokenType::WHILE)
@@ -301,11 +288,13 @@ class Parser
   # Parse a variable declaration
   #
   # @return [VarDeclaration] The Vardeclaration AST node
+  #
+  # @raise [NameError] If an uninitialized constant is found.
   def parse_var_declaration
     is_const = at().type == TokenType::CONST # Get if const keyword is present
 
     eat() if is_const # eat the const keyword if we have a const
-    type_specifier = expect(TokenType::TYPE_SPECIFIER).value # Get what type the var should be
+    type_specifier = expect(TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value # Get what type the var should be
 
     identifier = parse_identifier().symbol
     @logger.debug("Found indentifier from var declaration: #{identifier}")

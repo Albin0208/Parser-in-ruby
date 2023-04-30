@@ -149,12 +149,6 @@ class TestLexer < Test::Unit::TestCase
     assert_raise(InvalidTokenError) { lexer.tokenize }
   end
 
-  # def test_tokenize_input_with_invalid_float
-  #   input = '1 + 2. * 3'
-  #   lexer = Lexer.new(input)
-  #   assert_raise(InvalidTokenError) { lexer.tokenize }
-  # end
-
   def test_tokenize_input_with_invalid_integer
     input = '1 + 012 * 3'
     lexer = Lexer.new(input)

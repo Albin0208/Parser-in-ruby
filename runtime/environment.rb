@@ -99,13 +99,9 @@ class Environment
   def assign_var(varname, value)
     env = find_scope(varname)
   
-    if env.constants.include?(varname)
-      raise "Cannot reassign constant variable \"#{varname}\""
-    end
-    
-    if env.identifiers.key?(varname) && env.identifiers[varname].type == NODE_TYPES[:FuncDeclaration]
-      raise "Cannot assign a value to a function \"#{varname}\""
-    end
+    raise "Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
+    raise "Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
+  
   
     var_type = env.identifiers_type[varname]
 
@@ -153,5 +149,16 @@ class Environment
     raise "Error: \"#{identifier}\" was not declared in any scope" if env.nil?
 
     return env.identifiers[identifier]
+  end
+
+  private
+
+  # Checks if the variable in the given environment is a function.
+  #
+  # @param varname [String] The name of the variable to check.
+  # @param env [Environment] The environment to check for the variable.
+  # @return [Boolean] Whether the variable is a function.
+  def is_function?(varname, env)
+    return env.identifiers.key?(varname) && env.identifiers[varname].type == NODE_TYPES[:FuncDeclaration]
   end
 end

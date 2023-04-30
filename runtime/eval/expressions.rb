@@ -9,38 +9,71 @@ require_relative '../../ast_nodes/nodes'
 # binary expressions, unary expressions and more.
 module ExpressionsEvaluator
 
+  # Evaluates an identifier expression.
+  #
+  # @param [Identifier] ast_node The identifier to look up.
+  # @param [Environment] env The environment to evaluate the expression in.
+  # @return [RunTimeVal] The value of the identifier in the environment.
   def eval_identifier(ast_node, env)
-    env.lookup_identifier(ast_node.symbol)
+    return env.lookup_identifier(ast_node.symbol)
   end
 
-  def eval_logical_and_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    return BooleanVal.new(false) unless lhs.value == true # Don't eval right side if we are false
+  # Evaluates a logical AND expression.
+  #
+  # @param [LogicalAndExpr] logic_and The logical AND expression to evaluate.
+  # @param [Environment] env The environment to evaluate the expression in.
+  # @return [BooleanVal] The result of the logical AND operation.
+  def eval_logical_and_expr(logic_and, env)
+    lhs = evaluate(logic_and.left, env)
+    return lhs if lhs.value == false # Don't eval right side if we are false
 
-    rhs = evaluate(binop.right, env)
+    rhs = evaluate(logic_and.right, env)
     # We have come here so we know the expr is true if the right side is true
     BooleanVal.new(rhs.value == true)
   end
 
-  def eval_logical_or_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    rhs = evaluate(binop.right, env)
+  # Evaluates a logical OR expression.
+  #
+  # @param [LogicalOrExpr] logic_or The logical OR expression to evaluate.
+  # @param [Environment] env The environment to evaluate the expression in.
+  # @return [BooleanVal] The result of the logical OR operation.
+  def eval_logical_or_expr(logic_or, env)
+    lhs = evaluate(logic_or.left, env)
+    # Return early if lhs is true since only one of the statments have to be true
+    if lhs.value == true
+      return lhs
+    end
+    rhs = evaluate(logic_or.right, env)
 
-    BooleanVal.new(lhs.value == true || rhs.value == true)
+    return BooleanVal.new(rhs.value == true)
   end
 
-  def eval_unary_expr(binop, env)
-    lhs = evaluate(binop.left, env)
-    case binop.op
+  # Evaluates a unary expression and returns the result
+  #
+  # @param unary [UnaryExpr] the unary expression to evaluate
+  # @param env [Environment] the environment to use for variable lookups
+  # @return [NumberVal, BooleanVal] the result of the evaluation
+  def eval_unary_expr(unary, env)
+    lhs = evaluate(unary.left, env)
+    case unary.op
     when :-
       return NumberVal.new(-lhs.value, lhs.type)
     when :+
       return NumberVal.new(-lhs.value, lhs.type)
     when :!
-      BooleanVal.new(!lhs.value)
+      return BooleanVal.new(!lhs.value)
     end
   end
 
+  #
+  # Evaluates a binary expression by evaluation the left and right operands,
+  # then performing the specified operation on the two.
+  #
+  # @param [BinaryExpr] binop The binary expression node to be evaluated
+  # @param [Environment] env The environment in which we are evaluating
+  #
+  # @return [NumberVal, BooleanVal] the result of the binary operation
+  #
   def eval_binary_expr(binop, env)
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)
@@ -48,13 +81,17 @@ module ExpressionsEvaluator
     lhs.send(binop.op, rhs)
   end
 
+  # Evaluates an assignment expression and updates the environment accordingly.
+  #
+  # @param ast_node [AssignmentExpr] The AST node representing the assignment expression
+  # @param env [Environment] The environment in which to evaluate the expression
+  # @return [Value] The new value of the assigned variable or container
+  # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
   def eval_assignment_expr(ast_node, env)
     if ast_node.assigne.type == :ContainerAccessor
       container_accessor = ast_node.assigne
-      container_accessor.identifier.symbol
-      
-      access_key = container_accessor.access_key
-      access_key = evaluate(access_key, env)
+
+      access_key = evaluate(container_accessor.access_key, env)
       container = env.lookup_identifier(container_accessor.identifier.symbol)
       raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
 
@@ -71,33 +108,39 @@ module ExpressionsEvaluator
       container.value[access_key.value] = value
       return container
     else
-      raise 'Cannot assign to none Identifier type' if ast_node.assigne.type != NODE_TYPES[:Identifier]
+      raise 'Cannot assign to non-Identifier type' unless ast_node.assigne.type == NODE_TYPES[:Identifier]
     end
 
     env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
   end
 
+  # Evaluate a method call expression by first evaluating the receiver expression and
+  # then looking up the method in the class hierarchy or the receiver's metaclass.
+  #
+  # @param ast_node [MethodCallExpr] the AST node representing the method call expression
+  # @param call_env [Environment] the environment in which the method call is evaluated
+  # @return [RunTimeVal] the result of calling the method with the given arguments
+  # @raise [RuntimeError] if the method is not defined or the receiver is not a valid object or class
   def eval_method_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
     err_class_name = evaled_expr.class
-    # TODO Fix another error message
     # Check if we are calling a custom class
     if evaled_expr.instance_of?(ClassVal)
       class_decl = call_env.lookup_identifier(evaled_expr.value)
-      method = class_decl.member_functions.select() { |func| func.identifier == ast_node.method_name}
+      method = class_decl.member_functions.find() { |func| func.identifier == ast_node.method_name}
+
       
-      return call_function(method[0], ast_node, call_env) unless method.empty?
+      return call_function(method, ast_node, call_env) unless method.nil?
       err_class_name = class_decl.class_name
     end
 
-      # Check if the method exists
-      available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
-      unless available_methods.include?(ast_node.method_name.to_sym)
-        raise "#{ast_node.method_name} is not defined in #{err_class_name}"
-      end
+    # Check if the method exists
+    available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
+    unless available_methods.include?(ast_node.method_name.to_sym)
+      raise "Method #{ast_node.method_name} is not defined in #{err_class_name}"
+    end
     # Grab the methods
     method = evaled_expr.method(ast_node.method_name)
-
     args = ast_node.params.map() { |param| evaluate(param, call_env)}
 
     return method.call(*args)
@@ -126,6 +169,12 @@ module ExpressionsEvaluator
     return call_function(function, ast_node, call_env)
   end
 
+  # Calls a function with the given arguments.
+  #
+  # @param [FuncDeclaration] function The function to call.
+  # @param [CallExpr] ast_node The function call AST node.
+  # @param [Environment] call_env The environment in which the function call occurs.
+  # @return [RunTimeVaö] The value returned by the function.
   def call_function(function, ast_node, call_env)
     env = Environment.new(function.env)
     validate_params(function, ast_node.params, call_env)
@@ -141,7 +190,8 @@ module ExpressionsEvaluator
     # Check that the return value is the same type as the return type of the function
     expected_return_type = {'bool': :boolean}.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
     return NullVal.new() if expected_return_type == :void
-    unless return_value.type == expected_return_type
+
+    if return_value.type != expected_return_type
       raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
     end
 
@@ -197,6 +247,11 @@ module ExpressionsEvaluator
     }
   end
 
+  # Evaluates a hash literal expression.
+  #
+  # @param [HashLiteral] ast_node The hash literal to evaluate.
+  # @param [Environment] env The environment to evaluate the expression in.
+  # @return [HashVal] The result of the hash literal evaluation.
   def eval_hash_literal(ast_node, env)
     key_values = ast_node.key_value_pairs
     value_hash = {}
@@ -206,12 +261,12 @@ module ExpressionsEvaluator
       value = evaluate(pair[:value], env)
 
       # Check if the key type is correct
-      # TODO Improve error message
       raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
       raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type}" if value.type != ast_node.value_type
 
       value_hash[key.value] = value
     }
+    # Build the hash type
     type = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
 
     return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)

@@ -189,8 +189,9 @@ module StatementEvaluator
   end
 
   
-  #
-  # Evaluates a class declaration AST node and declares the class in the given environment.
+  # Evaluates a class declaration by creating a new environment for the class and declaring
+  # all the instance variables and methods in that environment. It then adds the class to the
+  # parent environment.
   #
   # @param [ClassDeclaration] ast_node the class declaration AST node to evaluate
   # @param [Environment] env the environment in which to declare the class
