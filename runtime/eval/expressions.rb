@@ -193,8 +193,8 @@ module ExpressionsEvaluator
 
       # Check if the key type is correct
       # TODO Improve error message
-      raise "Error: Key type is incorrect" if key.type != ast_node.key_type
-      raise "Error: Value type is incorrect" if value.type != ast_node.value_type
+      raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
+      raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type}" if value.type != ast_node.value_type
 
       value_hash[key.value] = value
     }

@@ -37,7 +37,7 @@ print(a.keys())
 print(a == Hash<string, int>{ "hej" = 1 + 2, "hejs" = test(2)})
 print("")
 print(a != Hash<string, int>{ "hej" = 1 + 3, "hejs" = test(2)})
-#Hash<string, int> b = Hash<string, int>{ "hej" = 4, "hejs" = test(2)}
+#Hash<string, int> b = Hash<string, boi>{ "hej" = 4, "hejs" = test(2)}
 Hash<int, int> c
 #print(b)
 
