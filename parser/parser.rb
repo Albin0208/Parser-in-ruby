@@ -619,14 +619,7 @@ class Parser
   #
   def parse_method_call(expr, method_name)
     expect(TokenType::LPAREN)
-    params = []
-    if at().type != TokenType::RPAREN
-      params << parse_expr()
-      while at().type == TokenType::COMMA
-        expect(TokenType::COMMA)
-        params << parse_expr()
-      end
-    end
+    params = parse_call_params()
     expect(TokenType::RPAREN)
     return MethodCallExpr.new(expr, method_name.symbol, params)
   end
@@ -652,6 +645,18 @@ class Parser
     identifier = parse_identifier()
     expect(TokenType::LPAREN) # eat the start paren
 
+    params = parse_call_params()
+
+    expect(TokenType::RPAREN) # Find ending paren
+    return CallExpr.new(identifier, params)
+  end
+
+  #
+  # Parses all the call params to a function or method
+  #
+  # @return [Array] A list of all the params
+  #
+  def parse_call_params
     # Parse any params
     params = []
     if at().type != TokenType::RPAREN
@@ -662,8 +667,7 @@ class Parser
       end
     end
 
-    expect(TokenType::RPAREN) # Find ending paren
-    return CallExpr.new(identifier, params)
+    return params
   end
 
   # Parses a logical expression
