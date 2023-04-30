@@ -22,8 +22,10 @@ func void hello() {
 
 Test t = new Test
 Tes c = new Tes
-int a = 2
 t.hello()
 c.hello()
 print(c.type())
-print(a.type())
+
+Hash<string, Test> a = Hash<string, Test>{ "p1" = new Test}
+
+print(a['p1'].hello())

@@ -209,6 +209,6 @@ end
 
 class ClassVal < RunTimeVal
   def initialize(value)
-    super(value, :class)
+    super(value, value.to_sym)
   end
 end
