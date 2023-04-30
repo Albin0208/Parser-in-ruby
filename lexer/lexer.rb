@@ -29,6 +29,7 @@ TOKEN_TYPES = [
 
 KEYWORDS = {
   const: TokenType::CONST,
+  class: TokenType::CLASS,
   func: TokenType::FUNC,
   if: TokenType::IF,
   elsif: TokenType::ELSIF,

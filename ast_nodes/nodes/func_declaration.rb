@@ -23,10 +23,10 @@ class FuncDeclaration < Stmt
   #
   def display_info(indent = 0)
     puts "#{' ' * indent} #{self.class.name}"
-    puts "#{' ' * indent} Return type: #{@type_specifier}"
-    puts "#{' ' * indent} Params:"
-    @params.each { |param| param.display_info(indent + 2) unless @params.empty? }
-    puts "#{' ' * indent} Body:"
-    @body.each { |stmt| stmt.display_info(indent + 2) }
+    puts "#{' ' * (indent + 2)} Return type: #{@type_specifier}"
+    puts "#{' ' * (indent + 2)} Params:"
+    @params.each { |param| param.display_info(indent + 4) unless @params.empty? }
+    puts "#{' ' * (indent + 2)} Body:"
+    @body.each { |stmt| stmt.display_info(indent + 4) }
   end
 end

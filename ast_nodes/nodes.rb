@@ -9,6 +9,7 @@ NODE_TYPES = {
     VarDeclaration: :VarDeclaration,
     HashDeclaration: :HashDeclaration,
     FuncDeclaration: :FuncDeclaration,
+    ClassDeclaration: :ClassDeclaration,
     ReturnStmt: :ReturnStmt,
     BreakStmt: :BreakStmt,
     ContinueStmt: :ContinueStmt,

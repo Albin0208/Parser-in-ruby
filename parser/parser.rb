@@ -59,6 +59,8 @@ class Parser
       return parse_assignment_stmt()
     when TokenType::FOR, TokenType::WHILE
       return parse_loops()
+    when TokenType::CLASS
+      return parse_class_declaration()
     when TokenType::FUNC
       return parse_function_declaration()
     when TokenType::RETURN
@@ -74,6 +76,18 @@ class Parser
     else
       return parse_expr()
     end
+  end
+
+  def parse_class_declaration 
+    expect(TokenType::CLASS)
+
+    class_name = parse_identifier()
+    class_body = []
+    expect(TokenType::LBRACE)
+    class_body << parse_stmt() while at().type != TokenType::RBRACE
+    expect(TokenType::RBRACE)
+
+    return ClassDeclaration.new(class_name, class_body)
   end
 
   #
@@ -158,7 +172,7 @@ class Parser
   #
   def parse_hash_type_specifier
     expect(TokenType::HASH)
-    
+
     hash_type = expect(TokenType::HASH_TYPE).value
     hash_type = hash_type.to_s.gsub(/[<>\s]/, '').split(',')
 
