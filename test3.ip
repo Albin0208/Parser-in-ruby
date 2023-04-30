@@ -1,0 +1,25 @@
+class Test {
+  int var = 1
+
+  func void Test() {
+    
+  }
+
+  func void hello() {
+    print("Hello world")
+  }
+}
+
+func void hello() {
+  print("j")
+}
+
+Test t = new Test
+t.hello()
+#t.var
+
+func void te() {
+
+}
+
+te()
