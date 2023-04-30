@@ -21,8 +21,8 @@ TOKEN_TYPES = [
   [:lbracket, /\A\[/],
   [:rbracket, /\A\]/],
   [:array_type, /\A.*?\[\]/], # array_type
+  # [:class_type, /\A[A-Z][a-zA-Z0-9_]*/], # class_type or class name
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
-  #[:class_type, /\A[A-Z][a-zA-Z0-9_]/], # class_type or class name
   [:comma, /\A,/],
   [:dot, /\A\./],
 ].to_h.freeze
@@ -41,6 +41,7 @@ KEYWORDS = {
   Hash: TokenType::HASH,
   break: TokenType::BREAK,
   continue: TokenType::CONTINUE,
+  new: TokenType::NEW,
 
   # Loops
   for: TokenType::FOR,
@@ -299,6 +300,8 @@ class Lexer
   def handle_identifier_match(match)
     # Check if it is a keyword
     return create_token(match, KEYWORDS[match.to_sym], 'Found keyword token') if KEYWORDS.key?(match.to_sym)
+    # Check if a class type
+    # return create_token(match, TokenType::CLASS_TYPE, 'Found class type token') if match.match?(/[A-Z][a-zA-Z0-9_]*/) && @tokens[-2]&.type != TokenType::FUNC
 
     # If not it is a user defined keyword
     return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')

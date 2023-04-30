@@ -205,3 +205,10 @@ class NullVal < RunTimeVal
     super('null', :null)
   end
 end
+
+
+class ClassVal < RunTimeVal
+  def initialize(value)
+    super(value, :class)
+  end
+end

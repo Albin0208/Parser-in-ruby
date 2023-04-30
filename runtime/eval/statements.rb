@@ -187,4 +187,31 @@ module StatementEvaluator
     end
       return evaled_condition.value
   end
+
+  
+  #
+  # Evaluates a class declaration AST node and declares the class in the given environment.
+  #
+  # @param [ClassDeclaration] ast_node the class declaration AST node to evaluate
+  # @param [Environment] env the environment in which to declare the class
+  #
+  def eval_class_declaration(ast_node, env)
+    class_env = Environment.new(env)
+    # Declare all instance vars
+    if !ast_node.member_variables.empty?
+      ast_node.member_variables.each() { |var| 
+        value = var.value ? evaluate(var.value, env) : NullVal.new
+        class_env.declare_var(var.identifier, value, var.value_type, var.constant)
+      }
+    end
+
+    # Declare all instance methods
+    if !ast_node.member_functions.empty?
+      ast_node.member_functions.each() { |method| 
+        class_env.declare_func(method.identifier, method.type_specifier, method, class_env)
+      }
+    end
+
+    env.declare_class(ast_node.class_name.symbol, ast_node, class_env)
+  end
 end

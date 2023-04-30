@@ -32,7 +32,8 @@ NODE_TYPES = {
     HashLiteral: :HashLiteral,
     Boolean: :Boolean,
     String: :String,
-    Null: :Null
+    Null: :Null,
+    ClassInstance: :ClassInstance
   }.freeze
   
   NODE_TYPES_CONVERTER = {

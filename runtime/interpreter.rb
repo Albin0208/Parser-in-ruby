@@ -18,11 +18,13 @@ class ReturnSignal < StandardError
     @return_node = return_node
   end
 end
+
 #
 # Represents a signal for a break statement in a loop.
 #
 class BreakSignal < StandardError
 end
+
 #
 # Represents a signal for a continue statement in a loop.
 #
@@ -66,6 +68,10 @@ class Interpreter
       eval_binary_expr(ast_node, env)
     when NODE_TYPES[:Program]
       eval_program(ast_node, env)
+    when NODE_TYPES[:ClassInstance]
+      eval_class_instance(ast_node, env)
+    when NODE_TYPES[:ClassDeclaration]
+      eval_class_declaration(ast_node, env)
     when NODE_TYPES[:VarDeclaration]
       eval_var_declaration(ast_node, env)
     when NODE_TYPES[:HashDeclaration]

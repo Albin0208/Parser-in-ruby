@@ -80,10 +80,22 @@ module ExpressionsEvaluator
   def eval_method_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
     # TODO Fix another error message
-    # Check if the method exists
-    available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
-    unless available_methods.include?(ast_node.method_name.to_sym)
-      raise "#{ast_node.method_name} is not defined in #{evaled_expr.class}"
+    # Check if we are calling a custom class
+    if evaled_expr.instance_of?(ClassVal)
+      class_decl = call_env.lookup_identifier(evaled_expr.value)
+      method = class_decl.member_functions.select() { |func| func.identifier == "hello"}
+      #p method[0]
+      if method.empty?
+        raise "#{ast_node.method_name} is not defined in Class #{evaled_expr.value}"
+      end
+
+      return call_function(method[0], ast_node, call_env)
+    else
+      # Check if the method exists
+      available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
+      unless available_methods.include?(ast_node.method_name.to_sym)
+        raise "#{ast_node.method_name} is not defined in #{evaled_expr.class}"
+      end
     end
     # Grab the methods
     method = evaled_expr.method(ast_node.method_name)
@@ -108,11 +120,15 @@ module ExpressionsEvaluator
       param_results = ast_node.params.map() { |param| 
         evaled = evaluate(param, call_env)
         evaled.instance_variable_defined?(:@value) ? evaled.value : evaled }
-      NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
-      return nil
-    end
-    raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
+        NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
+        return nil
+      end
+      raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
+    return call_function(function, ast_node, call_env)
+  end
+
+  def call_function(function, ast_node, call_env)
     env = Environment.new(function.env)
     validate_params(function, ast_node.params, call_env)
     declare_params(function, ast_node.params, call_env, env)
@@ -216,5 +232,17 @@ module ExpressionsEvaluator
     value = container.value[access_key.value]
     raise "Error: Key: #{access_key} does not exist in container" if value.nil?
     return value ? value : NullVal.new()
+  end
+
+  #
+  # Evaluates a creation of a class instance
+  #
+  # @param [ClassInstance] ast_node The ast node
+  # @param [Environment] env The environment where the class instance is created
+  #
+  # @return [ClassVal] The class we wanted a instance of
+  #
+  def eval_class_instance(ast_node, env)
+    return ClassVal.new(ast_node.value.symbol)
   end
 end

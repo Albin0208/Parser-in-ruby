@@ -71,6 +71,24 @@ class Environment
   end
 
   #
+  # Declare a new class inside this Environment
+  #
+  # @param [String] class_name The name of the class
+  # @param [ClassDeclaration] node The class node
+  # @param [Environment] env The parent environment for the class
+  #
+  def declare_class(class_name, node, env)
+    # Check if the class is Already declared
+    if find_scope(class_name)
+      raise "Cannot declare Class '#{class_name}' since it is anleady defined in this scope"
+    end
+
+    node.env = env
+    @identifiers[class_name] = node
+    @identifiers_type[class_name] = class_name
+  end
+
+  #
   # Assign a new value to a variable
   #
   # @param [String] varname The name of the variable we want to assign to

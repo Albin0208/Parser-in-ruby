@@ -48,9 +48,14 @@ class Parser
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
     case at().type
-    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH
+    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER
       if at().type == TokenType::HASH || next_token().type == TokenType::HASH
         return parse_hash_declaration()
+      end
+      if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::IDENTIFIER
+        return parse_var_class()
+      elsif at().type == TokenType::IDENTIFIER
+        return parse_assignment_stmt()
       end
       return parse_var_declaration()
     when TokenType::IF
@@ -78,16 +83,50 @@ class Parser
     end
   end
 
+  def parse_var_class
+    is_const = at().type == TokenType::CONST # Get if const keyword is present
+
+    eat() if is_const # eat the const keyword if we have a const
+    type_specifier = expect(TokenType::IDENTIFIER).value # Get what type the var should be
+
+    identifier = parse_identifier().symbol
+    @logger.debug("Found indentifier from var declaration: #{identifier}")
+    
+    if at().type != TokenType::ASSIGN
+      return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
+
+      @logger.error('Found Uninitialized constant')
+      raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
+    end
+
+    expect(TokenType::ASSIGN)
+    expression = parse_expr()
+
+    # TODO fix validate maybe for classes
+    #validate_assignment_type(expression, type_specifier) # Validate that the type is correct
+
+    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
+  end
+
   def parse_class_declaration 
     expect(TokenType::CLASS)
 
     class_name = parse_identifier()
-    class_body = []
+    member_variables = []
+    member_functions = []
     expect(TokenType::LBRACE)
-    class_body << parse_stmt() while at().type != TokenType::RBRACE
+    while at().type != TokenType::RBRACE
+      stmt = parse_stmt()
+      case stmt.type
+      when :FuncDeclaration
+        member_functions << stmt
+      when :VarDeclaration
+        member_variables << stmt
+      end
+    end
     expect(TokenType::RBRACE)
 
-    return ClassDeclaration.new(class_name, class_body)
+    return ClassDeclaration.new(class_name, member_variables, member_functions)
   end
 
   #
@@ -283,19 +322,6 @@ class Parser
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
-
-  # def parse_func_call_with_binary_operation
-  #   if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::LPAREN
-  #     expression = parse_func_call()
-  #     if at().type == TokenType::BINARYOPERATOR
-  #       op = eat().value
-  #       right = parse_expr()
-  #       return BinaryExpr.new(expression, op, right)
-  #     end
-  #     return expression
-  #   end
-  #   return parse_expr()
-  # end
 
   # Validate that we are trying to assign a correct type to our variable.
   #
@@ -511,6 +537,11 @@ class Parser
   def parse_assignment_stmt
     # @logger.debug('Parsing assign expression')
     left = parse_expr()
+    # #p left
+    # # Check for class type
+    # if left.type == :Identifier && at().type == TokenType::IDENTIFIER
+      
+    # end
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
@@ -753,6 +784,9 @@ class Parser
     when TokenType::NULL
       expect(TokenType::NULL)
       expr = NullLiteral.new()
+    when TokenType::NEW
+      expect(TokenType::NEW)
+      expr = ClassInstance.new(parse_identifier())
     else
       raise InvalidTokenError.new("Unexpected token found: #{at()}")
     end
