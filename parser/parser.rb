@@ -102,8 +102,10 @@ class Parser
     expect(TokenType::ASSIGN)
     expression = parse_expr()
 
+    # p type_specifier == expression.value.symbol
+
     # TODO fix validate maybe for classes
-    #validate_assignment_type(expression, type_specifier) # Validate that the type is correct
+    validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression)
   end
@@ -338,9 +340,14 @@ class Parser
       end
       return
     end
+    if expression.instance_of?(ClassInstance)
+      expression = expression.value.symbol
+    else
+      expression = expression.type
+    end
 
-    unless valid_assignment_type?(expression.type, type)
-      raise InvalidTokenError, "Can't assign #{expression.type.downcase} value to value of type #{type}"
+    unless valid_assignment_type?(expression, type)
+      raise InvalidTokenError, "Can't assign #{expression} value to value of type #{type}"
     end
   end
 
@@ -359,7 +366,7 @@ class Parser
           when 'string'
             [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
           else
-            false
+            expression_type.to_sym == expected_type.to_sym
           end
   end
 

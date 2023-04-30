@@ -79,24 +79,22 @@ module ExpressionsEvaluator
 
   def eval_method_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
+    err_class_name = evaled_expr.class
     # TODO Fix another error message
     # Check if we are calling a custom class
     if evaled_expr.instance_of?(ClassVal)
       class_decl = call_env.lookup_identifier(evaled_expr.value)
-      method = class_decl.member_functions.select() { |func| func.identifier == "hello"}
-      #p method[0]
-      if method.empty?
-        raise "#{ast_node.method_name} is not defined in Class #{evaled_expr.value}"
-      end
+      method = class_decl.member_functions.select() { |func| func.identifier == ast_node.method_name}
+      
+      return call_function(method[0], ast_node, call_env) unless method.empty?
+      err_class_name = class_decl.class_name
+    end
 
-      return call_function(method[0], ast_node, call_env)
-    else
       # Check if the method exists
       available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
       unless available_methods.include?(ast_node.method_name.to_sym)
-        raise "#{ast_node.method_name} is not defined in #{evaled_expr.class}"
+        raise "#{ast_node.method_name} is not defined in #{err_class_name}"
       end
-    end
     # Grab the methods
     method = evaled_expr.method(ast_node.method_name)
 
