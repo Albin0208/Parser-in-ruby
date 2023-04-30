@@ -41,8 +41,8 @@ print(a != Hash<string, int>{ "hej" = 1 + 3, "hejs" = test(2)})
 Hash<int, int> c
 #print(b)
 
-int as = 2
+int as = test(3)
 
-as -= 45
+#as -= 45
 
 print(as)

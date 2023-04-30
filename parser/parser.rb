@@ -619,7 +619,14 @@ class Parser
   #
   def parse_method_call(expr, method_name)
     expect(TokenType::LPAREN)
-    params = parse_function_params()
+    params = []
+    if at().type != TokenType::RPAREN
+      params << parse_expr()
+      while at().type == TokenType::COMMA
+        expect(TokenType::COMMA)
+        params << parse_expr()
+      end
+    end
     expect(TokenType::RPAREN)
     return MethodCallExpr.new(expr, method_name.symbol, params)
   end

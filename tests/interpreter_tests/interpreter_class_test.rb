@@ -56,6 +56,22 @@ class TestInterpreterClass < Test::Unit::TestCase
     assert_equal(@env.lookup_identifier('result').value, 5)
   end
 
+  def test_method_call_with_params
+    input = "class MyClass { 
+                int x = 5
+                func int my_func(int t) {
+                  return x * t
+                } 
+              }
+
+              MyClass obj = new MyClass
+              int result = obj.my_func(3)"
+    ast = @parser.produce_ast(input)
+    @interpreter.evaluate(ast, @env)
+
+    assert_equal(@env.lookup_identifier('result').value, 15)
+  end
+
   def test_property_call
     input = "class MyClass { 
                 int x = 5

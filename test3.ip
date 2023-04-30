@@ -1,8 +1,9 @@
 class Test {
   int var = 1
 
-  func void Test() {
-    
+  func int Test(int a) {
+    print(var * a)
+    return var * a
   }
 
   func void hello() {
@@ -10,34 +11,7 @@ class Test {
   }
 }
 
-class Tes {
-    func void hello() {
-    print("Hello")
-  }
-}
-
-func void hello() {
-  print("j")
-}
-
-func Test tt() {
-  return new Test
-}
-
 Test t = new Test
-Tes c = new Tes
-t.hello()
-c.hello()
-print(c.type())
+int a = t.Test(3)
 
-Hash<string, Test> a = Hash<string, Test>{ "p1" = new Test}
-
-print(a['p1'].hello())
-
-print(t.var)
-
-Tes cp = tt()
-
-cp = new Test
-
-print(cp)
+print(a)
