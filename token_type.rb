@@ -1,15 +1,38 @@
 # All the different token types available
 class TokenType
+  ##########################
+  #    Type Specifiers     #
+  ##########################
+  TYPE_SPECIFIER = :TYPE_SPECIFIER
+  HASH_TYPE = :HASH_TYPE
+  ARRAY_TYPE = :ARRAY_TYPE
   INTEGER = :INTEGER
   FLOAT = :FLOAT
-  CONST = :CONST
-  FUNC = :FUNC
+  BOOLEAN = :BOOLEAN
+  STRING = :STRING
+  ##########################
+  #        Literals        #
+  ##########################
+  ##########################
+  #   Control Statements   #
+  ##########################
   IF = :IF
   ELSIF = :ELSIF
   ELSE = :ELSE
-  BOOLEAN = :BOOLEAN
-  STRING = :STRING
+  FOR = :FOR
+  WHILE = :WHILE
+  BREAK = :BREAK
+  CONTINUE = :CONTINUE
+  ##########################
+  #        Keywords        #
+  ##########################
+  CONST = :CONST
+  FUNC = :FUNC
   NULL = :NULL
+  VOID = :VOID
+  RETURN = :RETURN
+  HASH = :HASH
+
   COMMA = :COMMA
   DOT = :DOT
   ASSIGN = :ASSIGN
@@ -18,7 +41,7 @@ class TokenType
   UNARYOPERATOR = :UNARYOPERATOR
   BINARYOPERATOR = :BINARYOPERATOR
   IDENTIFIER = :IDENTIFIER
-  RESERVED = :RESERVED
+  #RESERVED = :RESERVED
   LPAREN = :LPAREN
   RPAREN = :RPAREN
   LBRACE = :LBRACE
@@ -26,15 +49,8 @@ class TokenType
   LBRACKET = :LBRACKET
   RBRACKET = :RBRACKET
   EOF = :EOF
-  TYPE_SPECIFIER = :TYPE_SPECIFIER
+
   FUNC_CALL = :FUNC_CALL
-  VOID = :VOID
-  RETURN = :RETURN
-  FOR = :FOR
-  WHILE = :WHILE
-  HASH = :HASH
-  BREAK = :BREAK
-  CONTINUE = :CONTINUE
 end
 
 LOGICCOMPARISON = %i[< > >= <= == !=].freeze

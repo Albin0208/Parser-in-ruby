@@ -158,21 +158,11 @@ class Parser
   #
   def parse_hash_type_specifier
     expect(TokenType::HASH)
-    if at().value != :<
-      raise "Error: Invalid Hash declaration expected starting <"
-    end
-    eat()
-    key_type = expect(TokenType::TYPE_SPECIFIER).value
     
-    expect(TokenType::COMMA)
-    
-    value_type = expect(TokenType::TYPE_SPECIFIER).value
-    if at().value != :>
-      raise "Error: Invalid Hash declaration expected ending >"
-    end
-    eat()
+    hash_type = expect(TokenType::HASH_TYPE).value
+    hash_type = hash_type.to_s.gsub(/[<>\s]/, '').split(',')
 
-    return key_type, value_type
+    return hash_type[0], hash_type[1]
   end
 
   #

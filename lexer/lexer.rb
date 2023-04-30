@@ -6,6 +6,7 @@ require_relative '../token_type'
 
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
+  [:hash_type, /\A<.*?,.*?>/], # hash_type
   [:integer, /\A\d+(\.\d+)?/],
   [:string, /\A("|')(?:\\.|[^\\"])*?("|')/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
@@ -19,7 +20,9 @@ TOKEN_TYPES = [
   [:rbrace, /\A\}/],
   [:lbracket, /\A\[/],
   [:rbracket, /\A\]/],
+  [:array_type, /\A.*?\[\]/], # array_type
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
+  #[:class_type, /\A[A-Z][a-zA-Z0-9_]/], # class_type or class name
   [:comma, /\A,/],
   [:dot, /\A\./],
 ].to_h.freeze
