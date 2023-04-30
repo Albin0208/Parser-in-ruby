@@ -10,16 +10,17 @@ class Test {
   }
 }
 
+class Tes {
+  func void hello() {
+    print("Hello")
+  }
+}
+
 func void hello() {
   print("j")
 }
 
 Test t = new Test
+Test c = new Tes
 t.hello()
-#t.var
-
-func void te() {
-
-}
-
-te()
+c.hello()
