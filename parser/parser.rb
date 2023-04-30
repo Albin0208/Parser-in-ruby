@@ -319,7 +319,7 @@ class Parser
   # @param [Expr] expression The expression we want to validate
   # @param [String] type What type we are trying to assign to
   def validate_assignment_type(expression, type)
-    return if expression.type == NODE_TYPES[:Identifier] # The expr is a identifier we can't tell what type from the parser
+    return unless [:NumericLiteral, :String, :Boolean, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
 
     if !expression.instance_variable_defined?(:@value)
       @logger.debug("Validating #{type} variable assignment")
