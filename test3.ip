@@ -20,6 +20,10 @@ func void hello() {
   print("j")
 }
 
+func Test tt() {
+  return new Test
+}
+
 Test t = new Test
 Tes c = new Tes
 t.hello()
@@ -31,3 +35,7 @@ Hash<string, Test> a = Hash<string, Test>{ "p1" = new Test}
 print(a['p1'].hello())
 
 print(t.var)
+
+Tes cp = tt()
+
+print(cp)

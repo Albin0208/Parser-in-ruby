@@ -368,7 +368,7 @@ class Parser
     expect(TokenType::FUNC) # Eat the func keyword
     @parsing_function = true
 
-    return_type = expect(TokenType::VOID, TokenType::TYPE_SPECIFIER).value
+    return_type = expect(TokenType::VOID, TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value
 
     identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
 

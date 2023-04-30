@@ -80,6 +80,8 @@ class Interpreter
       eval_func_declaration(ast_node, env)
     when NODE_TYPES[:MethodCallExpr]
       eval_method_call_expr(ast_node, env)
+    when NODE_TYPES[:PropertyCallExpr]
+      eval_property_call_expr(ast_node, env)
     when NODE_TYPES[:CallExpr]
       eval_call_expr(ast_node, env)
     when NODE_TYPES[:ReturnStmt]

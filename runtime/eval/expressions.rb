@@ -146,6 +146,13 @@ module ExpressionsEvaluator
     return method.call(*args)
   end
 
+  def eval_property_call_expr(ast_node, call_env)
+    evaled_expr = evaluate(ast_node.expr, call_env)
+    class_decl = call_env.lookup_identifier(evaled_expr.value)
+    
+    return class_decl.env.lookup_identifier(ast_node.property_name)
+  end
+
   # Evaluates a call expression in the specified environment.
   #
   # @param ast_node [CallExpr] the call expression node to evaluate

@@ -38,6 +38,10 @@ module StatementEvaluator
               end
     end
 
+    if ast_node.value_type.to_sym != value.type.to_sym
+      raise "Error: Can't assign #{value.type} to value of type #{ast_node.value_type}"
+    end
+
     env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.constant)
     return value
   end
@@ -188,7 +192,6 @@ module StatementEvaluator
       return evaled_condition.value
   end
 
-  
   # Evaluates a class declaration by creating a new environment for the class and declaring
   # all the instance variables and methods in that environment. It then adds the class to the
   # parent environment.

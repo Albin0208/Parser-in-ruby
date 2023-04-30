@@ -42,6 +42,10 @@ class Environment
       raise "Cannot declare variable '#{varname}' since it is already defined in this scope"
     end
 
+    # if value.type != value_type
+    #   raise "J"
+    # end
+
     @identifiers[varname] = value
     @identifiers_type[varname] = value_type
     @constants.add(varname) if is_constant
