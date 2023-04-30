@@ -149,7 +149,7 @@ module ExpressionsEvaluator
   def eval_property_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
     class_decl = call_env.lookup_identifier(evaled_expr.value)
-    
+
     return class_decl.env.lookup_identifier(ast_node.property_name)
   end
 
@@ -195,7 +195,7 @@ module ExpressionsEvaluator
     end
 
     # Check that the return value is the same type as the return type of the function
-    expected_return_type = {'bool': :boolean}.fetch(function.type_specifier.to_sym, function.type_specifier.to_sym)
+    expected_return_type = function.type_specifier.to_sym
     return NullVal.new() if expected_return_type == :void
 
     if return_value.type != expected_return_type

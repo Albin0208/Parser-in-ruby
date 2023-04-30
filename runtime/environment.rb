@@ -42,9 +42,9 @@ class Environment
       raise "Cannot declare variable '#{varname}' since it is already defined in this scope"
     end
 
-    # if value.type != value_type
-    #   raise "J"
-    # end
+    if value.type.to_sym != :null && value.type.to_sym != value_type.to_sym
+      raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{value_type}\"."
+    end
 
     @identifiers[varname] = value
     @identifiers_type[varname] = value_type

@@ -36,7 +36,7 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
     input = "true.type()"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_equal("boolean", result.to_s)
+    assert_equal("bool", result.to_s)
 
     input = "null.type()"
     ast = @parser.produce_ast(input)

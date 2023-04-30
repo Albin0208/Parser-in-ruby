@@ -38,4 +38,6 @@ print(t.var)
 
 Tes cp = tt()
 
+cp = new Test
+
 print(cp)

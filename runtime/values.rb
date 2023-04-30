@@ -188,7 +188,7 @@ end
 
 class BooleanVal < RunTimeVal
   def initialize(value = true)
-    super(value, :boolean)
+    super(value, :bool)
   end
 
   def !=(other)
