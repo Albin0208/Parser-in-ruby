@@ -26,6 +26,6 @@ print(ts.var)
 #ts.set(21)
 #print(ts.var)
 
-#t.var = 4
+t.var = 4
 
 #print(t.var)
