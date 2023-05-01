@@ -198,20 +198,20 @@ module StatementEvaluator
   def eval_class_declaration(ast_node, env)
     class_env = Environment.new(env)
     # Declare all instance vars
-    if !ast_node.member_variables.empty?
-      ast_node.member_variables.each() { |var| 
-        value = var.value ? evaluate(var.value, env) : NullVal.new
-        class_env.declare_var(var.identifier, value, var.value_type, var.constant)
-      }
-    end
+    # if !ast_node.member_variables.empty?
+    #   ast_node.member_variables.each() { |var| 
+    #     value = var.value ? evaluate(var.value, env) : NullVal.new
+    #     class_env.declare_var(var.identifier, value, var.value_type, var.constant)
+    #   }
+    # end
 
-    # Declare all instance methods
-    if !ast_node.member_functions.empty?
-      ast_node.member_functions.each() { |method| 
-        class_env.declare_func(method.identifier, method.type_specifier, method, class_env)
-      }
-    end
+    # # Declare all instance methods
+    # if !ast_node.member_functions.empty?
+    #   ast_node.member_functions.each() { |method| 
+    #     class_env.declare_func(method.identifier, method.type_specifier, method, class_env)
+    #   }
+    # end
 
-    env.declare_class(ast_node.class_name.symbol, ast_node, class_env)
+    env.declare_class(ast_node.class_name.symbol, ast_node, env)
   end
 end

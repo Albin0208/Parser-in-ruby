@@ -107,6 +107,12 @@ module ExpressionsEvaluator
       
       container.value[access_key.value] = value
       return container
+    elsif ast_node.assigne.type == :PropertyCallExpr
+      # p evaluate(ast_node.assigne.expr, env)
+      # p ast_node.assigne.property_name
+      # env = env.find_scope(ast_node.assigne.expr.symbol)
+      #p env
+      return env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
     else
       raise 'Cannot assign to non-Identifier type' unless ast_node.assigne.type == NODE_TYPES[:Identifier]
     end
@@ -126,10 +132,8 @@ module ExpressionsEvaluator
     err_class_name = evaled_expr.class
     # Check if we are calling a custom class
     if evaled_expr.instance_of?(ClassVal)
-      class_decl = call_env.lookup_identifier(evaled_expr.value)
-      method = class_decl.member_functions.find() { |func| func.identifier == ast_node.method_name}
+      method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name)
 
-      
       return call_function(method, ast_node, call_env) unless method.nil?
       err_class_name = class_decl.class_name
     end
@@ -148,9 +152,8 @@ module ExpressionsEvaluator
 
   def eval_property_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
-    class_decl = call_env.lookup_identifier(evaled_expr.value)
 
-    return class_decl.env.lookup_identifier(ast_node.property_name)
+    return evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.property_name)
   end
 
   # Evaluates a call expression in the specified environment.
@@ -184,6 +187,8 @@ module ExpressionsEvaluator
   # @return [RunTimeVaö] The value returned by the function.
   def call_function(function, ast_node, call_env)
     env = Environment.new(function.env)
+    # puts "H"
+    #p env
     validate_params(function, ast_node.params, call_env)
     declare_params(function, ast_node.params, call_env, env)
 
@@ -303,6 +308,8 @@ module ExpressionsEvaluator
   # @return [ClassVal] The class we wanted a instance of
   #
   def eval_class_instance(ast_node, env)
-    return ClassVal.new(ast_node.value.symbol)
+    class_instance = evaluate(ast_node.value, env).clone
+    class_instance.create_instance(self)
+    return ClassVal.new(ast_node.value.symbol, class_instance)
   end
 end

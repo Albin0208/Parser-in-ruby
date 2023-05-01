@@ -1,17 +1,31 @@
 class Test {
   int var = 1
 
-  func int Test(int a) {
-    print(var * a)
-    return var * a
-  }
+
 
   func void hello() {
     print("Hello world")
   }
+
+  func void set(int c) {
+    var = c
+  }
 }
 
+Test ts = new Test
 Test t = new Test
-int a = t.Test(3)
+#int a = t.Test(3)
 
-print(a)
+#print(t == ts)
+
+t.set(4)
+ts.set(422)
+print(t.var)
+print(ts.var)
+
+#ts.set(21)
+#print(ts.var)
+
+#t.var = 4
+
+#print(t.var)

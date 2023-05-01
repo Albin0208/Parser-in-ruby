@@ -208,7 +208,10 @@ end
 
 
 class ClassVal < RunTimeVal
-  def initialize(value)
+  attr_reader :class_instance
+
+  def initialize(value, class_instance)
     super(value, value.to_sym)
+    @class_instance = class_instance
   end
 end

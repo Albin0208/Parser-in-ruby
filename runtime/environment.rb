@@ -5,7 +5,9 @@ require_relative '../runtime/native_functions.rb'
 # The representation of an Environment or scope
 #
 class Environment
-  attr_reader :identifiers, :constants, :identifiers_type, :parent_env
+  attr_reader :identifiers, :constants, :identifiers_type, :parent_env, :global_env
+
+  @@global_env = nil
 
   #
   # Creates a new environment
@@ -20,6 +22,7 @@ class Environment
   end
 
   def setup_native_functions
+    @global_env = self
     NativeFunctions::FUNCTIONS.each() { |func_name| 
                                         @constants.add(func_name)
                                         @identifiers[func_name] = :native_func
@@ -84,7 +87,7 @@ class Environment
   def declare_class(class_name, node, env)
     # Check if the class is Already declared
     if find_scope(class_name)
-      raise "Cannot declare Class '#{class_name}' since it is anleady defined in this scope"
+      raise "Cannot declare Class '#{class_name}' since it is already defined in this scope"
     end
 
     node.env = env
