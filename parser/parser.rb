@@ -131,7 +131,7 @@ class Parser
       return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, 'Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation'
+      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
     expect(TokenType::ASSIGN)
@@ -305,7 +305,7 @@ class Parser
       return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, 'Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation'
+      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
     expect(TokenType::ASSIGN)
