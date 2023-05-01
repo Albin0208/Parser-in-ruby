@@ -6,15 +6,23 @@ class RunTimeVal
     @type = type
   end
 
+  def !
+    raise TypeError, "unsupported operand types for !: #{@type}"
+  end
+
+  def -@
+    raise TypeError, "unsupported operand types for -: #{@type}"
+  end
+
+  def +@
+    raise TypeError, "unsupported operand types for +: #{@type}"
+  end
+  
   def +(other)
     raise TypeError, "unsupported operand types for +: #{@type} and #{other.type}"
   end
 
   def -(other)
-    raise TypeError, "unsupported operand types for -: #{@type} and #{other.type}"
-  end
-
-  def !
     raise TypeError, "unsupported operand types for -: #{@type} and #{other.type}"
   end
 
@@ -66,6 +74,14 @@ end
 class NumberVal < RunTimeVal
   def initialize(value, type)
     super(value, type)
+  end
+
+  def -@
+    NumberVal.new(-@value, type)
+  end
+
+  def +@
+    NumberVal.new(+@value, type)
   end
 
   def +(other)
@@ -189,6 +205,10 @@ end
 class BooleanVal < RunTimeVal
   def initialize(value = true)
     super(value, :bool)
+  end
+
+  def !
+    BooleanVal.new(!@value)
   end
 
   def !=(other)

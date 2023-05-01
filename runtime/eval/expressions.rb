@@ -55,16 +55,13 @@ module ExpressionsEvaluator
   # @return [NumberVal, BooleanVal] the result of the evaluation
   def eval_unary_expr(unary, env)
     lhs = evaluate(unary.left, env)
-    # p lhs.class
-    # p unary
-    raise "Error: Unsupported operand type for #{binop.op}: #{lhs.class}" unless lhs.is_a?(RunTimeVal)
     case unary.op
     when :-
-      return NumberVal.new(-lhs.value, lhs.type)
+      return NumberVal.new((-lhs).value, lhs.type)
     when :+
-      return NumberVal.new(-lhs.value, lhs.type)
+      return NumberVal.new((+lhs).value, lhs.type)
     when :!
-      return BooleanVal.new(!lhs.value)
+      return BooleanVal.new((!lhs).value)
     end
   end
 

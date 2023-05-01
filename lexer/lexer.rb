@@ -177,7 +177,7 @@ class Lexer
   # @return [Token] A new Token if type @type
   def create_token(match, type, message, to_symbol = false)
     match = to_symbol ? match.to_sym : match
-
+    
     # Handle unary operators
     if type == TokenType::UNARYOPERATOR
       # Check if the previous token is a binary operator, a left parenthesis or the beginning of the input
@@ -185,6 +185,7 @@ class Lexer
       type = if previous_token.nil? ||
                 previous_token.type == TokenType::LPAREN ||
                 previous_token.type == TokenType::BINARYOPERATOR ||
+                match == :! ||
                 previous_token.line < @line
                # This is a unary operator
                TokenType::UNARYOPERATOR

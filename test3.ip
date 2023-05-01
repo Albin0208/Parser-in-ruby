@@ -24,4 +24,4 @@ Test t = new Test
 
 print(!t)
 
-!t
+print(-t)
