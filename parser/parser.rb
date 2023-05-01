@@ -21,6 +21,8 @@ class Parser
     @parsing_loop = false # Flag to keep track of loop parsing. Use for not allowing break and continue outside loops
     @ast = []
 
+    @location = 1 # used to display the line number where ther error is
+
     @logger = Logger.new($stdout)
     @logger.level = logging ? Logger::DEBUG : Logger::FATAL
   end
@@ -71,11 +73,11 @@ class Parser
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
-      raise "Error: Break cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
       return BreakStmt.new()
     when TokenType::CONTINUE
-      raise "Error: Continue cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
       return ContinueStmt.new()
     else
@@ -129,7 +131,7 @@ class Parser
       return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
+      raise NameError, 'Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation'
     end
 
     expect(TokenType::ASSIGN)
@@ -167,7 +169,7 @@ class Parser
 
       # Check if key allready has been defined
       if key.type != NODE_TYPES[:Identifier] && keys.include?(key)
-        raise "Error: Key: '#{key}' already exists in hash"
+        raise "Line:#{@location}: Error: Key: '#{key}' already exists in hash"
       end
       validate_assignment_type(key, key_type) # Validate that the type is correct
 
@@ -226,14 +228,14 @@ class Parser
     @parsing_loop = true
     expect(TokenType::FOR)
     var_dec = parse_var_declaration()
-    raise "Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
+    raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
     expect(TokenType::COMMA)
     condition = parse_conditional_condition() # Parse the loop condition
     expect(TokenType::COMMA)
     expr = parse_stmt()
     # Don't allow for every stmt, only assignstatement and expressions
     unless expr.is_a?(Expr) || expr.is_a?(AssignmentStmt)
-      raise "Error: Wrong type of expression given"
+      raise "Line:#{@location}: Error: Wrong type of expression given"
     end
 
     expect(TokenType::LBRACE)
@@ -277,7 +279,7 @@ class Parser
   # @return [Return] The return statement with the expressions
   #
   def parse_return()
-    raise "Error: Unexpected return encountered. Returns are not allowed outside of functions" unless @parsing_function
+    raise "Line:#{@location}: Error: Unexpected return encountered. Returns are not allowed outside of functions" unless @parsing_function
 
     expect(TokenType::RETURN)
     expr = parse_expr()
@@ -303,7 +305,7 @@ class Parser
       return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, 'Uninitialized Constant. Constants must be initialize upon creation'
+      raise NameError, 'Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation'
     end
 
     expect(TokenType::ASSIGN)
@@ -336,7 +338,7 @@ class Parser
     end
 
     unless valid_assignment_type?(expression, type)
-      raise InvalidTokenError, "Can't assign #{expression} value to value of type #{type}"
+      raise InvalidTokenError, "Line:#{@location}: Error: Can't assign #{expression} value to value of type #{type}"
     end
   end
 
@@ -381,7 +383,7 @@ class Parser
     body, has_return_stmt = parse_function_body()
 
     if return_type != 'void' && !has_return_stmt
-      raise "Func error: Function of type: '#{return_type}' expects a return statment"
+      raise "Line:#{@location}: Error: Function of type: '#{return_type}' expects a return statment"
     end
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
@@ -399,7 +401,7 @@ class Parser
     while at().type != TokenType::RBRACE
       stmt = parse_stmt()
       # Don't allow for function declaration inside a function
-      raise "Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      raise "Line:#{@location}: Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
       
       has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
 
@@ -520,8 +522,7 @@ class Parser
     if at().type != TokenType::LBRACE
       condition = parse_logical_expr() 
     else
-      # TODO Fix error message
-      raise "Conditional statment requires a condition"
+      raise "Line:#{@location}: Error: Conditional statment requires a condition"
     end
     
     return condition
@@ -794,7 +795,7 @@ class Parser
       expect(TokenType::NEW)
       expr = ClassInstance.new(parse_identifier())
     else
-      raise InvalidTokenError.new("Unexpected token found: #{at()}")
+      raise InvalidTokenError.new("Line:#{@location}: Unexpected token found: #{at().value}")
     end
 
     while at().type == TokenType::DOT
@@ -827,6 +828,7 @@ class Parser
   #
   # @return [Token] What token we have right now
   def at
+    @location = @tokens[0].line
     return @tokens[0]
   end
 
@@ -839,7 +841,9 @@ class Parser
   # @return [Token] The token eaten
   def eat
     @logger.debug("Eating token: #{at()}")
-    return @tokens.shift()
+    token = @tokens.shift()
+    @location = token.line
+    return token
   end
 
   # Eat the next token and make sure we have eaten the correct type
@@ -853,6 +857,6 @@ class Parser
     if token_types.include?(token.type)
       return token
     end
-    raise "Error: Expected token of type #{token_types.join(' or ')}, but found #{token.type} instead"
+    raise "Line:#{@location}: Error: Expected a token of type #{token_types.join(' or ')}, but found #{token.type} instead"
   end
 end

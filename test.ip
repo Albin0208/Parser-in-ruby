@@ -37,3 +37,5 @@ print(1.type())
 int a = test(5)
 
 testing(5)
+
+print(test)
