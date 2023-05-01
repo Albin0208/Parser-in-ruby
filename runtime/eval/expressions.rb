@@ -108,11 +108,9 @@ module ExpressionsEvaluator
       container.value[access_key.value] = value
       return container
     elsif ast_node.assigne.type == :PropertyCallExpr
-      # p evaluate(ast_node.assigne.expr, env)
-      # p ast_node.assigne.property_name
-      # env = env.find_scope(ast_node.assigne.expr.symbol)
-      #p env
-      return env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
+      evaled_class = evaluate(ast_node.assigne.expr, env)
+      raise "Error: Can't assign to property of non-class object" unless evaled_class.instance_of?(ClassVal)
+      return evaled_class.class_instance.instance_env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
     else
       raise 'Cannot assign to non-Identifier type' unless ast_node.assigne.type == NODE_TYPES[:Identifier]
     end
@@ -187,8 +185,6 @@ module ExpressionsEvaluator
   # @return [RunTimeVaö] The value returned by the function.
   def call_function(function, ast_node, call_env)
     env = Environment.new(function.env)
-    # puts "H"
-    #p env
     validate_params(function, ast_node.params, call_env)
     declare_params(function, ast_node.params, call_env, env)
 

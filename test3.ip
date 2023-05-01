@@ -1,7 +1,9 @@
 class Test {
   int var = 1
 
-
+  func int test(int ass) {
+    return ass
+  }
 
   func void hello() {
     print("Hello world")
@@ -14,7 +16,7 @@ class Test {
 
 Test ts = new Test
 Test t = new Test
-#int a = t.Test(3)
+int a = t.test(3)
 
 #print(t == ts)
 
@@ -26,6 +28,7 @@ print(ts.var)
 #ts.set(21)
 #print(ts.var)
 
-t.var = 4
+t.var = 304
+print(1.type())
 
-#print(t.var)
+print(t.var)
