@@ -12,13 +12,23 @@ class Test {
   func void set(int c) {
     var = c
   }
+
+  func bool ==(Test other) {
+    return 1 > 2
+  }
+}
+
+class Vs {
+
 }
 
 Test ts = new Test
 Test t = new Test
+Vs vs = new Vs
 int a = t.test(3)
 
-#print(t == ts)
+print(t == ts)
+#print(t == vs)
 
 t.set(4)
 ts.set(422)

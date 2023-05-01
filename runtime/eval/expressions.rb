@@ -148,10 +148,20 @@ module ExpressionsEvaluator
     return method.call(*args)
   end
 
+  #
+  # Evaluates a property call ast node by evaluating the expression and looking
+  # up the property name in the instance environment
+  #
+  # @param [PropertyCallExpr] ast_node The property call node
+  # @param [Environment] call_env From where the call is made
+  #
+  # @return [RunTimeVal] The value of the property being called
+  #
   def eval_property_call_expr(ast_node, call_env)
     evaled_expr = evaluate(ast_node.expr, call_env)
+    instance_env = evaled_expr.class_instance.instance_env
 
-    return evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.property_name)
+    return instance_env.lookup_identifier(ast_node.property_name)
   end
 
   # Evaluates a call expression in the specified environment.
@@ -182,7 +192,7 @@ module ExpressionsEvaluator
   # @param [FuncDeclaration] function The function to call.
   # @param [CallExpr] ast_node The function call AST node.
   # @param [Environment] call_env The environment in which the function call occurs.
-  # @return [RunTimeVaö] The value returned by the function.
+  # @return [RunTimeVal] The value returned by the function.
   def call_function(function, ast_node, call_env)
     env = Environment.new(function.env)
     validate_params(function, ast_node.params, call_env)
@@ -195,10 +205,10 @@ module ExpressionsEvaluator
       return_value = signal.return_node
     end
 
-    # Check that the return value is the same type as the return type of the function
     expected_return_type = function.type_specifier.to_sym
     return NullVal.new() if expected_return_type == :void
-
+    
+    # Check that the return value is the same type as the return type of the function
     if return_value.type != expected_return_type
       raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
     end
