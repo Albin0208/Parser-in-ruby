@@ -12,10 +12,6 @@ class Test {
   func void set(int c) {
     var = c
   }
-
-  func bool ==(Test other) {
-    return 1 > 2
-  }
 }
 
 class Vs {
@@ -24,21 +20,8 @@ class Vs {
 
 Test ts = new Test
 Test t = new Test
-Vs vs = new Vs
-int a = t.test(3)
 
-print(t == ts)
-#print(t == vs)
 
-t.set(4)
-ts.set(422)
-print(t.var)
-print(ts.var)
+print(!t)
 
-#ts.set(21)
-#print(ts.var)
-
-t.var = 304
-print(1.type())
-
-print(t.var)
+!t

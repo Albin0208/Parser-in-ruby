@@ -184,7 +184,8 @@ class Lexer
       previous_token = @tokens.last
       type = if previous_token.nil? ||
                 previous_token.type == TokenType::LPAREN ||
-                previous_token.type == TokenType::BINARYOPERATOR
+                previous_token.type == TokenType::BINARYOPERATOR ||
+                previous_token.line < @line
                # This is a unary operator
                TokenType::UNARYOPERATOR
              else
@@ -227,12 +228,6 @@ class Lexer
   #
   # @return [Token] A new number token
   def handle_number_match(number_str)
-    # Check for whitespace between two numbers
-    # if @string[@position + number_str.length..] =~ /\A\s*\d+/
-    #   raise InvalidTokenError,
-    #         "Unexpected token, number separeted by whitespace at line #{@line}, column #{@column} in #{@current_line}"
-    # end
-
     # Check for if number has trailing digits when starting with 0 and that it is not a unary operator
     if number_str.length > 1 && number_str[0].to_i.zero? && !TOKEN_TYPES[:unaryOperator].match(number_str[0])
       raise InvalidTokenError, "Number starting with 0 has trailing digits at line #{@line}, column #{@column} in #{@current_line}"

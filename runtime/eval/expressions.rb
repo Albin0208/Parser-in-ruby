@@ -55,6 +55,9 @@ module ExpressionsEvaluator
   # @return [NumberVal, BooleanVal] the result of the evaluation
   def eval_unary_expr(unary, env)
     lhs = evaluate(unary.left, env)
+    # p lhs.class
+    # p unary
+    raise "Error: Unsupported operand type for #{binop.op}: #{lhs.class}" unless lhs.is_a?(RunTimeVal)
     case unary.op
     when :-
       return NumberVal.new(-lhs.value, lhs.type)
@@ -77,6 +80,8 @@ module ExpressionsEvaluator
   def eval_binary_expr(binop, env)
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)
+
+    raise "Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(RunTimeVal) && rhs.is_a?(RunTimeVal)
 
     lhs.send(binop.op, rhs)
   end

@@ -109,7 +109,6 @@ class Environment
     raise "Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
     raise "Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
   
-  
     var_type = env.identifiers_type[varname]
 
     if value.type == :int || value.type == :float
