@@ -21,7 +21,7 @@ class TestInterpreterClass < Test::Unit::TestCase
     assert_equal(@env.lookup_identifier('MyClass').class, ClassDeclaration)
     assert_equal(@env.lookup_identifier('MyClass').member_variables.first.value.value, 5)
     assert_equal(@env.lookup_identifier('MyClass').member_functions.first.identifier, 'my_func')
-    assert_equal(@env.lookup_identifier('MyClass').env.lookup_identifier('x').value, 5)
+    assert_equal(@env.lookup_identifier('MyClass').class_instance.lookup_identifier('x').value, 5)
   end
 
   def test_class_instantiation
