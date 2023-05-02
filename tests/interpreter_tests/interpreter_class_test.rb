@@ -39,6 +39,38 @@ class TestInterpreterClass < Test::Unit::TestCase
     assert_equal(@env.lookup_identifier('obj').type.to_s, @env.lookup_identifier('MyClass').class_name.symbol)
   end
 
+  def test_const_class_property_access
+    input = "class MyClass {
+                int x = 5
+                func void add(int a) {
+                  x += a
+                }
+              }
+
+              const MyClass obj = new MyClass
+              obj.add(5)
+              obj.x"
+    ast = @parser.produce_ast(input)
+    result = @interpreter.evaluate(ast, @env)
+    assert_true(@env.constants.member?('obj'))
+
+    assert_equal(10, result.value)
+  end
+
+  def test_const_class_instantiation_and_reassign
+    input = "class MyClass {
+                int x = 5
+                func int my_func() {
+                  return x
+                }
+              }
+
+              const MyClass obj = new MyClass
+              obj = new MyClass"
+    ast = @parser.produce_ast(input)
+    assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
+  end
+
   def test_method_call
     input = "class MyClass {
                 int x = 5
@@ -82,5 +114,19 @@ class TestInterpreterClass < Test::Unit::TestCase
     @interpreter.evaluate(ast, @env)
 
     assert_equal(@env.lookup_identifier('result').value, 5)
+  end
+
+  def test_property_reassign
+    input = "class MyClass {
+                int x = 5
+              }
+
+              MyClass obj = new MyClass
+              obj.x = 100
+              int result = obj.x"
+    ast = @parser.produce_ast(input)
+    @interpreter.evaluate(ast, @env)
+
+    assert_equal(@env.lookup_identifier('result').value, 100)
   end
 end
