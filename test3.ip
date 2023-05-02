@@ -16,6 +16,10 @@ class Test {
   func Hash<string, int> get_hash() {
     return Hash<string, int> {'a' = 2, 'b' = 4}
   }
+
+  func Test get_class() {
+    return new Test
+  }
 }
 
 class Vs {
@@ -39,3 +43,4 @@ Test tc = new Test
 #print(tc.var)
 
 print(tc.get_hash())#['a']
+print(tc.get_class()
