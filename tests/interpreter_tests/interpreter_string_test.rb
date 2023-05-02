@@ -3,7 +3,7 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterString < Test::Unit::TestCase
   def setup
-    @parser = Parser.new()
+    @parser = Parser.new
     @interpreter = Interpreter.new
     @env = Environment.new
   end

@@ -3,17 +3,17 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterClass < Test::Unit::TestCase
   def setup
-    @parser = Parser.new()
+    @parser = Parser.new
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
   def test_class_declaration
-    input = "class MyClass { 
+    input = "class MyClass {
                 int x = 5
                 func int my_func() {
                   return x
-                } 
+                }
               }"
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
@@ -24,11 +24,11 @@ class TestInterpreterClass < Test::Unit::TestCase
   end
 
   def test_class_instantiation
-    input = "class MyClass { 
+    input = "class MyClass {
                 int x = 5
                 func int my_func() {
                   return x
-                } 
+                }
               }
 
               MyClass obj = new MyClass"
@@ -40,11 +40,11 @@ class TestInterpreterClass < Test::Unit::TestCase
   end
 
   def test_method_call
-    input = "class MyClass { 
+    input = "class MyClass {
                 int x = 5
                 func int my_func() {
                   return x
-                } 
+                }
               }
 
               MyClass obj = new MyClass
@@ -56,11 +56,11 @@ class TestInterpreterClass < Test::Unit::TestCase
   end
 
   def test_method_call_with_params
-    input = "class MyClass { 
+    input = "class MyClass {
                 int x = 5
                 func int my_func(int t) {
                   return x * t
-                } 
+                }
               }
 
               MyClass obj = new MyClass
@@ -72,7 +72,7 @@ class TestInterpreterClass < Test::Unit::TestCase
   end
 
   def test_property_call
-    input = "class MyClass { 
+    input = "class MyClass {
                 int x = 5
               }
 

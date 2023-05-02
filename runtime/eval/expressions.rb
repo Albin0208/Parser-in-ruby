@@ -183,7 +183,7 @@ module ExpressionsEvaluator
         evaled.instance_variable_defined?(:@value) ? evaled.value : evaled }
         NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
         return nil
-      end
+    end
       raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
     return call_function(function, ast_node, call_env)

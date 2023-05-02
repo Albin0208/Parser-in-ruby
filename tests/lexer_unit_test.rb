@@ -287,18 +287,18 @@ class TestLexer < Test::Unit::TestCase
 
   def test_tokenize_simple_string
     # Test double quotes
-    input = "\"hej då\""
+    input = '"hej då"'
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
     assert_equal(['STRING: hej då, (1, 1)',
-                  "EOF: , (1, 9)"], tokens.map(&:to_s))
+                  'EOF: , (1, 9)'], tokens.map(&:to_s))
 
     # Test single quotes
     input = "'hej då'"
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
     assert_equal(['STRING: hej då, (1, 1)',
-                  "EOF: , (1, 9)"], tokens.map(&:to_s))
+                  'EOF: , (1, 9)'], tokens.map(&:to_s))
   end
 
   def test_error_on_missmatched_quotes_on_string
@@ -312,42 +312,42 @@ class TestLexer < Test::Unit::TestCase
   end
 
   def test_escaping_quotes_in_string
-    input = "\"hej \\\"då\\\" bruv\""
+    input = '"hej \"då\" bruv"'
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
     assert_equal(['STRING: hej "då" bruv, (1, 1)',
-                  "EOF: , (1, 18)"], tokens.map(&:to_s))
+                  'EOF: , (1, 18)'], tokens.map(&:to_s))
 
     input = "\'hej \\\'då\\\' bruv\'"
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
     assert_equal(["STRING: hej 'då' bruv, (1, 1)",
-                  "EOF: , (1, 18)"], tokens.map(&:to_s))
+                  'EOF: , (1, 18)'], tokens.map(&:to_s))
   end
 
   def test_escaping_char_in_string
     # Test newline
-    input = "\"hej \\ndå\""
+    input = '"hej \\ndå"'
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
 
-    assert_equal(["STRING: hej \n" + "då, (1, 1)",
-                  "EOF: , (1, 11)"], tokens.map(&:to_s))
+    assert_equal(["STRING: hej \n" + 'då, (1, 1)',
+                  'EOF: , (1, 11)'], tokens.map(&:to_s))
 
     # Test tab
-    input = "\"hej \\tdå\""
+    input = '"hej \\tdå"'
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
 
     assert_equal(["STRING: hej \tdå, (1, 1)",
-                  "EOF: , (1, 11)"], tokens.map(&:to_s))
+                  'EOF: , (1, 11)'], tokens.map(&:to_s))
     # Test carriage return
-    input = "\"hej \\rdå\""
+    input = '"hej \\rdå"'
     lexer = Lexer.new(input)
     tokens = lexer.tokenize
 
     assert_equal(["STRING: hej \rdå, (1, 1)",
-                  "EOF: , (1, 11)"], tokens.map(&:to_s))
+                  'EOF: , (1, 11)'], tokens.map(&:to_s))
 
     # Test \n \t and \" togethet
     input = "\"hej \\ndå\\\t\\\"\""
@@ -355,6 +355,6 @@ class TestLexer < Test::Unit::TestCase
     tokens = lexer.tokenize
 
     assert_equal(["STRING: hej \n" + "då\\\t\", (1, 1)",
-                  "EOF: , (1, 15)"], tokens.map(&:to_s))
+                  'EOF: , (1, 15)'], tokens.map(&:to_s))
   end
 end

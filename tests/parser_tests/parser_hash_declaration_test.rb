@@ -7,11 +7,11 @@ class TestParserHashDeclarations < Test::Unit::TestCase
   end
 
   def test_parse_hash_declaration_without_assignment
-    input = "Hash<string, int> MY_HASH"
+    input = 'Hash<string, int> MY_HASH'
     declaration = @parser.produce_ast(input).body[0]
 
     assert_equal(false, declaration.constant)
-    assert_equal("MY_HASH", declaration.identifier)
+    assert_equal('MY_HASH', declaration.identifier)
     assert_equal(:string, declaration.key_type)
     assert_equal(:int, declaration.value_type)
     assert_nil(declaration.value)
@@ -22,10 +22,10 @@ class TestParserHashDeclarations < Test::Unit::TestCase
     declaration = @parser.produce_ast(input).body[0]
 
     assert_equal(false, declaration.constant)
-    assert_equal("my_hash", declaration.identifier)
+    assert_equal('my_hash', declaration.identifier)
     assert_equal(:string, declaration.key_type)
     assert_equal(:string, declaration.value_type)
-    hash_literal =  declaration.value
+    hash_literal = declaration.value
     assert_not_nil(hash_literal)
     assert_equal(2, hash_literal.key_value_pairs.length)
 
@@ -43,23 +43,23 @@ class TestParserHashDeclarations < Test::Unit::TestCase
     declaration = @parser.produce_ast(input).body[0]
 
     assert_equal(true, declaration.constant)
-    assert_equal("my_hash", declaration.identifier)
+    assert_equal('my_hash', declaration.identifier)
     assert_equal(:string, declaration.key_type)
     assert_equal(:string, declaration.value_type)
   end
 
   def test_parse_hash_declaration_with_assignment_to_func_call
-    input = "Hash<string, int> my_hash = some_func(arg1, arg2)"
+    input = 'Hash<string, int> my_hash = some_func(arg1, arg2)'
     declaration = @parser.produce_ast(input).body[0]
 
     assert_equal(false, declaration.constant)
-    assert_equal("my_hash", declaration.identifier)
+    assert_equal('my_hash', declaration.identifier)
     assert_equal(:string, declaration.key_type)
     assert_equal(:int, declaration.value_type)
     assert_not_nil(declaration.value)
 
     func_call = declaration.value
-    assert_equal("some_func", func_call.func_name.symbol)
+    assert_equal('some_func', func_call.func_name.symbol)
     assert_equal(2, func_call.params.length)
   end
 
@@ -69,7 +69,7 @@ class TestParserHashDeclarations < Test::Unit::TestCase
   end
 
   def test_parse_hash_declaration_with_uninitialized_const
-    input = "const Hash<string, int> MY_HASH"
+    input = 'const Hash<string, int> MY_HASH'
     assert_raise(NameError) { @parser.produce_ast(input) }
   end
 end

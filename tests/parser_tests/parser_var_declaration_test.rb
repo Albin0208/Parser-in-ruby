@@ -14,7 +14,7 @@ class TestParserVarDeclarations < Test::Unit::TestCase
 
     ast = @parser.produce_ast('int x = 3 + 4')
     assert_equal(ast.body[0].identifier, 'x')
-    #assert_equal(ast.body[0].value.value, 1)
+    # assert_equal(ast.body[0].value.value, 1)
     assert_equal(ast.body[0].constant, false)
 
     # Test for declaration of var to value of another var
@@ -23,11 +23,11 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     assert_equal(ast.body[0].value.symbol, 'x')
     assert_equal(ast.body[0].constant, false)
 
-      # Test for declaration of var to value of another var
-      ast = @parser.produce_ast('string a = "Hej"')
-      assert_equal(ast.body[0].identifier, 'a')
-      assert_equal(ast.body[0].value.value, 'Hej')
-      assert_equal(ast.body[0].constant, false)
+    # Test for declaration of var to value of another var
+    ast = @parser.produce_ast('string a = "Hej"')
+    assert_equal(ast.body[0].identifier, 'a')
+    assert_equal(ast.body[0].value.value, 'Hej')
+    assert_equal(ast.body[0].constant, false)
   end
 
   def test_parse_variable_declaration_without_assign
@@ -114,6 +114,6 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     assert_equal(100, member_vars[1].value.value)
 
     assert_instance_of(FuncDeclaration, member_func[0])
-    assert_equal('hello', member_func[0].identifier)   
+    assert_equal('hello', member_func[0].identifier)
   end
 end

@@ -82,7 +82,7 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal('a', body[0].identifier)
     assert_equal(4, body[0].value.left.value)
   end
-  
+
   def test_parse_if_elsif_else_statement
     ast = @parser.produce_ast('if 3 < 4 { int a = 4} elsif 3 > 4 { 3 + 3 } else {int a = 4 * 3}')
     assert_equal(NODE_TYPES[:IF], ast.body[0].type)
@@ -106,7 +106,7 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal(:+, assign_expr.op)
     assert_equal('i', assign_expr.left.symbol)
     assert_equal(1, assign_expr.right.value)
-  end 
+  end
 
   def test_parse_for_loop
     ast = @parser.produce_ast('for int i = 0, i < 10, i = i + 1 { 1 }')
@@ -121,21 +121,23 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal('i', node.expr.assigne.symbol)
     body = ast.body[0].body[0]
     assert_instance_of(NumericLiteral, body)
-  end 
+  end
 
   def test_invalid_return_placement
     input = "int a = 2
              return a"
-    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+    assert_raise(RuntimeError) { @parser.produce_ast(input) }
   end
+
   def test_invalid_continue_placement
     input = "int a = 2
              continue"
-    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+    assert_raise(RuntimeError) { @parser.produce_ast(input) }
   end
+
   def test_invalid_break_placement
     input = "int a = 2
              break"
-    assert_raise(RuntimeError) { @parser.produce_ast(input)}
+    assert_raise(RuntimeError) { @parser.produce_ast(input) }
   end
 end

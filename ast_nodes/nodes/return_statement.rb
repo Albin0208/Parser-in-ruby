@@ -18,8 +18,8 @@ class ReturnStmt < Stmt
   # @param [Integer] indent How much the next row should be indented
   #
 	def display_info(indent = 0)
-			puts "#{' ' * indent} #{self.class.name}"
-			puts "#{' ' * (indent + 2)} Body:"
-			@body&.display_info(indent + 4)
+		puts "#{' ' * indent} #{self.class.name}"
+		puts "#{' ' * (indent + 2)} Body:"
+		@body&.display_info(indent + 4)
 	end
 end

@@ -3,33 +3,33 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterFunctions < Test::Unit::TestCase
   def setup
-    @parser = Parser.new()
+    @parser = Parser.new
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
   def test_evaluate_func_declaration
     # Test void function
-    input = "func void test() {}"
+    input = 'func void test() {}'
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
     identifiers = @env.identifiers
     assert_equal(1, identifiers.length)
-    assert_true(identifiers.key?("test"))
-    test_func = identifiers["test"]
+    assert_true(identifiers.key?('test'))
+    test_func = identifiers['test']
     assert_instance_of(FuncDeclaration, test_func)
     assert_equal('void', test_func.type_specifier)
     assert_empty(test_func.params)
     assert_empty(test_func.body)
 
     # Test int function
-    input = "func int test2() { return 2 }"
+    input = 'func int test2() { return 2 }'
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
     identifiers = @env.identifiers
     assert_equal(2, identifiers.length)
-    assert_true(identifiers.key?("test2"))
-    test_func = identifiers["test2"]
+    assert_true(identifiers.key?('test2'))
+    test_func = identifiers['test2']
     assert_instance_of(FuncDeclaration, test_func)
     assert_equal('int', test_func.type_specifier)
     assert_empty(test_func.params)
@@ -37,13 +37,13 @@ class TestInterpreterFunctions < Test::Unit::TestCase
   end
 
   def test_evaluate_func_declaration_with_params
-    input = "func int add(int a, int b) { return a + b }"
+    input = 'func int add(int a, int b) { return a + b }'
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
     identifiers = @env.identifiers
     assert_equal(1, identifiers.length)
-    assert_true(identifiers.key?("add"))
-    test_func = identifiers["add"]
+    assert_true(identifiers.key?('add'))
+    test_func = identifiers['add']
     assert_instance_of(FuncDeclaration, test_func)
     assert_equal('int', test_func.type_specifier)
     assert_equal(2, test_func.params.length)

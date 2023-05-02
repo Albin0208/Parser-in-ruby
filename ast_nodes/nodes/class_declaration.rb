@@ -14,7 +14,7 @@ class ClassDeclaration < Stmt
 		@class_name = class_name
 		@member_variables = member_variables
 		@member_functions = member_functions
-	end
+  end
 
 	def to_s
 		"Class name: #{@class_name}"

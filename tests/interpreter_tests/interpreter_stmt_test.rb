@@ -3,28 +3,28 @@ require_relative '../../runtime/interpreter'
 
 class TestInterpreterStatement < Test::Unit::TestCase
   def setup
-    @parser = Parser.new()
+    @parser = Parser.new
     @interpreter = Interpreter.new
     @env = Environment.new
   end
 
   def test_evaluate_if_statment
     # Test a if evaling to true
-    input = "if true && true { 3 }"
+    input = 'if true && true { 3 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(3, result.value)
 
     # Test a if evaling to false
-    input = "if false { 3 }"
+    input = 'if false { 3 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NullVal, result)
     assert_equal('null', result.value)
 
     # Test a if evaling to false
-    input = "if 5 > 3 { 3 + 3 }"
+    input = 'if 5 > 3 { 3 + 3 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
@@ -33,14 +33,14 @@ class TestInterpreterStatement < Test::Unit::TestCase
 
   def test_evaluate_elsif_statment
     # Test with single elsif
-    input = "if false { 3 } elsif true { 4 }"
+    input = 'if false { 3 } elsif true { 4 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(4, result.value)
 
     # Test with multiple elsif
-    input = "if false && true { 3 } elsif false { 4 } elsif true { 6 }"
+    input = 'if false && true { 3 } elsif false { 4 } elsif true { 6 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
@@ -49,14 +49,14 @@ class TestInterpreterStatement < Test::Unit::TestCase
 
   def test_evaluate_else_statment
     # Test else
-    input = "if false { 3 } else { 45 }"
+    input = 'if false { 3 } else { 45 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
     assert_equal(45, result.value)
 
     # Test a if evaling to false and else running
-    input = "if 5 < 3 {3} elsif false { 4 } elsif 6 > 100 { 10 } else { 2 }"
+    input = 'if 5 < 3 {3} elsif false { 4 } elsif 6 > 100 { 10 } else { 2 }'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
     assert_instance_of(NumberVal, result)
@@ -64,7 +64,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
   end
 
   def test_evaluate_program
-    input = "int x = 5 
+    input = "int x = 5
              int y = 10
              x = 7
              int z = x + y
@@ -111,7 +111,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
       a, b = b, a + b
     end
     parser_fib_nums = []
-    
+
     for i in 1..10
       input = "int n = #{i}
               int a = 0
@@ -125,11 +125,11 @@ class TestInterpreterStatement < Test::Unit::TestCase
                 count = count + 1
               }
               a"
-      env = Environment.new()
+      env = Environment.new
       ast = @parser.produce_ast(input)
       parser_fib_nums << @interpreter.evaluate(ast, env).value
     end
-    
+
     assert_equal(fib_nums, parser_fib_nums)
   end
 
