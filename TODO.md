@@ -36,6 +36,10 @@
 - [ ] Classes
     - [ ] Inheritance
 
+# Fix wonky stuff
+- [ ] Fix problem when a identifier such as a class is printed it show the whole class node.
+- [ ] Fix so when an hash i printed it prints the value if it exist
+
 # Tests
 ## Lexer tests
 - [x] Test string

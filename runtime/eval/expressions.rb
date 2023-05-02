@@ -90,34 +90,41 @@ module ExpressionsEvaluator
   # @return [Value] The new value of the assigned variable or container
   # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
   def eval_assignment_expr(ast_node, env)
-    if ast_node.assigne.type == :ContainerAccessor
-      container_accessor = ast_node.assigne
-
-      access_key = evaluate(container_accessor.access_key, env)
-      container = env.lookup_identifier(container_accessor.identifier.symbol)
+    case ast_node.assigne.type
+    when :ContainerAccessor
+      # Evaluate the container accessor expression and access key
+      # container_accessor = 
+  
+      # Retrieve the container and check its key and value types
+      container = env.lookup_identifier(ast_node.assigne.identifier.symbol)
+      access_key = evaluate(ast_node.assigne.access_key, env)
       raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
-
+  
+      # Evaluate the assigned value and convert it to the correct type if necessary
       value = evaluate(ast_node.value, env)
-
       if container.value_type == :int && value.type == :float
         value = NumberVal.new(value.value.to_i, :int)
       elsif container.value_type == :float && value.type == :int
         value = NumberVal.new(value.value.to_f, :float)
       end
-
       raise "Error: Expected value type to be #{container.value_type} but got #{value.type}" unless container.value_type == value.type
-      
+    
+      # Assign the value to the container
       container.value[access_key.value] = value
       return container
-    elsif ast_node.assigne.type == :PropertyCallExpr
-      evaled_class = evaluate(ast_node.assigne.expr, env)
-      raise "Error: Can't assign to property of non-class object" unless evaled_class.instance_of?(ClassVal)
-      return evaled_class.class_instance.instance_env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
+    when :PropertyCallExpr
+      # Evaluate the class value and check if it's a ClassVal
+      class_value = evaluate(ast_node.assigne.expr, env)
+      raise "Error: Can't assign to property of non-class object" unless class_value.instance_of?(ClassVal)
+  
+      # Assign the value to the class instance environment
+      return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
+    when NODE_TYPES[:Identifier]
+      # Assign the value to the identifier
+      env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
     else
-      raise 'Cannot assign to non-Identifier type' unless ast_node.assigne.type == NODE_TYPES[:Identifier]
+      raise 'Cannot assign to non-Identifier type'
     end
-
-    env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
   end
 
   # Evaluate a method call expression by first evaluating the receiver expression and
@@ -135,6 +142,7 @@ module ExpressionsEvaluator
       method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name)
 
       return call_function(method, ast_node, call_env) unless method.nil?
+
       err_class_name = class_decl.class_name
     end
 
@@ -143,9 +151,10 @@ module ExpressionsEvaluator
     unless available_methods.include?(ast_node.method_name.to_sym)
       raise "Method #{ast_node.method_name} is not defined in #{err_class_name}"
     end
+    
     # Grab the methods
     method = evaled_expr.method(ast_node.method_name)
-    args = ast_node.params.map() { |param| evaluate(param, call_env)}
+    args = ast_node.params.map() { |param| evaluate(param, call_env) }
 
     return method.call(*args)
   end

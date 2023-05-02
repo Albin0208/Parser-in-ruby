@@ -368,7 +368,11 @@ class Parser
     expect(TokenType::FUNC) # Eat the func keyword
     @parsing_function = true
 
-    return_type = expect(TokenType::VOID, TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value
+    if at().type == TokenType::HASH
+      return_type = "#{expect(TokenType::HASH).value}#{expect(TokenType::HASH_TYPE).value.to_s.delete(' ')}"
+    else
+      return_type = expect(TokenType::VOID, TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER, TokenType::HASH).value
+    end
 
     identifier = expect(TokenType::IDENTIFIER).value # Expect a identifier for the func
 
@@ -645,6 +649,7 @@ class Parser
     expect(TokenType::LPAREN) # eat the start paren
 
     params = parse_call_params()
+    p at()
 
     expect(TokenType::RPAREN) # Find ending paren
     return CallExpr.new(identifier, params)

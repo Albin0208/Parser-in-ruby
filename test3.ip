@@ -12,24 +12,30 @@ class Test {
   func void set(int c) {
     var = c
   }
+
+  func Hash<string, int> get_hash() {
+    return Hash<string, int> {'a' = 2, 'b' = 4}
+  }
 }
 
 class Vs {
 
 }
 
-Test ts = new Test
-const Test t = new Test
+#Test ts = new Test
+#const Test t = new Test
 
-Test tc
+#Test tc
 
-print(tc)
+#print(tc)
 
-tc = new Test
+Test tc = new Test
 
 #ts = tc
 
-ts.var = 10
+#ts.var = 10
 
-print(tc != ts)
-print(tc.var)
+#print(tc != ts)
+#print(tc.var)
+
+print(tc.get_hash())#['a']
