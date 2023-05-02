@@ -94,7 +94,7 @@ class TestInterpreterStatement < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
 
     # Evaluate while
-    result = @interpreter.evaluate(ast, @env)
+    @interpreter.evaluate(ast, @env)
     # Check variables
     assert_equal(10, @env.identifiers['i'].value)
     assert_equal(5, @env.identifiers['counter'].value)

@@ -88,11 +88,11 @@ module StatementEvaluator
       return last_eval
     end
     if !ast_node.elsif_stmts.nil?
-      ast_node.elsif_stmts.each do |stmt|
-        if eval_condition(stmt.conditions, env)
+      ast_node.elsif_stmts.each do |elsif_stmt|
+        if eval_condition(elsif_stmt.conditions, env)
           # Set up new env for if so vars die after if is done
           elsif_env = Environment.new(env)
-          stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
+          elsif_stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
           return last_eval
         end
       end

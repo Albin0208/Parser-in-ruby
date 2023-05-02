@@ -15,6 +15,7 @@ class ReturnSignal < StandardError
   # @param return_node [RunTimeVal] the runtime val representing the value to be returned
   #
   def initialize(return_node)
+    super()
     @return_node = return_node
   end
 end

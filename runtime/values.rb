@@ -72,10 +72,6 @@ class RunTimeVal
 end
 
 class NumberVal < RunTimeVal
-  def initialize(value, type)
-    super(value, type)
-  end
-
   def -@
     NumberVal.new(-@value, type)
   end
@@ -240,7 +236,7 @@ class ClassVal < RunTimeVal
   end
 
   def ==(other)
-    return BooleanVal.new(true) if other.object_id == self.object_id
+    return BooleanVal.new(true) if other.object_id.equal?(self.object_id)
 
     BooleanVal.new(false)
   end

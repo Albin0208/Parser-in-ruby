@@ -9,7 +9,6 @@ class TestInterpreterExpr < Test::Unit::TestCase
   end
 
   def test_evaluate_numeric_literal
-    ast = NumericLiteral.new(42, TokenType::INTEGER)
     input = '42'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
@@ -17,7 +16,6 @@ class TestInterpreterExpr < Test::Unit::TestCase
     assert_equal(42, result.value)
 
     # Test negative number
-    ast = NumericLiteral.new(-42, TokenType::INTEGER)
     input = '-42'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
