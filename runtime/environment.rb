@@ -118,7 +118,7 @@ class Environment
       when 'float'
         value = NumberVal.new(value.value.to_f, :float)
       end
-    elsif value.type != var_type
+    elsif value.type.to_sym != var_type.to_sym
       raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."
     end
   

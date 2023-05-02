@@ -23,9 +23,7 @@ def main
     puts program.to_s if debugging
     program.display_info if debugging
 
-    result = interpreter.evaluate(program, env)
-
-    #puts result.to_s
+    interpreter.evaluate(program, env)
   else
     puts "Type 'exit' to quit"
     print ">> "

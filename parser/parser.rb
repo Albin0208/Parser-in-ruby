@@ -51,19 +51,17 @@ class Parser
   def parse_stmt
     case at().type
     when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER
+      # If the token is a hash or the next token is a hash we want to parse a hash
+      # Support hashes declared as Hash<string, int> and const Hash<string, int>
       if at().type == TokenType::HASH || next_token().type == TokenType::HASH
         return parse_hash_declaration()
       end
-      if at().type == TokenType::IDENTIFIER && next_token().type == TokenType::IDENTIFIER
-        return parse_var_declaration()
-      elsif at().type == TokenType::IDENTIFIER
+      if at().type == TokenType::IDENTIFIER && next_token().type != TokenType::IDENTIFIER
         return parse_assignment_stmt()
       end
       return parse_var_declaration()
     when TokenType::IF
       return parse_if_statement()
-    when TokenType::IDENTIFIER # Handles an identifier with assign
-      return parse_assignment_stmt()
     when TokenType::FOR, TokenType::WHILE
       return parse_loops()
     when TokenType::CLASS

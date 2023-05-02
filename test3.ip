@@ -19,9 +19,17 @@ class Vs {
 }
 
 Test ts = new Test
-Test t = new Test
+const Test t = new Test
 
+Test tc
 
-print(!t)
+print(tc)
 
-print(-t)
+tc = new Test
+
+#ts = tc
+
+ts.var = 10
+
+print(tc != ts)
+print(tc.var)

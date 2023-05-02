@@ -234,4 +234,14 @@ class ClassVal < RunTimeVal
     super(value, value.to_sym)
     @class_instance = class_instance
   end
+
+  def !=(other)
+    BooleanVal.new(!(other == self))
+  end
+
+  def ==(other)
+    return BooleanVal.new(true) if other.object_id == self.object_id
+
+    BooleanVal.new(false)
+  end
 end
