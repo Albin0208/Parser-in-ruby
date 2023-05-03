@@ -19,8 +19,6 @@ class Parser
     @logging = logging
     @parsing_function = false # Flag to keep track of function parsing. Use for not allowing return outside functions
     @parsing_loop = false # Flag to keep track of loop parsing. Use for not allowing break and continue outside loops
-    @ast = []
-    @prev_node = nil
 
     @location = 1 # used to display the line number where ther error is
 
@@ -36,11 +34,10 @@ class Parser
   def produce_ast(source_code)
     @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list 
+    program = Program.new([])
     # Parse until end of file
-    @ast.append(parse_stmt()) while not_eof()
+    program.body.append(parse_stmt()) while not_eof()
 
-    program = Program.new(@ast)
-    @ast = []
     return program
   end
 
@@ -74,13 +71,13 @@ class Parser
     when TokenType::BREAK
       raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      @prev_node = BreakStmt.new()
-      return @prev_node
+      return BreakStmt.new()
+      
     when TokenType::CONTINUE
       raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      @prev_node = ContinueStmt.new()
-      return @prev_node
+      return ContinueStmt.new()
+      
     else
       return parse_expr()
     end
@@ -110,8 +107,8 @@ class Parser
       end
     end
     expect(TokenType::RBRACE)
-    @prev_node = ClassDeclaration.new(class_name, member_variables, member_functions)
-    return @prev_node
+    return ClassDeclaration.new(class_name, member_variables, member_functions)
+    
   end
 
   #
@@ -275,8 +272,8 @@ class Parser
   # @return [Expr] An expression matching the tokens
   #
   def parse_identifier
-    @prev_node = Identifier.new(expect(TokenType::IDENTIFIER).value)
-    return @prev_node
+    return Identifier.new(expect(TokenType::IDENTIFIER).value)
+    
   end
 
   #
@@ -589,8 +586,8 @@ class Parser
   #
   # @return [ContainerAccessor] The accessor for a container
   #
-  def parse_accessor
-    identifier = parse_identifier()
+  def parse_accessor(prev_node = nil)
+    identifier = prev_node ? prev_node : parse_identifier()
     expect(TokenType::LBRACKET)
     access_key = parse_expr()
     expect(TokenType::RBRACKET)
@@ -626,8 +623,8 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
-    @prev_node = MethodCallExpr.new(expr, method_name.symbol, params)
-    return @prev_node
+    
+    return MethodCallExpr.new(expr, method_name.symbol, params)
   end
   
   #
@@ -654,8 +651,7 @@ class Parser
     params = parse_call_params()
 
     expect(TokenType::RPAREN) # Find ending paren
-    @prev_node = CallExpr.new(identifier, params)
-    return @prev_node
+    return CallExpr.new(identifier, params)
   end
 
   #
@@ -667,10 +663,11 @@ class Parser
     # Parse any params
     params = []
     while at().type != TokenType::RPAREN
-      # Remove the last param if we have a container access
-      # It would then get the last node and use it in the access
-      params.pop if at().type == TokenType::LBRACKET# && next_token().type != TokenType::RBRACKET
-      params << parse_expr()
+      if at().type == TokenType::LBRACKET# && next_token().type != TokenType::RBRACKET
+        params << parse_accessor(params.pop)
+      else
+        params << parse_expr()
+      end
       expect(TokenType::COMMA) if at().type == TokenType::COMMA
     end
 
@@ -797,14 +794,14 @@ class Parser
     when TokenType::NULL
       expect(TokenType::NULL)
       expr = NullLiteral.new()
-    when TokenType::LBRACKET
-      expect(TokenType::LBRACKET)
-      expr = @prev_node
-      access_key = parse_expr()
-      # raise "Heö"
-      expect(TokenType::RBRACKET)
-      @prev_node = ContainerAccessor.new(expr, access_key)
-      return @prev_node
+    # when TokenType::LBRACKET
+    #   expect(TokenType::LBRACKET)
+    #   expr = @prev_node
+    #   access_key = parse_expr()
+    #   # raise "Heö"
+    #   expect(TokenType::RBRACKET)
+    #   return ContainerAccessor.new(expr, access_key)
+    #   
     when TokenType::NEW
       expect(TokenType::NEW)
       expr = ClassInstance.new(parse_identifier())

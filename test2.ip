@@ -42,7 +42,8 @@ Hash<int, int> c
 #print(b)
 
 int as = test(3)
-
+int caa= a['hej']
+print(caa)
 #as -= 45
 
 print(as)
