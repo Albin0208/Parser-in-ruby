@@ -308,7 +308,8 @@ module ExpressionsEvaluator
   # @raise [NameError] if the container identifier is not found in the environment
   #
   def eval_container_accessor(ast_node, env)
-    container = env.lookup_identifier(ast_node.identifier.symbol)
+    container = evaluate(ast_node.identifier, env)
+    #container = env.lookup_identifier(ast_node.identifier.symbol)
     access_key = evaluate(ast_node.access_key, env)
     value = container.value[access_key.value]
     raise "Error: Key: #{access_key} does not exist in container" if value.nil?

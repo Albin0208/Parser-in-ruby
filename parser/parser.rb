@@ -20,6 +20,7 @@ class Parser
     @parsing_function = false # Flag to keep track of function parsing. Use for not allowing return outside functions
     @parsing_loop = false # Flag to keep track of loop parsing. Use for not allowing break and continue outside loops
     @ast = []
+    @prev_node = nil
 
     @location = 1 # used to display the line number where ther error is
 
@@ -73,11 +74,13 @@ class Parser
     when TokenType::BREAK
       raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      return BreakStmt.new()
+      @prev_node = BreakStmt.new()
+      return @prev_node
     when TokenType::CONTINUE
       raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      return ContinueStmt.new()
+      @prev_node = ContinueStmt.new()
+      return @prev_node
     else
       return parse_expr()
     end
@@ -107,8 +110,8 @@ class Parser
       end
     end
     expect(TokenType::RBRACE)
-
-    return ClassDeclaration.new(class_name, member_variables, member_functions)
+    @prev_node = ClassDeclaration.new(class_name, member_variables, member_functions)
+    return @prev_node
   end
 
   #
@@ -272,7 +275,8 @@ class Parser
   # @return [Expr] An expression matching the tokens
   #
   def parse_identifier
-    return Identifier.new(expect(TokenType::IDENTIFIER).value)
+    @prev_node = Identifier.new(expect(TokenType::IDENTIFIER).value)
+    return @prev_node
   end
 
   #
@@ -538,13 +542,7 @@ class Parser
   #
   # @return [AssignmentExpr] The AST node
   def parse_assignment_stmt
-    # @logger.debug('Parsing assign expression')
     left = parse_expr()
-    # #p left
-    # # Check for class type
-    # if left.type == :Identifier && at().type == TokenType::IDENTIFIER
-      
-    # end
 
     # Check if we have an assignment token
     if at().type == TokenType::ASSIGN
@@ -628,7 +626,8 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
-    return MethodCallExpr.new(expr, method_name.symbol, params)
+    @prev_node = MethodCallExpr.new(expr, method_name.symbol, params)
+    return @prev_node
   end
   
   #
@@ -653,10 +652,10 @@ class Parser
     expect(TokenType::LPAREN) # eat the start paren
 
     params = parse_call_params()
-    p at()
 
     expect(TokenType::RPAREN) # Find ending paren
-    return CallExpr.new(identifier, params)
+    @prev_node = CallExpr.new(identifier, params)
+    return @prev_node
   end
 
   #
@@ -667,12 +666,12 @@ class Parser
   def parse_call_params
     # Parse any params
     params = []
-    if at().type != TokenType::RPAREN
+    while at().type != TokenType::RPAREN
+      # Remove the last param if we have a container access
+      # It would then get the last node and use it in the access
+      params.pop if at().type == TokenType::LBRACKET# && next_token().type != TokenType::RBRACKET
       params << parse_expr()
-      while at().type == TokenType::COMMA
-        expect(TokenType::COMMA)
-        params << parse_expr()
-      end
+      expect(TokenType::COMMA) if at().type == TokenType::COMMA
     end
 
     return params
@@ -798,6 +797,14 @@ class Parser
     when TokenType::NULL
       expect(TokenType::NULL)
       expr = NullLiteral.new()
+    when TokenType::LBRACKET
+      expect(TokenType::LBRACKET)
+      expr = @prev_node
+      access_key = parse_expr()
+      # raise "Heö"
+      expect(TokenType::RBRACKET)
+      @prev_node = ContainerAccessor.new(expr, access_key)
+      return @prev_node
     when TokenType::NEW
       expect(TokenType::NEW)
       expr = ClassInstance.new(parse_identifier())
