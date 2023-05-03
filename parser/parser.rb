@@ -102,13 +102,13 @@ class Parser
       case stmt.type
       when :FuncDeclaration
         member_functions << stmt
-      when :VarDeclaration
+      when :VarDeclaration, :HashDeclaration
         member_variables << stmt
       end
     end
     expect(TokenType::RBRACE)
+
     return ClassDeclaration.new(class_name, member_variables, member_functions)
-    
   end
 
   #
@@ -640,7 +640,12 @@ class Parser
   # @return [PropertyCallExpr] The property call
   #
   def parse_property_access(expr, property_name)
-    return PropertyCallExpr.new(expr, property_name.symbol)
+    node = PropertyCallExpr.new(expr, property_name.symbol)
+
+    while at().type == TokenType::LBRACKET
+      node = parse_accessor(node)
+    end
+    return node
   end
 
   #
@@ -655,7 +660,12 @@ class Parser
     params = parse_call_params()
 
     expect(TokenType::RPAREN) # Find ending paren
-    return CallExpr.new(identifier, params)
+    node = CallExpr.new(identifier, params)
+
+    while at().type == TokenType::LBRACKET
+      node = parse_accessor(node)
+    end
+    return node
   end
 
   #

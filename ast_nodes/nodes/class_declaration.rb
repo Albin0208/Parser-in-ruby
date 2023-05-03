@@ -39,9 +39,21 @@ class ClassDeclaration < Stmt
     # Declare all instance variables
     @member_variables.each { |var|
       value = var.value ? interpreter.evaluate(var.value, @instance_env) : NullVal.new
-      @instance_env.declare_var(var.identifier, value, var.value_type, var.constant)
-    }
+      type_specifier = var.value_type
+      if var.is_a?(HashDeclaration)
+        unless value.instance_of?(NullVal)
+          raise "Error: #{var.identifier} expected a hash of type: Hash<#{var.key_type}, #{var.value_type}> but got #{value.class}" if value.class != HashVal
+          # Check if key and value types match the type of the assigned hash
+          if value.key_type != var.key_type || value.value_type != var.value_type
+            raise "Error: #{var.identifier} expected a hash of type: Hash<#{var.key_type}, #{var.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"
+          end
+        end
+        type_specifier = "Hash<#{var.key_type},#{var.value_type}>".to_sym
+      end
 
+      @instance_env.declare_var(var.identifier, value, type_specifier, var.constant)
+    }
+    
     # Declare all instance methods
     @member_functions.each { |method|
       @instance_env.declare_func(method.identifier, method.type_specifier, method.clone, @instance_env)

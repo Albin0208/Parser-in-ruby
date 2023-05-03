@@ -306,7 +306,7 @@ module ExpressionsEvaluator
   #
   def eval_container_accessor(ast_node, env)
     container = evaluate(ast_node.identifier, env)
-
+ 
     unless container.is_a?(HashVal)
       raise "Error: Invalid type for container accessor, #{container.class}"
     end

@@ -1,5 +1,7 @@
 class Test {
   int var = 1
+  int c = 2
+  Hash<string, int> acc = Hash<string, int> {'a' = 2, 'b' = 4}
 
   func int test(int ass) {
     return ass
@@ -22,9 +24,9 @@ class Test {
   }
 }
 
-  func Hash<string, int> get_hash() {
-    return Hash<string, int> {'a' = 2, 'b' = 4}
-  }
+func Hash<string, int> geta_hash() {
+  return Hash<string, int> {'a' = 2, 'b' = 4}
+}
 
 class Vs {
 
@@ -52,9 +54,11 @@ Test tc = new Test
 #print(tc.type())
 print("hello")
 
-int a = get_hash()[tc.get_hash()['a']]['c']
+#int a = geta_hash()['a']
+int aaa = tc.acc['b'] + geta_hash()['a']
 
-print(a)
+#print(a)
+print(aaa)
 print("hello")
 #print(tc.get_hash()['a'])
 
