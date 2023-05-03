@@ -48,7 +48,10 @@ Test tc = new Test
 #print(tc.type())
 print("hello")
 
+int a = tc.get_hash()[tc.get_hash()['a']]['c']
+
+print(a)
 print("hello")
-print(tc.get_hash()['a'])
+#print(tc.get_hash()['a'])
 
 #print(tc.get_class().type())

@@ -623,8 +623,12 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
+    node = MethodCallExpr.new(expr, method_name.symbol, params)
+    while at().type == TokenType::LBRACKET
+      node = parse_accessor(node)
+    end
     
-    return MethodCallExpr.new(expr, method_name.symbol, params)
+    return node
   end
   
   #

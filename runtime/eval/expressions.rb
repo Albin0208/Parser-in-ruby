@@ -91,10 +91,7 @@ module ExpressionsEvaluator
   # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
   def eval_assignment_expr(ast_node, env)
     case ast_node.assigne.type
-    when :ContainerAccessor
-      # Evaluate the container accessor expression and access key
-      # container_accessor = 
-  
+    when :ContainerAccessor 
       # Retrieve the container and check its key and value types
       container = env.lookup_identifier(ast_node.assigne.identifier.symbol)
       access_key = evaluate(ast_node.assigne.access_key, env)
@@ -313,7 +310,7 @@ module ExpressionsEvaluator
     unless container.is_a?(HashVal)
       raise "Error: Invalid type for container accessor, #{container.class}"
     end
-    
+
     access_key = evaluate(ast_node.access_key, env)
     value = container.value[access_key.value]
     raise "Error: Key: #{access_key} does not exist in container" if value.nil?
