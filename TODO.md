@@ -38,10 +38,10 @@
 
 # Fix wonky stuff
 - [ ] Fix problem when a identifier such as a class is printed it show the whole class node.
-- [ ] Fix so when an hash i printed it prints the value if it exist
+- [ ] Fix so when an hash is printed it prints the value if it exist
 - [ ] Fix so a hash of hashes are ok
 - [x] Fix so func_call can have a container access after
-- [ ] Fix so a container access on a none container causes an error
+- [x] Fix so a container access on a none container causes an error
 
 # Tests
 ## Lexer tests
