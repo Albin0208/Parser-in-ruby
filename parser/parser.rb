@@ -195,7 +195,11 @@ class Parser
     expect(TokenType::HASH)
 
     hash_type = expect(TokenType::HASH_TYPE).value
+    # p hash_type
+
+    # TODO implement so hashes can have hashes as values
     hash_type = hash_type.to_s.gsub(/[<>\s]/, '').split(',')
+    #p hash_type
 
     return hash_type[0], hash_type[1]
   end

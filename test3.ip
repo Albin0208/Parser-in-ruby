@@ -42,5 +42,10 @@ Test tc = new Test
 #print(tc != ts)
 #print(tc.var)
 
-print(tc.get_hash())#['a']
-print(tc.get_class()
+#Hash<string, Hash<string, int>> t = Hash<string, Hash<string, int>>{'a' = Hash<string, int> { 'c' = 2}}
+#print(t)
+
+print(tc.type())
+
+#print(tc.get_hash())#['a']
+#print(tc.get_class().type())

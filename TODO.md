@@ -32,13 +32,14 @@
     - [ ] Lambda functions?
 - [x] Don't allow returns outside functions
 - [x] Fixa så att continue och break inte finns utanför loopar
-- [ ] Property access for objects (Probably best to implement classes first)
+- [x] Property access for objects (Probably best to implement classes first)
 - [ ] Classes
     - [ ] Inheritance
 
 # Fix wonky stuff
 - [ ] Fix problem when a identifier such as a class is printed it show the whole class node.
 - [ ] Fix so when an hash i printed it prints the value if it exist
+- [ ] Fix so a hash of hashes are ok
 
 # Tests
 ## Lexer tests

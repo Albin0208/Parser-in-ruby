@@ -139,11 +139,10 @@ module ExpressionsEvaluator
     err_class_name = evaled_expr.class
     # Check if we are calling a custom class
     if evaled_expr.instance_of?(ClassVal)
-      method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name)
+      # Grab the method, if error occurs it does not exist then set method to nil
+      method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name) rescue nil
 
       return call_function(method, ast_node, call_env) unless method.nil?
-
-      err_class_name = class_decl.class_name
     end
 
     # Check if the method exists
