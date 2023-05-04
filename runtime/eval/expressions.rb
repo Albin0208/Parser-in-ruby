@@ -324,12 +324,12 @@ module ExpressionsEvaluator
       unless ast_node.value_type.is_a?(Array)
         # Check if the key type is correct
         raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
-        raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type}" if value.type != ast_node.value_type
+        raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type.to_s.gsub(',', ', ')}" if value.type != ast_node.value_type
       end
       value_hash[key.value] = value
     }
     # Build the hash type
-    type = "Hash<#{ast_node.key_type}, #{ast_node.value_type}>".to_sym
+    type = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
 
     return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
   end

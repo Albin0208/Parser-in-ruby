@@ -43,3 +43,5 @@ Test tc = new Test
 
 Test t = tc.copy()
 print(tc == t)
+
+print(Test)

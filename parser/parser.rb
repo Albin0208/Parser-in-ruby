@@ -190,7 +190,7 @@ class Parser
       flatt_type = value_type.flatten
       flatt_type.flatten.each_with_index() { |type, index| 
         if index < flatt_type.flatten.length - 1
-          pretty_type << "Hash<#{type}, "
+          pretty_type << "Hash<#{type},"
         else
           pretty_type << "#{type}"
         end
