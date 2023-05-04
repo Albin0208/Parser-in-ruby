@@ -13,7 +13,8 @@ class FuncDeclaration < Stmt
   end
 
   def to_s
-    "Type: #{@type_specifier}, Ident: #{@identifier}, Params: #{@params}, body: #{@body}"
+    "Function declaration: Type: #{@type_specifier.gsub(',', ', ')}"
+    #"Type: #{@type_specifier}, Ident: #{@identifier}, Params: #{@params}, body: #{@body}"
   end
 
   #
