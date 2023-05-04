@@ -15,7 +15,7 @@ module ExpressionsEvaluator
   # @param [Environment] env The environment to evaluate the expression in.
   # @return [RunTimeVal] The value of the identifier in the environment.
   def eval_identifier(ast_node, env)
-    return env.lookup_identifier(ast_node.symbol)
+    return env.lookup_identifier(ast_node.symbol, ast_node.line)
   end
 
   # Evaluates a logical AND expression.
@@ -100,10 +100,10 @@ module ExpressionsEvaluator
   
       # Assign the value to the class instance environment
       value = evaluate(ast_node.value, env)
-      return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, value)
+      return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, value, ast_node.line)
     when NODE_TYPES[:Identifier]
       # Assign the value to the identifier
-      env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
+      env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env), ast_node.line)
     else
       raise "Line: #{ast_node.line}: Cannot assign to non-Identifier type"
     end
@@ -120,7 +120,7 @@ module ExpressionsEvaluator
       access_nodes << access_nodes.last.identifier
     end
     # Grab the top container of the call chain
-    container = env.lookup_identifier(access_nodes.last.identifier.symbol)
+    container = env.lookup_identifier(access_nodes.last.identifier.symbol, ast_node.line)
     access_nodes.shift # Remove the node where the assignments is done since it is done later
 
     # Reverse traverse through all the container accesses
@@ -168,7 +168,7 @@ module ExpressionsEvaluator
     # Check if we are calling a custom class
     if evaled_expr.instance_of?(ClassVal)
       # Grab the method, if error occurs it does not exist then set method to nil
-      method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name) rescue nil
+      method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name, ast_node.line) rescue nil
 
       return call_function(method, ast_node, call_env) unless method.nil?
     end
@@ -199,7 +199,7 @@ module ExpressionsEvaluator
     evaled_expr = evaluate(ast_node.expr, call_env)
     instance_env = evaled_expr.class_instance.instance_env
 
-    return instance_env.lookup_identifier(ast_node.property_name)
+    return instance_env.lookup_identifier(ast_node.property_name, ast_node.line)
   end
 
   # Evaluates a call expression in the specified environment.
@@ -212,7 +212,7 @@ module ExpressionsEvaluator
   # @return [NullVal] A null value if the function is of type void
   # @return [RunTimeVal] the return value of the evaluated call expression
   def eval_call_expr(ast_node, call_env)
-    function = call_env.lookup_identifier(ast_node.func_name.symbol)
+    function = call_env.lookup_identifier(ast_node.func_name.symbol, ast_node.line)
     if function.instance_of?(Symbol) && function == :native_func
       param_results = ast_node.params.map() { |param| 
         evaled = evaluate(param, call_env)
@@ -304,7 +304,7 @@ module ExpressionsEvaluator
       end
 
       # Declare any var params
-      env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, false)
+      env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, function.line, false)
     }
   end
 

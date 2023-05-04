@@ -81,6 +81,7 @@ class Parser
   # @return [ClassDeclaration] The ClassDeclaration AST node.
   def parse_class_declaration 
     expect(TokenType::CLASS)
+    decl_location = @location
 
     class_name = parse_identifier()
     member_variables = []
@@ -101,7 +102,7 @@ class Parser
     end
     expect(TokenType::RBRACE)
 
-    return ClassDeclaration.new(class_name, member_variables, member_functions, @location)
+    return ClassDeclaration.new(class_name, member_variables, member_functions, decl_location)
   end
 
   #

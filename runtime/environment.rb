@@ -39,14 +39,14 @@ class Environment
   #
   # @return [String, Int, Float, Boolean] The value assigned to the var
   #
-  def declare_var(varname, value, value_type, is_constant = false)
+  def declare_var(varname, value, value_type, line, is_constant = false)
     # Check if the var is already declared in the current scope
     if find_scope(varname)
-      raise "Cannot declare variable '#{varname}' since it is already defined in this scope"
+      raise "Line: #{line}: Cannot declare variable '#{varname}' since it is already defined in this scope"
     end
 
     if value.type.to_sym != :null && value.type.to_sym != value_type.to_sym
-      raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{value_type}\"."
+      raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{value_type}\"."
     end
 
     @identifiers[varname] = value
@@ -69,7 +69,7 @@ class Environment
   def declare_func(func_name, return_type, node, env)
     # Check if the var is already declared in the current scope
     if find_scope(func_name)
-      raise "Cannot declare function '#{func_name}' since it is already defined in this scope"
+      raise "Line: #{node.line}: Cannot declare function '#{func_name}' since it is already defined in this scope"
     end
     node.env = env
 
@@ -103,11 +103,11 @@ class Environment
   #
   # @return [String, Int, Float, Boolean] The value we assigned
   #
-  def assign_var(varname, value)
+  def assign_var(varname, value, line)
     env = find_scope(varname)
   
-    raise "Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
-    raise "Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
+    raise "Line: #{line}: Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
+    raise "Line: #{line}: Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
   
     var_type = env.identifiers_type[varname]
 
@@ -119,7 +119,7 @@ class Environment
         value = NumberVal.new(value.value.to_f, :float)
       end
     elsif value.type.to_sym != var_type.to_sym
-      raise "Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."
+      raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."
     end
   
     env.identifiers[varname] = value
@@ -149,10 +149,10 @@ class Environment
   #
   # @return [String, Int, Float, Boolean] The value of the var
   #
-  def lookup_identifier(identifier)
+  def lookup_identifier(identifier, line = nil)
     env = find_scope(identifier)
 
-    raise "Error: \"#{identifier}\" was not declared in any scope" if env.nil?
+    raise "Line: #{line}: Error: \"#{identifier}\" was not declared in any scope" if env.nil?
 
     return env.identifiers[identifier]
   end

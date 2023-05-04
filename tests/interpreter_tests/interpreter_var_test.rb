@@ -55,7 +55,7 @@ class TestInterpreterVar < Test::Unit::TestCase
   end
 
   def test_evaluate_retrieval_of_var
-    @env.declare_var('x', NumberVal.new(10, :int), 'int', false) # Declare the var in the env
+    @env.declare_var('x', NumberVal.new(10, :int), 'int', 1, false) # Declare the var in the env
 
     input = 'x'
     ast = @parser.produce_ast(input)
@@ -65,7 +65,7 @@ class TestInterpreterVar < Test::Unit::TestCase
   end
 
   def test_evaluate_var_assignment_expr
-    @env.declare_var('x', NumberVal.new(10, :int), 'int', false)
+    @env.declare_var('x', NumberVal.new(10, :int), 'int', 1, false)
     input = 'x = 5'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
@@ -75,7 +75,7 @@ class TestInterpreterVar < Test::Unit::TestCase
   end
 
   def test_evaluate_int_and_float_assignment_conversion
-    @env.declare_var('x', NumberVal.new(10, :int), 'int', false)
+    @env.declare_var('x', NumberVal.new(10, :int), 'int', 1, false)
     input = 'x = 5.3'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
@@ -83,7 +83,7 @@ class TestInterpreterVar < Test::Unit::TestCase
     assert_instance_of(NumberVal, @env.identifiers['x'])
     assert_equal(5, @env.identifiers['x'].value)
 
-    @env.declare_var('y', NumberVal.new(10.3, :float), 'float', false)
+    @env.declare_var('y', NumberVal.new(10.3, :float), 'float', 1, false)
     input = 'y = 5'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
@@ -93,11 +93,11 @@ class TestInterpreterVar < Test::Unit::TestCase
   end
 
   def test_evaluate_invalid_var_assignment_expr
-    @env.declare_var('x', NumberVal.new(10, :int), 'int', false)
+    @env.declare_var('x', NumberVal.new(10, :int), 'int', 1, false)
     assert_raise(RuntimeError) { @env.declare_var('x', NumberVal.new(10, :int), false, 'int') }
 
     # Test reassign of const value
-    @env.declare_var('c', NumberVal.new(10, :int), 'int', true)
+    @env.declare_var('c', NumberVal.new(10, :int), 'int', 1, true)
     input = 'c = 5'
     ast = @parser.produce_ast(input)
     assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
