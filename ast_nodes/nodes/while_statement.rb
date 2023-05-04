@@ -9,8 +9,8 @@ class WhileStmt < Stmt
   # @param [Array] body A list of all the nodes inside the while loop
   # @param [Expr] conditions The conditions of the loop
   #
-  def initialize(body, conditions)
-    super(NODE_TYPES[:WHILE_LOOP])
+  def initialize(body, conditions, line)
+    super(NODE_TYPES[:WHILE_LOOP], line)
     @body = body # A list of all statements
     @conditions = conditions
   end

@@ -12,8 +12,8 @@ class HashDeclaration < Stmt
   # @param [string] value_type What type the value is
   # @param [Expr] value The value that should be assigned or nil if only declaring
   #
-  def initialize(constant, identifier, key_type, value_type, value = nil)
-    super(NODE_TYPES[:HashDeclaration])
+  def initialize(constant, identifier, key_type, value_type, line, value = nil)
+    super(NODE_TYPES[:HashDeclaration], line)
     @constant = constant
     @identifier = identifier
     @key_type = key_type

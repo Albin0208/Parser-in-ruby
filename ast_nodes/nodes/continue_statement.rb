@@ -1,8 +1,8 @@
 require_relative 'stmt'
 
 class ContinueStmt < Stmt
-  def initialize
-    super(NODE_TYPES[:ContinueStmt])
+  def initialize(line)
+    super(NODE_TYPES[:ContinueStmt], line)
   end
 
   def to_s

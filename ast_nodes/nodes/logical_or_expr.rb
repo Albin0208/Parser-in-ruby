@@ -10,8 +10,8 @@ class LogicalOrExpr < Expr
   # @param [Stmt] left The left side of the or expression
   # @param [Stmt] right The right side of the or expression
   #
-  def initialize(left, right)
-    super(NODE_TYPES[:LogicalOr])
+  def initialize(left, right, line)
+    super(NODE_TYPES[:LogicalOr], line)
     @left = left
     @op = :"||"
     @right = right

@@ -9,8 +9,8 @@ class StringLiteral < Expr
   #
   # @param [String] value The value of the string node
   #
-  def initialize(value)
-    super(NODE_TYPES[:String])
+  def initialize(value, line)
+    super(NODE_TYPES[:String], line)
     @value = value
   end
 

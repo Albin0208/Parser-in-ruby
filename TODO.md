@@ -37,7 +37,7 @@
     - [ ] Inheritance
 
 # Fix wonky stuff
-- [ ] Fix problem when a identifier such as a class is printed it show the whole class node.
+- [x] Fix problem when a identifier such as a class is printed it show the whole class node.
 - [x] Fix so when an hash is printed it prints the value if it exist
 - [x] Fix so a hash of hashes are ok
 - [x] Fix with nested hashes so the expected error msg is correct

@@ -9,8 +9,8 @@ class NumericLiteral < Expr
   #
   # @param [int, float] value The number the numeric node, can be an int or float
   #
-  def initialize(value, type)
-    super(NODE_TYPES[:NumericLiteral])
+  def initialize(value, type, line)
+    super(NODE_TYPES[:NumericLiteral], line)
     @value = value
     @numeric_type = type
   end

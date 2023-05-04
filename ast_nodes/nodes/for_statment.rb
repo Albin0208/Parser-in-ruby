@@ -10,8 +10,8 @@ class ForStmt < Stmt
   # @param [VarDeclaration] var_dec Variable declaration to be used in loop
   # @param [Expr] expr What to do after each iteration
   #
-  def initialize(body, condition, var_dec, expr)
-    super(NODE_TYPES[:FOR_LOOP])
+  def initialize(body, condition, var_dec, expr, line)
+    super(NODE_TYPES[:FOR_LOOP], line)
     @body = body # A list of all statements
     @condition = condition
     @var_dec = var_dec

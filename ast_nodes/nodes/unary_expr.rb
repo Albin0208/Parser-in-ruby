@@ -10,8 +10,8 @@ class UnaryExpr < Expr
   # @param [Expr] left The expression
   # @param [Symbol] op The operator for the expression
   #
-  def initialize(left, op)
-    super(NODE_TYPES[:UnaryExpr])
+  def initialize(left, op, line)
+    super(NODE_TYPES[:UnaryExpr], line)
     @left = left
     @op = op
   end

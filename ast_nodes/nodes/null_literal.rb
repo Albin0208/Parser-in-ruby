@@ -7,8 +7,8 @@ class NullLiteral < Expr
   #
   # Creates a null node
   #
-  def initialize
-    super(NODE_TYPES[:Null])
+  def initialize(line)
+    super(NODE_TYPES[:Null], line)
     @value = 'null'
   end
 

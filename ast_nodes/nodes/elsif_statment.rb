@@ -10,8 +10,8 @@ class ElsifStatement < Stmt
   # @param [Array] body A list of all the nodes inside the if body
   # @param [Expr] conditions The conditions of the if
   #
-  def initialize(body, conditions)
-    super(NODE_TYPES[:ELSIF])
+  def initialize(body, conditions, line)
+    super(NODE_TYPES[:ELSIF], line)
     @body = body # A list of all statements
     @conditions = conditions
   end

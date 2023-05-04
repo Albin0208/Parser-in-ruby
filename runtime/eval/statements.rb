@@ -51,10 +51,10 @@ module StatementEvaluator
   def eval_hash_declaration(ast_node, env)
     value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
     unless value.instance_of?(NullVal)
-      raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != HashVal
+      raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != HashVal
       # Check if key and value types match the type of the assigned hash
       if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
-        raise "Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got Hash<#{value.key_type}, #{value.value_type.to_s.gsub(',', ', ')}>"
+        raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got Hash<#{value.key_type}, #{value.value_type.to_s.gsub(',', ', ')}>"
       end
     end
     type_specifier = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym

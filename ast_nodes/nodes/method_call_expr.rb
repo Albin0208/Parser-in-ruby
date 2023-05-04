@@ -10,8 +10,8 @@ class MethodCallExpr < Expr
   # @param [String] method_name The name of the method to call
   # @param [Array] params A list of params that should be sent to the function later
   #
-  def initialize(expr, method_name, params)
-    super(NODE_TYPES[:MethodCallExpr])
+  def initialize(expr, method_name, params, line)
+    super(NODE_TYPES[:MethodCallExpr], line)
     @expr = expr
     @method_name = method_name
     @params = params

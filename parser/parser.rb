@@ -34,7 +34,7 @@ class Parser
   def produce_ast(source_code)
     @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list 
-    program = Program.new([])
+    program = Program.new([], @location)
     # Parse until end of file
     program.body.append(parse_stmt()) while not_eof()
 
@@ -66,11 +66,11 @@ class Parser
     when TokenType::BREAK
       raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      return BreakStmt.new()
+      return BreakStmt.new(@location)
     when TokenType::CONTINUE
       raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      return ContinueStmt.new()
+      return ContinueStmt.new(@location)
     else
       return parse_expr()
     end
@@ -101,7 +101,7 @@ class Parser
     end
     expect(TokenType::RBRACE)
 
-    return ClassDeclaration.new(class_name, member_variables, member_functions)
+    return ClassDeclaration.new(class_name, member_variables, member_functions, @location)
   end
 
   #
@@ -116,7 +116,7 @@ class Parser
     identifier = parse_identifier().symbol
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, nil) unless is_const
+      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, @location, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
@@ -131,7 +131,7 @@ class Parser
       expression = parse_hash_literal()
     end
 
-    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, expression)
+    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, @location, expression)
   end
 
   #
@@ -169,7 +169,7 @@ class Parser
 
     expect(TokenType::RBRACE) # Get the closing brace
 
-    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type)
+    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
   end
 
   #
@@ -251,7 +251,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForStmt.new(body, condition, var_dec, expr)
+    return ForStmt.new(body, condition, var_dec, expr, @location)
   end
 
   # Parses a while loop statement.
@@ -269,7 +269,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return WhileStmt.new(body, condition)
+    return WhileStmt.new(body, condition, @location)
   end
 
   #
@@ -278,7 +278,7 @@ class Parser
   # @return [Expr] An expression matching the tokens
   #
   def parse_identifier
-    return Identifier.new(expect(TokenType::IDENTIFIER).value)
+    return Identifier.new(expect(TokenType::IDENTIFIER).value, @location)
     
   end
 
@@ -293,7 +293,7 @@ class Parser
     expect(TokenType::RETURN)
     expr = parse_expr()
 
-    return ReturnStmt.new(expr)
+    return ReturnStmt.new(expr, @location)
   end
 
   # Parse a variable declaration
@@ -313,7 +313,7 @@ class Parser
     identifier = parse_identifier().symbol
     
     if at().type != TokenType::ASSIGN
-      return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
+      return VarDeclaration.new(is_const, identifier, type_specifier, @location, nil) unless is_const
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
@@ -322,7 +322,7 @@ class Parser
 
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
-    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
+    return VarDeclaration.new(is_const, identifier, type_specifier, @location, expression)
   end
 
   # Validate that we are trying to assign a correct type to our variable.
@@ -399,7 +399,7 @@ class Parser
     end
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
-    return FuncDeclaration.new(return_type, identifier, params, body)
+    return FuncDeclaration.new(return_type, identifier, params, body, @location)
   end
 
   #
@@ -473,7 +473,7 @@ class Parser
     elsif_stmts = parse_elsif_statements() # Parse else ifs
     else_body = parse_else_statement() # Parse Else
 
-    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
+    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts, @location)
   end
 
   #
@@ -489,7 +489,7 @@ class Parser
       expect(TokenType::LBRACE) # eat lbrace token
       elsif_body = parse_conditional_body() # Parse elsif body
       expect(TokenType::RBRACE) # eat the rbrace token
-      elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition)
+      elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition, @location)
     end
 
     return elsif_stmts
@@ -551,9 +551,9 @@ class Parser
       token = expect(TokenType::ASSIGN).value
       value = parse_expr()
       if token.length == 2
-        value = BinaryExpr.new(left, token[0], value)
+        value = BinaryExpr.new(left, token[0], value, @location)
       end
-      return AssignmentStmt.new(value, left)
+      return AssignmentStmt.new(value, left, @location)
     end
 
     return left
@@ -580,7 +580,7 @@ class Parser
     if at().type == TokenType::BINARYOPERATOR
       op = eat().value
       right = parse_expr()
-      expr = BinaryExpr.new(expr, op, right)
+      expr = BinaryExpr.new(expr, op, right, @location)
     end
 
     return expr
@@ -598,7 +598,7 @@ class Parser
     access_key = parse_expr()
     expect(TokenType::RBRACKET)
 
-    expr = ContainerAccessor.new(identifier, access_key)
+    expr = ContainerAccessor.new(identifier, access_key, @location)
     
     return at().type == TokenType::LBRACKET ? parse_accessor(expr) : expr
   end
@@ -632,7 +632,7 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
-    node = MethodCallExpr.new(expr, method_name.symbol, params)
+    node = MethodCallExpr.new(expr, method_name.symbol, params, @location)
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
     end
@@ -649,7 +649,7 @@ class Parser
   # @return [PropertyCallExpr] The property call
   #
   def parse_property_access(expr, property_name)
-    node = PropertyCallExpr.new(expr, property_name.symbol)
+    node = PropertyCallExpr.new(expr, property_name.symbol, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -669,7 +669,7 @@ class Parser
     params = parse_call_params()
 
     expect(TokenType::RPAREN) # Find ending paren
-    node = CallExpr.new(identifier, params)
+    node = CallExpr.new(identifier, params, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -707,7 +707,7 @@ class Parser
     while at().value == :"||"
       eat().value # eat the operator
       right = parse_logical_and_expr()
-      left = LogicalOrExpr.new(left, right)
+      left = LogicalOrExpr.new(left, right, @location)
     end
 
     return left
@@ -723,7 +723,7 @@ class Parser
     while at().value == :"&&"
       eat().value # eat the operator
       right = parse_comparison_expr()
-      left = LogicalAndExpr.new(left, right)
+      left = LogicalAndExpr.new(left, right, @location)
     end
 
     return left
@@ -738,7 +738,7 @@ class Parser
     while LOGICCOMPARISON.include?(at().value)
       comparetor = eat().value # eat the comparetor
       right = parse_additive_expr()
-      left = BinaryExpr.new(left, comparetor, right)
+      left = BinaryExpr.new(left, comparetor, right, @location)
     end
 
     return left
@@ -753,7 +753,7 @@ class Parser
     while ADD_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_multiplication_expr()
-      left = BinaryExpr.new(left, operator, right)
+      left = BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -768,7 +768,7 @@ class Parser
     while MULT_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_unary_expr()
-      left = BinaryExpr.new(left, operator, right)
+      left = BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -781,7 +781,7 @@ class Parser
     if %i[- + !].include?(at().value)
       operator = eat().value # eat the operator
       right = parse_primary_expr()
-      return UnaryExpr.new(right, operator)
+      return UnaryExpr.new(right, operator, @location)
     end
 
     return parse_primary_expr()
@@ -803,13 +803,13 @@ class Parser
         expr = parse_identifier()
       end
     when TokenType::INTEGER
-      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int)
+      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int, @location)
     when TokenType::FLOAT
-      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float)
+      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float, @location)
     when TokenType::BOOLEAN
-      expr = BooleanLiteral.new(eat().value == "true")
+      expr = BooleanLiteral.new(eat().value == "true", @location)
     when TokenType::STRING
-      expr = StringLiteral.new(expect(TokenType::STRING).value.to_s)
+      expr = StringLiteral.new(expect(TokenType::STRING).value.to_s, @location)
     when TokenType::HASH
       expr = parse_hash_literal()
     when TokenType::LPAREN
@@ -818,10 +818,10 @@ class Parser
       expect(TokenType::RPAREN) # Eat closing paren
     when TokenType::NULL
       expect(TokenType::NULL)
-      expr = NullLiteral.new()
+      expr = NullLiteral.new(@location)
     when TokenType::NEW
       expect(TokenType::NEW)
-      expr = ClassInstance.new(parse_identifier())
+      expr = ClassInstance.new(parse_identifier(), @location)
     else
       raise InvalidTokenError.new("Line:#{@location}: Unexpected token found: #{at().value}")
     end
@@ -833,7 +833,7 @@ class Parser
       if at().type == TokenType::BINARYOPERATOR
         op = eat().value
         right = parse_expr()
-        expr = BinaryExpr.new(expr, op, right)
+        expr = BinaryExpr.new(expr, op, right, @location)
       end
     end
 

@@ -9,15 +9,15 @@ class ClassDeclaration < Stmt
   # @param class_name [String] The name of the class.
   # @param member_variables [Array<VarDeclaration>] An array of member variable declarations in the class.
   # @param member_functions [Array<FuncDeclaration>] An array of member function declarations in the class.
-  def initialize(class_name, member_variables, member_functions)
-		super(NODE_TYPES[:ClassDeclaration])
+  def initialize(class_name, member_variables, member_functions, line)
+		super(NODE_TYPES[:ClassDeclaration], line)
 		@class_name = class_name
 		@member_variables = member_variables
 		@member_functions = member_functions
   end
 
 	def to_s
-		"Class name: #{@class_name}"
+		"Class: #{@class_name}"
 	end
 
 	# Displays information about the class declaration, including its name, member variables, and member functions.

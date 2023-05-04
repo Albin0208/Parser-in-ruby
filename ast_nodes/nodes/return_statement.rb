@@ -3,8 +3,8 @@ require_relative 'stmt'
 class ReturnStmt < Stmt
 	attr_reader :return_type, :body
 
-	def initialize(body)
-		super(NODE_TYPES[:ReturnStmt])
+	def initialize(body, line)
+		super(NODE_TYPES[:ReturnStmt], line)
 		@body = body
 	end
 

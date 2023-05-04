@@ -12,8 +12,8 @@ class CallExpr < Expr
 	# @param [String] func_name The name of the function to call
 	# @param [Array] params A list of params that should be sent to the function later
 	#
-	def initialize(func_name, params)
-		super(NODE_TYPES[:CallExpr])
+	def initialize(func_name, params, line)
+		super(NODE_TYPES[:CallExpr], line)
 		@func_name = func_name
 		@params = params
 	end

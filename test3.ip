@@ -32,7 +32,7 @@ func int ass() {
   return 1
 }
 
-class Vs {
+class Test {
 
 }
 
@@ -44,10 +44,12 @@ class Vs {
 #print(tc)
 
 Test tc = new Test
-while true {}
-#print(while true {})
 Test t = tc.copy()
 print(tc == t)
+
+
+print(Test)
+print(t.copy() == t.copy())
 
 print(ass)
 print(geta_hash)

@@ -10,8 +10,8 @@ class LogicalAndExpr < Expr
   # @param [Stmt] left The left side of the and expression
   # @param [Stmt] right The right side of the and expression
   #
-  def initialize(left, right)
-    super(NODE_TYPES[:LogicalAnd])
+  def initialize(left, right, line)
+    super(NODE_TYPES[:LogicalAnd], line)
     @left = left
     @op = :"&&"
     @right = right

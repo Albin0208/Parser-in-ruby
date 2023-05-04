@@ -9,8 +9,8 @@ class AssignmentStmt < Stmt
   # @param [Expr] value The expr we want the result of to assign to the variable
   # @param [Identifier] assigne To what identifier we want to do the assignment to
   #
-  def initialize(value, assigne)
-    super(NODE_TYPES[:AssignmentExpr])
+  def initialize(value, assigne, line)
+    super(NODE_TYPES[:AssignmentExpr], line)
     @value = value
     @assigne = assigne
   end

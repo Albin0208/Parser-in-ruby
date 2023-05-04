@@ -7,8 +7,8 @@ class ClassInstance < Expr
   #
   # @param [Boolean] value The value of the boolean, true or false
   #
-  def initialize(value)
-    super(NODE_TYPES[:ClassInstance])
+  def initialize(value, line)
+    super(NODE_TYPES[:ClassInstance], line)
     @value = value
   end
 

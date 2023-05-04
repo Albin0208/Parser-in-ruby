@@ -12,8 +12,8 @@ class IfStatement < Stmt
   # @param [Array] else_body A list of all the nodes inside the else body
   # @param [Array] elsif_stmts A list of all the elsif statements
   #
-  def initialize(body, conditions, else_body, elsif_stmts)
-    super(NODE_TYPES[:IF])
+  def initialize(body, conditions, else_body, elsif_stmts, line)
+    super(NODE_TYPES[:IF], line)
     @body = body # A list of all statements
     @conditions = conditions
     @else_body = else_body

@@ -87,7 +87,7 @@ class Environment
   def declare_class(class_name, node, env)
     # Check if the class is Already declared
     if find_scope(class_name)
-      raise "Cannot declare Class '#{class_name}' since it is already defined in this scope"
+      raise "Line: #{node.line}: Cannot declare Class '#{class_name}' since it is already defined in this scope"
     end
 
     node.env = env

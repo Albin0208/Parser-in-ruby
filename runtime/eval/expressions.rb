@@ -78,7 +78,7 @@ module ExpressionsEvaluator
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)
 
-    raise "Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(RunTimeVal) && rhs.is_a?(RunTimeVal)
+    raise "Line:#{binop.line} Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(RunTimeVal) && rhs.is_a?(RunTimeVal)
 
     lhs.send(binop.op, rhs)
   end
@@ -96,7 +96,7 @@ module ExpressionsEvaluator
     when :PropertyCallExpr
       # Evaluate the class value and check if it's a ClassVal
       class_value = evaluate(ast_node.assigne.expr, env)
-      raise "Error: Can't assign to property of non-class object" unless class_value.instance_of?(ClassVal)
+      raise "Line: #{ast_node.line}: Error: Can't assign to property of non-class object" unless class_value.instance_of?(ClassVal)
   
       # Assign the value to the class instance environment
       value = evaluate(ast_node.value, env)
@@ -105,7 +105,7 @@ module ExpressionsEvaluator
       # Assign the value to the identifier
       env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
     else
-      raise 'Cannot assign to non-Identifier type'
+      raise "Line: #{ast_node.line}: Cannot assign to non-Identifier type"
     end
   end
 
@@ -127,7 +127,7 @@ module ExpressionsEvaluator
     access_nodes.reverse_each { |access| 
       access_key = evaluate(access.access_key, env)
       unless container.key_type == access_key.type
-        raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+        raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
       end
       container = container.value[access_key.value]
     }
@@ -135,7 +135,7 @@ module ExpressionsEvaluator
     # Retrive the final access key
     access_key = evaluate(ast_node.assigne.access_key, env)
     unless container.key_type == access_key.type
-      raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+      raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
     end
 
     # Evaluate the assigned value and convert it to the correct type if necessary
@@ -147,7 +147,7 @@ module ExpressionsEvaluator
     end
 
     unless container.value_type == value.type
-      raise "Error: Expected value type to be #{container.value_type} but got #{value.type}"
+      raise "Line: #{ast_node.line}: Error: Expected value type to be #{container.value_type} but got #{value.type}"
     end
 
     # Assign the value to the container
@@ -176,7 +176,7 @@ module ExpressionsEvaluator
     # Check if the method exists
     available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
     unless available_methods.include?(ast_node.method_name.to_sym)
-      raise "Method #{ast_node.method_name} is not defined in #{err_class_name}"
+      raise "Line:#{ast_node.line}: Error: Method #{ast_node.method_name} is not defined in #{err_class_name}"
     end
     
     # Grab the methods
@@ -225,7 +225,7 @@ module ExpressionsEvaluator
       NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
       return nil
     end
-      raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
+      raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
     return call_function(function, ast_node, call_env)
   end
@@ -253,7 +253,7 @@ module ExpressionsEvaluator
     
     # Check that the return value is the same type as the return type of the function
     if return_value.type != expected_return_type
-      raise "Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
+      raise "Line: #{ast_node.line}: Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
     end
 
     return return_value
@@ -269,7 +269,7 @@ module ExpressionsEvaluator
   def validate_params(function, call_params, call_env)
     unless function.params.length == call_params.length
       types = function.params.map(&:value_type).join(", ")
-      raise "Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
+      raise "Line: #{ast_node.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
     end
 
     function.params.zip(call_params) { |func_param, call_param| 
@@ -278,7 +278,7 @@ module ExpressionsEvaluator
       evaled_call_param = evaluate(call_param, call_env)
 
       unless evaled_call_param.type.downcase == type.downcase
-        raise "Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
+        raise "Line: #{ast_node.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
       end
     }
   end
@@ -323,8 +323,8 @@ module ExpressionsEvaluator
       # TODO check if correct for nested
       unless ast_node.value_type.is_a?(Array)
         # Check if the key type is correct
-        raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
-        raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type.to_s.gsub(',', ', ')}" if value.type != ast_node.value_type
+        raise "Line: #{ast_node.line}: Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
+        raise "Line: #{ast_node.line}: Error: Hash expected value of type #{value.type} but got #{ast_node.value_type.to_s.gsub(',', ', ')}" if value.type != ast_node.value_type
       end
       value_hash[key.value] = value
     }
@@ -345,12 +345,12 @@ module ExpressionsEvaluator
     container = evaluate(ast_node.identifier, env)
  
     unless container.is_a?(HashVal)
-      raise "Error: Invalid type for container accessor, #{container.class}"
+      raise "Line: #{ast_node.line}: Error: Invalid type for container accessor, #{container.class}"
     end
 
     access_key = evaluate(ast_node.access_key, env)
     value = container.value[access_key.value]
-    raise "Error: Key: #{access_key} does not exist in container" if value.nil?
+    raise "Line: #{ast_node.line}: Error: Key: #{access_key} does not exist in container" if value.nil?
     return value ? value : NullVal.new()
   end
 

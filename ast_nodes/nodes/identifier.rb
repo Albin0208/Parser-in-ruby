@@ -9,8 +9,8 @@ class Identifier < Expr
   #
   # @param [Symbol] symbol A symbol of the name for the identifier
   #
-  def initialize(symbol)
-    super(NODE_TYPES[:Identifier])
+  def initialize(symbol, line)
+    super(NODE_TYPES[:Identifier], line)
     @symbol = symbol
   end
 

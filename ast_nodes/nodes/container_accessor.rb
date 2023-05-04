@@ -3,8 +3,8 @@ require_relative 'expr'
 class ContainerAccessor < Expr
   attr_reader :identifier, :access_key
 
-  def initialize(identifier, access_key)
-    super(NODE_TYPES[:ContainerAccessor])
+  def initialize(identifier, access_key, line)
+    super(NODE_TYPES[:ContainerAccessor], line)
     @identifier = identifier
     @access_key = access_key
   end

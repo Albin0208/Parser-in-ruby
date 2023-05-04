@@ -12,8 +12,8 @@ class VarDeclaration < Stmt
   # @param [<Type>] value_type What type this var is
   # @param [Expr] value The value that should be assigned or nil if only declaring
   #
-  def initialize(constant, identifier, value_type, value = nil)
-    super(NODE_TYPES[:VarDeclaration])
+  def initialize(constant, identifier, value_type, line, value = nil)
+    super(NODE_TYPES[:VarDeclaration], line)
     @constant = constant
     @identifier = identifier
     @value_type = value_type

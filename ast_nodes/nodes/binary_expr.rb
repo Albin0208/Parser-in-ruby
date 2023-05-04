@@ -11,8 +11,8 @@ class BinaryExpr < Expr
   # @param [Symbol] op The operator to be used for the expression
   # @param [Expr] right The right side of the expression
   #
-  def initialize(left, op, right)
-    super(NODE_TYPES[:BinaryExpr])
+  def initialize(left, op, right, line)
+    super(NODE_TYPES[:BinaryExpr], line)
     @left = left
     @op = op
     @right = right

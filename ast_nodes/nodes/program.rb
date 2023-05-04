@@ -4,8 +4,8 @@ require_relative 'stmt'
 class Program < Stmt
   attr_reader :body
 
-  def initialize(body)
-    super(NODE_TYPES[:Program])
+  def initialize(body, line)
+    super(NODE_TYPES[:Program], line)
     @body = body # A list of all statements
   end
 

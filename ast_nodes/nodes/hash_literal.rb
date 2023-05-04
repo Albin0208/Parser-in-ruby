@@ -8,8 +8,8 @@ class HashLiteral < Expr
   #
   # @param [Array] key_value_pairs The list of all key value pairs
   #
-  def initialize(key_value_pairs, key_type, value_type)
-    super(NODE_TYPES[:HashLiteral])
+  def initialize(key_value_pairs, key_type, value_type, line)
+    super(NODE_TYPES[:HashLiteral], line)
     @key_value_pairs = key_value_pairs
     @key_type = key_type
     @value_type = value_type

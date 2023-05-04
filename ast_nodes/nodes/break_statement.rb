@@ -1,8 +1,8 @@
 require_relative 'stmt'
 
 class BreakStmt < Stmt
-  def initialize
-    super(NODE_TYPES[:BreakStmt])
+  def initialize(line)
+    super(NODE_TYPES[:BreakStmt], line)
   end
 
   def to_s

@@ -1,8 +1,9 @@
 class Stmt
-  attr_reader :type
+  attr_reader :type, :line
 
-  def initialize(type)
+  def initialize(type, line)
     @type = type
+    @line = line
   end
 
   def to_s
