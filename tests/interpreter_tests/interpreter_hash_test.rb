@@ -45,11 +45,11 @@ class TestInterpreterHash < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
 
-    assert_instance_of(HashVal, result)
-    assert_equal(%w[a b], result.value.keys)
-    values = result.value
-    assert_equal(2, values.length)
-    assert_equal(1, values['a'].value)
-    assert_equal(2, values['b'].value)
+    assert_instance_of(NumberVal, result)
+    assert_equal(2, result.value)
+    hash = @env.lookup_identifier('my_hash').value
+    assert_equal(2, hash.length)
+    assert_equal(1, hash['a'].value)
+    assert_equal(2, hash['b'].value)
   end
 end

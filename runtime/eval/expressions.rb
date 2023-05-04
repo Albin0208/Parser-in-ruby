@@ -87,7 +87,7 @@ module ExpressionsEvaluator
   #
   # @param ast_node [AssignmentExpr] The AST node representing the assignment expression
   # @param env [Environment] The environment in which to evaluate the expression
-  # @return [Value] The new value of the assigned variable or container
+  # @return [RunTimeVal] The new value of the assigned variable or container
   # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
   def eval_assignment_expr(ast_node, env)
     case ast_node.assigne.type
@@ -99,7 +99,8 @@ module ExpressionsEvaluator
       raise "Error: Can't assign to property of non-class object" unless class_value.instance_of?(ClassVal)
   
       # Assign the value to the class instance environment
-      return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, evaluate(ast_node.value, env))
+      value = evaluate(ast_node.value, env)
+      return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, value)
     when NODE_TYPES[:Identifier]
       # Assign the value to the identifier
       env.assign_var(ast_node.assigne.symbol, evaluate(ast_node.value, env))
@@ -108,6 +109,10 @@ module ExpressionsEvaluator
     end
   end
 
+  # Evaluates an assignment to a container access expression, which can be a single access or a chain of accesses.
+  # @param ast_node [AssignmentExpr] The AST node representing the assignment to a container access expression.
+  # @param env [Environment] The environment in which the assignment should be evaluated.
+  # @return [RunTimeVal] The container value that was assigned to.
   def eval_assignment_to_container_access(ast_node, env)
     access_nodes = [ast_node.assigne]
     # Extract all the chained container accesses
@@ -129,7 +134,9 @@ module ExpressionsEvaluator
 
     # Retrive the final access key
     access_key = evaluate(ast_node.assigne.access_key, env)
-    raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
+    unless container.key_type == access_key.type
+      raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+    end
 
     # Evaluate the assigned value and convert it to the correct type if necessary
     value = evaluate(ast_node.value, env)
@@ -138,11 +145,14 @@ module ExpressionsEvaluator
     elsif container.value_type == :float && value.type == :int
       value = NumberVal.new(value.value.to_f, :float)
     end
-    raise "Error: Expected value type to be #{container.value_type} but got #{value.type}" unless container.value_type == value.type
-  
+
+    unless container.value_type == value.type
+      raise "Error: Expected value type to be #{container.value_type} but got #{value.type}"
+    end
+
     # Assign the value to the container
     container.value[access_key.value] = value
-    return container
+    return value
   end
 
   # Evaluate a method call expression by first evaluating the receiver expression and
