@@ -184,8 +184,22 @@ class Parser
 
     hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
     hash_type = parse_nested_hash(hash_type)
+    value_type = hash_type[1]
+    if value_type.is_a?(Array)
+      pretty_type = ""
+      flatt_type = value_type.flatten
+      flatt_type.flatten.each_with_index() { |type, index| 
+        if index < flatt_type.flatten.length - 1
+          pretty_type << "Hash<#{type}, "
+        else
+          pretty_type << "#{type}"
+        end
+      }
+      pretty_type << '>' * (flatt_type.flatten.length - 1)
+      value_type = pretty_type
+    end
 
-    return hash_type[0], hash_type[1]
+    return hash_type[0], value_type.to_sym
   end
 
   def parse_nested_hash(hash_type)

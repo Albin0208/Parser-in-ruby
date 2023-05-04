@@ -324,7 +324,8 @@ module ExpressionsEvaluator
       value_hash[key.value] = value
     }
     # Build the hash type
-    type = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
+    type = "Hash<#{ast_node.key_type}, #{ast_node.value_type}>".to_sym
+    # p type
 
     return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
   end
