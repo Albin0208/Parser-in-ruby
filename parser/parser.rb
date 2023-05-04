@@ -107,7 +107,7 @@ class Parser
   #
   # Parse a hash declaration
   #
-  # @param [Boolean] If the current hash declaration is a const or not
+  # @param [Boolean] is_const If the current hash declaration is a const or not
   # @return [HashDeclaration] The hash
   #
   def parse_hash_declaration(is_const)
