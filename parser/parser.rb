@@ -49,11 +49,6 @@ class Parser
   def parse_stmt
     case at().type
     when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER
-      # If the token is a hash or the next token is a hash we want to parse a hash
-      # Support hashes declared as Hash<string, int> and const Hash<string, int>
-      if at().type == TokenType::HASH || next_token().type == TokenType::HASH
-        return parse_hash_declaration()
-      end
       if at().type == TokenType::IDENTIFIER && next_token().type != TokenType::IDENTIFIER
         return parse_assignment_stmt()
       end
@@ -72,12 +67,10 @@ class Parser
       raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
       return BreakStmt.new()
-      
     when TokenType::CONTINUE
       raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
       return ContinueStmt.new()
-      
     else
       return parse_expr()
     end
@@ -114,13 +107,10 @@ class Parser
   #
   # Parse a hash declaration
   #
+  # @param [Boolean] If the current hash declaration is a const or not
   # @return [HashDeclaration] The hash
   #
-  def parse_hash_declaration
-    is_const = at().type == TokenType::CONST # Get if const keyword is present
-
-    eat() if is_const # eat the const keyword if we have a const
-
+  def parse_hash_declaration(is_const)
     key_type, value_type = parse_hash_type_specifier()
 
     identifier = parse_identifier().symbol
@@ -134,13 +124,9 @@ class Parser
 
     expect(TokenType::ASSIGN)
 
-    # Only allowed to have a func call or a Hash literal
-    # Check for identifier then we have a func call
     expression = nil
-
     if at().type == TokenType::IDENTIFIER
       expression = parse_expr()
-      # expression = parse_func_call()
     else # Else we want a hash literal
       expression = parse_hash_literal()
     end
@@ -299,15 +285,15 @@ class Parser
     is_const = at().type == TokenType::CONST # Get if const keyword is present
 
     eat() if is_const # eat the const keyword if we have a const
+
+    return parse_hash_declaration(is_const) if at().type == TokenType::HASH
+
     type_specifier = expect(TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value # Get what type the var should be
 
     identifier = parse_identifier().symbol
-    @logger.debug("Found indentifier from var declaration: #{identifier}")
     
     if at().type != TokenType::ASSIGN
       return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
-
-      @logger.error('Found Uninitialized constant')
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 

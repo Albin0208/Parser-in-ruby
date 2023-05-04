@@ -4,7 +4,7 @@ class NativeFunctions
 	def self.dispatch(name, args)
 		case name
 		when 'print'
-			args.each() { |arg| puts arg}
+			args.each() { |arg| puts arg }
 		end
 	end
 end
