@@ -1,7 +1,7 @@
 #Hash<string, string> my_hash = Hash<string, string>{ 'a'='A', 'b'='B' }
 #Hash<string, Hash<string, Hash<string, Hash<string, Hash<string, int>>>>> t = Hash<s, t> {}
  #Hash<string, int> tc =  Hash<string, int> { 'c' = 2}
-Hash<string, Hash<string, int>> t = Hash<string, Hash<string, int>>{'a' = Hash<string, int> { 'c' = 2}}
+Hash<string, Hash<string, int>> t = Hash<string, Hash<string, int>>{'a' = Hash<string, int> { 'c' = 2}, 'b' = Hash<string, int> { 'c' = 2, 'b' = 2, 'a' = 3}}
 
 Hash<string, int> ac = t['a'].copy()
 int ba = t['a']['c']
@@ -15,3 +15,5 @@ print("Change")
 print(ac['c'])
 print(t['a']['c'])
 print(ba)
+
+print(t)

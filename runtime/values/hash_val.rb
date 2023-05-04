@@ -37,4 +37,14 @@ class HashVal < RunTimeVal
 	def length
 		return NumberVal.new(@value.length(), :int)
 	end
+
+	def to_s
+		string = '{'
+		@value.each() { |key, val| 
+			string << "#{key} = #{val}, "
+		}
+		string.chomp!(', ')
+		string << '}'
+		return string
+	end
 end

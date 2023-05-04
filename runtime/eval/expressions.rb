@@ -216,9 +216,14 @@ module ExpressionsEvaluator
     if function.instance_of?(Symbol) && function == :native_func
       param_results = ast_node.params.map() { |param| 
         evaled = evaluate(param, call_env)
-        evaled.instance_variable_defined?(:@value) ? evaled.value : evaled }
-        NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
-        return nil
+        if !evaled.is_a?(HashVal) && evaled.instance_variable_defined?(:@value)
+          evaled.value
+        else
+          evaled
+        end
+      }
+      NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
+      return nil
     end
       raise "Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
 
@@ -325,7 +330,6 @@ module ExpressionsEvaluator
     }
     # Build the hash type
     type = "Hash<#{ast_node.key_type}, #{ast_node.value_type}>".to_sym
-    # p type
 
     return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
   end
