@@ -180,12 +180,18 @@ class Parser
   def parse_hash_type_specifier
     expect(TokenType::HASH)
 
-    hash_type = expect(TokenType::HASH_TYPE).value
+    hash_type = expect(TokenType::HASH_TYPE).value.to_s
     # p hash_type
 
     # TODO implement so hashes can have hashes as values
-    hash_type = hash_type.to_s.gsub(/[<>\s]/, '').split(',')
-    #p hash_type
+    if hash_type.include?("Hash")
+      p "Double hash"
+      p hash_type.split("Hash")
+    end
+
+    p hash_type
+    hash_type = hash_type.gsub(/[<>\s]/, '').split(',')
+    p hash_type
 
     return hash_type[0], hash_type[1]
   end
