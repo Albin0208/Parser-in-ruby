@@ -41,29 +41,5 @@ class Vs {
 
 Test tc = new Test
 
-#ts = tc
-
-#ts.var = 10
-
-#print(tc != ts)
-#print(tc.var)
-
-#Hash<string, Hash<string, int>> t = Hash<string, Hash<string, int>>{'a' = Hash<string, int> { 'c' = 2}}
-#print(t)
-
-#print(tc.type())
-print("hello")
-
-#int a = geta_hash()['a']
-int aaa = tc.acc['b'] + geta_hash()['a']
-
- Hash<string, int> abc = tc.get_hash().keys()
- print(abc)
-
-#print(a)
-print(aaa)
-print("hello")
-#print(tc.get_hash()['a'])
-#print(tc.get_hash())
-
-#print(tc.get_class().type())
+Test t = tc.copy()
+print(tc == t)

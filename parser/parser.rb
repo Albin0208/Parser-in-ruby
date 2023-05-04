@@ -116,7 +116,7 @@ class Parser
     identifier = parse_identifier().symbol
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, nil) unless is_const
+      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
@@ -131,7 +131,7 @@ class Parser
       expression = parse_hash_literal()
     end
 
-    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type.to_sym, expression)
+    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, expression)
   end
 
   #
@@ -160,7 +160,7 @@ class Parser
       expect(TokenType::ASSIGN)
       value = parse_expr()
 
-      validate_assignment_type(value, value_type) # Validate that the type is correct
+      #validate_assignment_type(value, value_type) # Validate that the type is correct
       key_value_pairs << { key: key, value: value} # Create a new pair
 
       keys << key # Add the key
@@ -169,7 +169,7 @@ class Parser
 
     expect(TokenType::RBRACE) # Get the closing brace
 
-    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type.to_sym)
+    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type)
   end
 
   #
@@ -181,19 +181,19 @@ class Parser
     expect(TokenType::HASH)
 
     hash_type = expect(TokenType::HASH_TYPE).value.to_s
-    # p hash_type
 
-    # TODO implement so hashes can have hashes as values
-    if hash_type.include?("Hash")
-      p "Double hash"
-      p hash_type.split("Hash")
-    end
-
-    p hash_type
-    hash_type = hash_type.gsub(/[<>\s]/, '').split(',')
-    p hash_type
+    hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
+    hash_type = parse_nested_hash(hash_type)
 
     return hash_type[0], hash_type[1]
+  end
+
+  def parse_nested_hash(hash_type)
+    if hash_type.length == 1
+      return hash_type.first.to_sym
+    end
+
+    return [hash_type.shift.to_sym, parse_nested_hash(hash_type)]
   end
 
   #
@@ -319,7 +319,6 @@ class Parser
     return unless [:NumericLiteral, :String, :Boolean, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
 
     if !expression.instance_variable_defined?(:@value)
-      @logger.debug("Validating #{type} variable assignment")
       if expression.type != NODE_TYPES[:CallExpr]
         validate_assignment_type(expression.left, type)
         validate_assignment_type(expression.right, type) if expression.instance_variable_defined?(:@right)
@@ -344,12 +343,12 @@ class Parser
   #
   # @return [Boolean] true if the expression type is valid for the variable type otherwise false
   def valid_assignment_type?(expression_type, expected_type)
-    return case expected_type
-          when 'int', 'float'
+    return case expected_type.to_sym
+          when :int, :float
             [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
-          when 'bool'
+          when :bool
             [NODE_TYPES[:Boolean], NODE_TYPES[:Identifier]].include?(expression_type)
-          when 'string'
+          when :string
             [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
           else
             expression_type.to_sym == expected_type.to_sym
@@ -576,6 +575,7 @@ class Parser
   #
   # Parses an accessor for a array or hash
   #
+  # @params [ContainerAccessor] prev_node if we have a chained access, get the last node
   # @return [ContainerAccessor] The accessor for a container
   #
   def parse_accessor(prev_node = nil)
@@ -583,7 +583,10 @@ class Parser
     expect(TokenType::LBRACKET)
     access_key = parse_expr()
     expect(TokenType::RBRACKET)
-    return ContainerAccessor.new(identifier, access_key)
+
+    expr = ContainerAccessor.new(identifier, access_key)
+    
+    return at().type == TokenType::LBRACKET ? parse_accessor(expr) : expr
   end
 
   #
@@ -780,6 +783,8 @@ class Parser
     when TokenType::IDENTIFIER
       if next_token().type == TokenType::LPAREN
         expr = parse_func_call()
+      elsif next_token().type == TokenType::LBRACKET
+        expr = parse_accessor()
       else
         expr = parse_identifier()
       end
@@ -800,14 +805,6 @@ class Parser
     when TokenType::NULL
       expect(TokenType::NULL)
       expr = NullLiteral.new()
-    # when TokenType::LBRACKET
-    #   expect(TokenType::LBRACKET)
-    #   expr = @prev_node
-    #   access_key = parse_expr()
-    #   # raise "Heö"
-    #   expect(TokenType::RBRACKET)
-    #   return ContainerAccessor.new(expr, access_key)
-    #   
     when TokenType::NEW
       expect(TokenType::NEW)
       expr = ClassInstance.new(parse_identifier())

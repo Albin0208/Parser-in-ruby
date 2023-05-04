@@ -92,23 +92,7 @@ module ExpressionsEvaluator
   def eval_assignment_expr(ast_node, env)
     case ast_node.assigne.type
     when :ContainerAccessor 
-      # Retrieve the container and check its key and value types
-      container = env.lookup_identifier(ast_node.assigne.identifier.symbol)
-      access_key = evaluate(ast_node.assigne.access_key, env)
-      raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
-  
-      # Evaluate the assigned value and convert it to the correct type if necessary
-      value = evaluate(ast_node.value, env)
-      if container.value_type == :int && value.type == :float
-        value = NumberVal.new(value.value.to_i, :int)
-      elsif container.value_type == :float && value.type == :int
-        value = NumberVal.new(value.value.to_f, :float)
-      end
-      raise "Error: Expected value type to be #{container.value_type} but got #{value.type}" unless container.value_type == value.type
-    
-      # Assign the value to the container
-      container.value[access_key.value] = value
-      return container
+      return eval_assignment_to_container_access(ast_node, env)
     when :PropertyCallExpr
       # Evaluate the class value and check if it's a ClassVal
       class_value = evaluate(ast_node.assigne.expr, env)
@@ -122,6 +106,43 @@ module ExpressionsEvaluator
     else
       raise 'Cannot assign to non-Identifier type'
     end
+  end
+
+  def eval_assignment_to_container_access(ast_node, env)
+    access_nodes = [ast_node.assigne]
+    # Extract all the chained container accesses
+    while access_nodes.last.identifier.is_a?(ContainerAccessor)
+      access_nodes << access_nodes.last.identifier
+    end
+    # Grab the top container of the call chain
+    container = env.lookup_identifier(access_nodes.last.identifier.symbol)
+    access_nodes.shift # Remove the node where the assignments is done since it is done later
+
+    # Reverse traverse through all the container accesses
+    access_nodes.reverse_each { |access| 
+      access_key = evaluate(access.access_key, env)
+      unless container.key_type == access_key.type
+        raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+      end
+      container = container.value[access_key.value]
+    }
+
+    # Retrive the final access key
+    access_key = evaluate(ast_node.assigne.access_key, env)
+    raise "Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}" unless container.key_type == access_key.type
+
+    # Evaluate the assigned value and convert it to the correct type if necessary
+    value = evaluate(ast_node.value, env)
+    if container.value_type == :int && value.type == :float
+      value = NumberVal.new(value.value.to_i, :int)
+    elsif container.value_type == :float && value.type == :int
+      value = NumberVal.new(value.value.to_f, :float)
+    end
+    raise "Error: Expected value type to be #{container.value_type} but got #{value.type}" unless container.value_type == value.type
+  
+    # Assign the value to the container
+    container.value[access_key.value] = value
+    return container
   end
 
   # Evaluate a method call expression by first evaluating the receiver expression and
@@ -284,11 +305,12 @@ module ExpressionsEvaluator
     key_values.map() { |pair| 
       key = evaluate(pair[:key], env)
       value = evaluate(pair[:value], env)
-
-      # Check if the key type is correct
-      raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
-      raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type}" if value.type != ast_node.value_type
-
+      # TODO check if correct for nested
+      unless ast_node.value_type.is_a?(Array)
+        # Check if the key type is correct
+        raise "Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
+        raise "Error: Hash expected value of type #{value.type} but got #{ast_node.value_type}" if value.type != ast_node.value_type
+      end
       value_hash[key.value] = value
     }
     # Build the hash type
