@@ -79,6 +79,8 @@ class Interpreter
       eval_hash_declaration(ast_node, env)
     when NODE_TYPES[:FuncDeclaration]
       eval_func_declaration(ast_node, env)
+    when NODE_TYPES[:ArrayDeclaration]
+      eval_array_declaration(ast_node, env)
     when NODE_TYPES[:MethodCallExpr]
       eval_method_call_expr(ast_node, env)
     when NODE_TYPES[:PropertyCallExpr]
@@ -103,6 +105,8 @@ class Interpreter
       BooleanVal.new(ast_node.value)
     when NODE_TYPES[:HashLiteral]
       eval_hash_literal(ast_node, env)
+    when NODE_TYPES[:ArrayLiteral]
+      eval_array_literal(ast_node, env)
     when NODE_TYPES[:Null]
       NullVal.new
     else

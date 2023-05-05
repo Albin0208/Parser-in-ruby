@@ -39,6 +39,6 @@ module TokenNavigation
     if token_types.include?(token.type)
       return token
     end
-    raise "Line:#{@location}: Error: Expected a token of type #{token_types.join(' or ')}, but found #{token.type} instead"
+    raise "Line:#{@location}: Error: Expected a token of type #{token_types.join(' or ')}, but found #{token.type} instead. #{token}"
   end
 end

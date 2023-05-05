@@ -72,6 +72,19 @@ module StatementsEvaluator
     env.declare_func(ast_node.identifier, ast_node.type_specifier, ast_node, env)
   end
 
+
+  def eval_array_declaration(ast_node, env)
+    value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
+
+    unless value.is_a?(ArrayVal)
+      raise "Line:#{value.line}: Error: Can't assign value of none array type to array"
+    end
+    # p ast_node.value_type
+    # p value
+
+    env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.line, ast_node.constant)
+  end
+
   # Evaluates an if statement AST node
   #
   # @param ast_node [IfStatement] the AST node to evaluate

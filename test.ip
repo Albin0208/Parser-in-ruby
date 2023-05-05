@@ -1,41 +1,7 @@
-func int test(int a) {
-    if a == 0 {
-        return 1
-    } 
+int[] a = int[1, true]
 
-    return a * test(a - 1)
-}
+float[] b = float[1]
 
-func void testing(int b) {
-  print(b)
-}
-
-#func int add(int a, int b) {
-  #  return a + b
-#}
-
-#test(6) + 10 * test(2)
-#int n = 10
-
-print(test(2).to_float().to_int())
-#print("test")
-#print(test(0) + "hej".length())
-print(test(0).type())
-
-print(1 + "hej".length() + ("hej".length() + "h".length()))
-
-test(0) + 2 + "hej".length()
-
-func bool boolean() {
-  return false
-}
-
-print(boolean().type())
-print(1.0.to_int() + 4)
-print(1.type())
-
-int a = test(5)
-
-testing(5)
-
-print(test)
+print(a[1].type())
+print(a.type())
+print(b[0].type())

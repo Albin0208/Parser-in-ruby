@@ -345,7 +345,7 @@ module ExpressionsEvaluator
   def eval_container_accessor(ast_node, env)
     container = evaluate(ast_node.identifier, env)
  
-    unless container.is_a?(HashVal)
+    unless container.is_a?(HashVal) || container.is_a?(ArrayVal)
       raise "Line: #{ast_node.line}: Error: Invalid type for container accessor, #{container.class}"
     end
 
@@ -367,5 +367,51 @@ module ExpressionsEvaluator
     class_instance = evaluate(ast_node.value, env).clone
     class_instance.create_instance(self)
     return ClassVal.new(ast_node.value.symbol, class_instance)
+  end
+
+  def eval_array_literal(ast_node, env)
+    values = []
+
+    ast_node.value.each() { |val|
+      # p val
+      value = evaluate(val, env)
+      # puts
+      # p ast_node.value_type
+      # p value.type
+      # p ast_node.value_type == "int" || ast_node.value_type == "float"
+      # puts
+      # if ast_node.value_type == 'int' || ast_node.value_type == 'float'
+      #   value = case ast_node.value_type
+      #   when 'int' then NumberVal.new(value.value.to_i, :int)
+      #   when 'float' then NumberVal.new(value.value.to_f, :float)
+      #   else value
+      #   end
+      # else
+      #   if value.type != ast_node.value_type.to_s
+      #     raise "Line:#{ast_node.line}: Error: Array expected value of type #{ast_node.value_type} but got #{value.type}"
+      #   end
+      # end
+
+
+
+      # if value.type != ast_node.value_type.to_sym && 
+      #   !(ast_node.value_type != "int" || ast_node.value_type != "float")
+      #   raise "Line:#{ast_node.line}: Error: Array expected value of type #{ast_node.value_type} but got #{value.type}"
+      # else
+        # TODO Check for correct type
+      #   value = case ast_node.value_type
+      #           when 'int' then NumberVal.new(value.value.to_i, :int)
+      #           when 'float' then NumberVal.new(value.value.to_f, :float)
+      #           else value
+      #           end
+      # # end
+      values << value
+
+    }
+
+    type = "#{ast_node.value_type}[]"
+    
+
+    return ArrayVal.new(values, type)
   end
 end

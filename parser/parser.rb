@@ -54,7 +54,7 @@ class Parser
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
     case at().type
-    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER
+    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER, TokenType::ARRAY_TYPE
       if at().type == TokenType::IDENTIFIER && next_token().type != TokenType::IDENTIFIER
         return parse_assignment_stmt()
       end
@@ -279,6 +279,8 @@ class Parser
 
     return parse_hash_declaration(is_const) if at().type == TokenType::HASH
 
+    return parse_array_declaration(is_const) if at().type == TokenType::ARRAY_TYPE
+
     type_specifier = expect(TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value # Get what type the var should be
 
     identifier = parse_identifier().symbol
@@ -294,6 +296,24 @@ class Parser
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
     return VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
+  end
+
+  def parse_array_declaration(is_const)
+    type = expect(TokenType::ARRAY_TYPE).value
+
+    identifier = parse_identifier()
+
+    if at().type != TokenType::ASSIGN
+      return ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, nil) unless is_const
+      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
+    end
+
+    expect(TokenType::ASSIGN)
+    expression = parse_expr()
+    
+    validate_assignment_type(expression, type) # Validate that the type is correct
+
+    return ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, expression)
   end
 
   #
@@ -724,6 +744,8 @@ class Parser
       expr = StringLiteral.new(expect(TokenType::STRING).value.to_s, @location)
     when TokenType::HASH
       expr = parse_hash_literal()
+    when TokenType::TYPE_SPECIFIER, TokenType::ARRAY_TYPE
+      expr = parse_array_literal()
     when TokenType::LPAREN
       expect(TokenType::LPAREN) # Eat opening paren
       expr = parse_expr()
@@ -750,5 +772,25 @@ class Parser
     end
 
     return expr
+  end
+
+  def parse_array_literal()
+    if at().type == TokenType::ARRAY_TYPE
+      type = expect(TokenType::ARRAY_TYPE).value.to_s.gsub('[]', '')
+      value = []
+    else
+      type = expect(TokenType::TYPE_SPECIFIER).value
+      expect(TokenType::LBRACKET)
+      value = []
+      while at().type != TokenType::RBRACKET
+        expr = parse_expr()
+        value << expr
+        expect(TokenType::COMMA) if at().type == TokenType::COMMA
+      end
+      
+      expect(TokenType::RBRACKET)
+    end
+
+    return ArrayLiteral.new(value, type, @location)
   end
 end
