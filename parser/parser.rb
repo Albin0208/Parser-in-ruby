@@ -3,6 +3,7 @@ require_relative '../lexer/lexer'
 require_relative '../token_type'
 require_relative '../errors/errors'
 require_relative 'parser_helpers'
+require_relative 'helpers/helpers'
 
 require 'logger'
 
@@ -11,6 +12,9 @@ require 'logger'
 #
 class Parser
   include ParserHelpers
+  include TokenNavigation
+  include ExpressionValidation
+  include HashValidation
   #
   # Creates the parser
   #
@@ -175,43 +179,7 @@ class Parser
     return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
   end
 
-  #
-  # Parses the hash_type specifier
-  #
-  # @return [String & String] The key and value types
-  #
-  def parse_hash_type_specifier
-    expect(TokenType::HASH)
 
-    hash_type = expect(TokenType::HASH_TYPE).value.to_s
-
-    hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
-    hash_type = parse_nested_hash(hash_type)
-    value_type = hash_type[1]
-    if value_type.is_a?(Array)
-      pretty_type = ""
-      flatt_type = value_type.flatten
-      flatt_type.flatten.each_with_index() { |type, index| 
-        if index < flatt_type.flatten.length - 1
-          pretty_type << "Hash<#{type},"
-        else
-          pretty_type << "#{type}"
-        end
-      }
-      pretty_type << '>' * (flatt_type.flatten.length - 1)
-      value_type = pretty_type
-    end
-
-    return hash_type[0], value_type.to_sym
-  end
-
-  def parse_nested_hash(hash_type)
-    if hash_type.length == 1
-      return hash_type.first.to_sym
-    end
-
-    return [hash_type.shift.to_sym, parse_nested_hash(hash_type)]
-  end
 
   #
   # Parse loops
@@ -382,23 +350,6 @@ class Parser
     end
 
     return body, has_return_stmt
-  end
-
-  #
-  # Recursivly check if the statment has any return statments
-  #
-  # @param [Stmt] stmt The statement to check
-  #
-  # @return [Boolean] True if ReturnStmt exits otherwise false
-  #
-  def has_return_statement?(stmt)
-    if stmt.instance_of?(ReturnStmt)
-      return true
-    elsif stmt.instance_variable_defined?(:@body)
-      return stmt.body.any? { |s| has_return_statement?(s) }
-    else
-      return false
-    end
   end
 
   #

@@ -1,0 +1,58 @@
+module HashValidation
+	private
+	# Determines whether a given key is present in a list of keys.
+	#
+	# @param key [StringLiteral, SymbolLiteral] the key to search for
+	# @param keys [Array<StringLiteral, SymbolLiteral>] the list of keys to search
+	# @return [Boolean] true if the key is present in the list of keys, false otherwise
+	def key_in_hash?(key, keys)
+			unless key.is_a?(StringLiteral) || key.is_a?(StringLiteral)
+					return false
+			end
+			keys.each() { |k|
+					return true if k.value == key.value
+			}
+			return false
+	end
+
+	#
+  # Parses the hash_type specifier
+  #
+  # @return [String & String] The key and value types
+  #
+  def parse_hash_type_specifier
+    expect(TokenType::HASH)
+
+    hash_type = expect(TokenType::HASH_TYPE).value.to_s
+
+    hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
+    hash_type = parse_nested_hash(hash_type)
+    value_type = hash_type[1]
+    if value_type.is_a?(Array)
+      pretty_type = ""
+      flatt_type = value_type.flatten
+      flatt_type.flatten.each_with_index() { |type, index| 
+        if index < flatt_type.flatten.length - 1
+          pretty_type << "Hash<#{type},"
+        else
+          pretty_type << "#{type}"
+        end
+      }
+      pretty_type << '>' * (flatt_type.flatten.length - 1)
+      value_type = pretty_type
+    end
+
+    return hash_type[0], value_type.to_sym
+  end
+
+	# Recursively parses a hash type specifier, splitting it into an array of nested key types.
+	# @param hash_type [Array] the hash type specifier to parse
+	# @return [Symbol, Array] the parsed hash type specifier
+  def parse_nested_hash(hash_type)
+    if hash_type.length == 1
+      return hash_type.first.to_sym
+    end
+
+    return [hash_type.shift.to_sym, parse_nested_hash(hash_type)]
+  end
+end
