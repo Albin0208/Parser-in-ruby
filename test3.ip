@@ -32,9 +32,11 @@ func int ass() {
   return 1
 }
 
-class Test {
+func a assa() {
 
+  return 1
 }
+
 
 #Test ts = new Test
 #const Test t = new Test
@@ -46,7 +48,6 @@ class Test {
 Test tc = new Test
 Test t = tc.copy()
 print(tc == t)
-
 
 print(Test)
 print(t.copy() == t.copy())

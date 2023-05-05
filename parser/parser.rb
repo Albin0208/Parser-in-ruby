@@ -2,6 +2,7 @@ require_relative '../ast_nodes/nodes'
 require_relative '../lexer/lexer'
 require_relative '../token_type'
 require_relative '../errors/errors'
+require_relative 'parser_helpers'
 
 require 'logger'
 
@@ -9,6 +10,7 @@ require 'logger'
 # This is the parser which produces a AST from a list of tokens
 #
 class Parser
+  include ParserHelpers
   #
   # Creates the parser
   #
@@ -64,13 +66,13 @@ class Parser
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
-      raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().line}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      return BreakStmt.new(@location)
+      return BreakStmt.new(at().line)
     when TokenType::CONTINUE
-      raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().line}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      return ContinueStmt.new(@location)
+      return ContinueStmt.new(at().line)
     else
       return parse_expr()
     end
@@ -81,9 +83,9 @@ class Parser
   # @return [ClassDeclaration] The ClassDeclaration AST node.
   def parse_class_declaration 
     expect(TokenType::CLASS)
-    decl_location = @location
-
+    
     class_name = parse_identifier()
+    decl_location = class_name.line
     member_variables = []
     member_functions = []
     expect(TokenType::LBRACE)
@@ -114,13 +116,13 @@ class Parser
   def parse_hash_declaration(is_const)
     key_type, value_type = parse_hash_type_specifier()
 
-    identifier = parse_identifier().symbol
+    identifier = parse_identifier()
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, @location, nil) unless is_const
+      return HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
+      raise NameError, "Line:#{identifier.line}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
     expect(TokenType::ASSIGN)
@@ -132,7 +134,7 @@ class Parser
       expression = parse_hash_literal()
     end
 
-    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, @location, expression)
+    return HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, expression)
   end
 
   #
@@ -153,18 +155,18 @@ class Parser
       key = parse_expr()
 
       # Check if key allready has been defined
-      if key.type != NODE_TYPES[:Identifier] && keys.include?(key)
-        raise "Line:#{@location}: Error: Key: '#{key}' already exists in hash"
+      if key_in_hash?(key, keys)#keys.include?(key.value)
+        raise "Line:#{@location}: Error: Key: #{key} already exists in hash"
       end
+      keys << key if key.is_a?(StringLiteral) || key.is_a?(StringLiteral) # Add the key
       validate_assignment_type(key, key_type) # Validate that the type is correct
 
       expect(TokenType::ASSIGN)
       value = parse_expr()
 
-      #validate_assignment_type(value, value_type) # Validate that the type is correct
+      # validate_assignment_type(value, value_type) # Validate that the type is correct
       key_value_pairs << { key: key, value: value} # Create a new pair
 
-      keys << key # Add the key
       eat() if at().type == TokenType::COMMA # The comma token
     end
 
@@ -323,51 +325,7 @@ class Parser
 
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
-    return VarDeclaration.new(is_const, identifier, type_specifier, @location, expression)
-  end
-
-  # Validate that we are trying to assign a correct type to our variable.
-  #
-  # @param [Expr] expression The expression we want to validate
-  # @param [String] type What type we are trying to assign to
-  def validate_assignment_type(expression, type)
-    return unless [:NumericLiteral, :String, :Boolean, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
-
-    if !expression.instance_variable_defined?(:@value)
-      if expression.type != NODE_TYPES[:CallExpr]
-        validate_assignment_type(expression.left, type)
-        validate_assignment_type(expression.right, type) if expression.instance_variable_defined?(:@right)
-      end
-      return
-    end
-    if expression.instance_of?(ClassInstance)
-      expression = expression.value.symbol
-    else
-      expression = expression.type
-    end
-
-    unless valid_assignment_type?(expression, type)
-      raise InvalidTokenError, "Line:#{@location}: Error: Can't assign #{expression} value to value of type #{type}"
-    end
-  end
-
-  # Checks whether a given expression type is valid for a variable of a certain type.
-  #
-  # @param expression_type [String] What type the expression is
-  # @param expected_type [String] The expected type for the expression
-  #
-  # @return [Boolean] true if the expression type is valid for the variable type otherwise false
-  def valid_assignment_type?(expression_type, expected_type)
-    return case expected_type.to_sym
-          when :int, :float
-            [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
-          when :bool
-            [NODE_TYPES[:Boolean], NODE_TYPES[:Identifier]].include?(expression_type)
-          when :string
-            [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
-          else
-            expression_type.to_sym == expected_type.to_sym
-          end
+    return VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
   end
 
   #
@@ -378,6 +336,7 @@ class Parser
   def parse_function_declaration
     expect(TokenType::FUNC) # Eat the func keyword
     @parsing_function = true
+    func_location = @location
 
     if at().type == TokenType::HASH
       return_type = "#{expect(TokenType::HASH).value}#{expect(TokenType::HASH_TYPE).value.to_s.delete(' ')}"
@@ -400,7 +359,8 @@ class Parser
     end
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
-    return FuncDeclaration.new(return_type, identifier, params, body, @location)
+
+    return FuncDeclaration.new(return_type, identifier, params, body, func_location)
   end
 
   #
@@ -414,7 +374,7 @@ class Parser
     while at().type != TokenType::RBRACE
       stmt = parse_stmt()
       # Don't allow for function declaration inside a function
-      raise "Line:#{@location}: Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
+      raise "Line:#{stmt.line}: Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
       
       has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
 
@@ -554,7 +514,7 @@ class Parser
       if token.length == 2
         value = BinaryExpr.new(left, token[0], value, @location)
       end
-      return AssignmentStmt.new(value, left, @location)
+      return AssignmentStmt.new(value, left, value.line)
     end
 
     return left
@@ -839,53 +799,5 @@ class Parser
     end
 
     return expr
-  end
-
-
-  ##################################################
-  # 				       Helper functions				         #
-  ##################################################
-
-  # Check if we are not at the end of file
-  #
-  # @return [Boolean] Return of we are at the end of file or not
-  def not_eof
-    return at().type != TokenType::EOF
-  end
-
-  # Get what token we are at
-  #
-  # @return [Token] What token we have right now
-  def at
-    @location = @tokens[0].line
-    return @tokens[0]
-  end
-
-  def next_token
-    return @tokens[1]
-  end
-
-  # Eat the next token
-  #
-  # @return [Token] The token eaten
-  def eat
-    @logger.debug("Eating token: #{at()}")
-    token = @tokens.shift()
-    @location = token.line
-    return token
-  end
-
-  # Eat the next token and make sure we have eaten the correct type
-  #
-  # @param token_types [Array] A list of token which we can expect
-  #
-  # @return [Token] Returns the expected token
-  def expect(*token_types)
-    token = eat() # Get the token
-
-    if token_types.include?(token.type)
-      return token
-    end
-    raise "Line:#{@location}: Error: Expected a token of type #{token_types.join(' or ')}, but found #{token.type} instead"
   end
 end

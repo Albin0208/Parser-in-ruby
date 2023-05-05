@@ -19,11 +19,26 @@ def main
   input = ''
 
   if !file.nil?
-    program = parser.produce_ast(File.read(file))
-    puts program.to_s if debugging
-    program.display_info if debugging
+    begin
+      program = parser.produce_ast(File.read(file))
+      puts program.to_s if debugging
+      program.display_info if debugging
 
-    interpreter.evaluate(program, env)
+      interpreter.evaluate(program, env)
+    rescue => e
+      if debugging
+        raise e
+      else
+        error_message = "#{e.message} on line #{}\n"
+        error_message += "Call stack:\n"
+        # @call_stack.reverse_each do |stack_frame|
+        #   node = stack_frame[:node]
+        #   line_number = stack_frame[:line_number]
+        #   error_message += "  #{node.type} on line #{line_number}\n"
+        # end
+        puts error_message
+      end
+    end
   else
     puts "Type 'exit' to quit"
     print ">> "
@@ -39,6 +54,18 @@ def main
     end
     puts 'Bye!'
   end
+end
+
+def build_back_trace(call_stack)
+  back_trace = []
+  p call_stack
+  call_stack.reverse_each() { |node|
+    back_trace << "file.ip:#{node.line}:in ''"
+
+    # back_trace << "\n" # Add a new line
+  }
+  # back_trace.pop()
+  return back_trace
 end
 
 main if __FILE__ == $PROGRAM_NAME
