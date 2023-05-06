@@ -56,6 +56,15 @@ class HashVal < RunTimeVal
 		return ArrayVal.new(@value.keys, :"#{@key_type}[]")
 	end
 
+  #
+  # Get an array of all values in the hash.
+  #
+  # @return [ArrayVal] An array of all values in the hash.
+  #
+	def values
+		return ArrayVal.new(@value.values, :"#{@value_type}[]")
+	end
+
 	#
   # Get the length of the hash.
   #

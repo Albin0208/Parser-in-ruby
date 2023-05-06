@@ -26,9 +26,7 @@ print(a)
 #abc.append(Hash<string, int>{'a'= 2})
 
 
-Hash<bool, int> tc =  Hash<bool, int> { true = 2, true = 3}
-print("Here")
-print(tc)
+Hash<string, int> tc =  Hash<string, int> { 'c' = 2, 'v' = 4}
 print("Keys")
 print(tc.keys())
 print()
@@ -36,8 +34,11 @@ print()
 print(a)
 int[] c = int[]
 
-for item in tc.keys(){
+for item in tc.values(){
     print(item)
     c.append(item)
 }
 
+
+print(a)
+print(c)
