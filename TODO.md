@@ -35,6 +35,7 @@
 - [x] Property access for objects (Probably best to implement classes first)
 - [ ] Classes
     - [ ] Inheritance
+- [ ] Array of Hashes not working
 
 # Fix wonky stuff
 - [x] Fix problem when a identifier such as a class is printed it show the whole class node.

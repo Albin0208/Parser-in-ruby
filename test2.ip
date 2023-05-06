@@ -17,7 +17,3 @@ print(t['a']['c'])
 print(ba)
 
 print(t)
-
-Hash<string, int> tc =  Hash<string, int> { 'c' = 2, 'c' = 3}
-
-print(tc)

@@ -1,7 +1,32 @@
-int[] a = int[1, true]
+int[] a = int[1, 2.0]
 
-float[] b = float[1]
+a[-2] = 3.0
+print(a)
 
-print(a[1].type())
-print(a.type())
-print(b[0].type())
+print(a[-2])
+print(a[-3])
+
+print("")
+a.append(3).append(4)
+print(a)
+print(a == int[3, 2])
+
+print(a.pop())
+print("")
+print(a)
+print("")
+
+print(a.remove_at(1))
+
+print("")
+print(a)
+
+#Hash<string, int>[] abc = Hash<string, int>[]
+
+#abc.append(Hash<string, int>{'a'= 2})
+
+
+Hash<string, int> tc =  Hash<string, int> { 'c' = 2}
+print("Keys")
+print(tc.keys())
+print

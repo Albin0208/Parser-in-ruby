@@ -1,7 +1,7 @@
 class Test {
   int var = 1
   int c = 2
-  Hash<string, int> acc = Hash<string, int> {'a' = 2, 'b' = 4}
+  Hash<string, int> acc = Hash<string, int> {'a' = 2.0, 'b' = 4}
 
   func int test(int ass) {
     return ass
@@ -37,6 +37,7 @@ func a assa() {
   return 1
 }
 
+Test[] array
 
 #Test ts = new Test
 #const Test t = new Test

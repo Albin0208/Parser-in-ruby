@@ -127,6 +127,14 @@ module ExpressionsEvaluator
     # Reverse traverse through all the container accesses
     access_nodes.reverse_each { |access| 
       access_key = evaluate(access.access_key, env)
+      if container.is_a?(ArrayVal)
+        # Wrap around from the back if it is negative
+        access_key = access_key % container.length.value if access_key.negative?
+      
+        if access_key >= container.length.value
+          raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+        end
+      end
       unless container.key_type == access_key.type
         raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
       end
@@ -135,21 +143,31 @@ module ExpressionsEvaluator
 
     # Retrive the final access key
     access_key = evaluate(ast_node.assigne.access_key, env)
-    unless container.key_type == access_key.type
-      raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+    if container.is_a?(HashVal)
+      unless container.key_type == access_key.type
+        raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+      end
+    else # We have an array
+      unless access_key.type == :int
+        raise "Line:#{ast_node.line}: Error: Array expected a index of type int but got #{access_key.type}"
+      end
+      # Wrap around from the back if it is negative
+      access_key = NumberVal.new(access_key.value % container.length.value, :int) if access_key.value.negative?
+    
+      if access_key.value >= container.length.value
+        raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+      end
     end
 
-    # Evaluate the assigned value and convert it to the correct type if necessary
+    # Evaluate the assigned value
     value = evaluate(ast_node.value, env)
-    if container.value_type == :int && value.type == :float
-      value = NumberVal.new(value.value.to_i, :int)
-    elsif container.value_type == :float && value.type == :int
-      value = NumberVal.new(value.value.to_f, :float)
+    if container.is_a?(ArrayVal)
+      value_type = container.value_type.to_s.gsub('[]', '')
+    else
+      value_type = container.value_type
     end
 
-    unless container.value_type == value.type
-      raise "Line: #{ast_node.line}: Error: Expected value type to be #{container.value_type} but got #{value.type}"
-    end
+    value = coerce_value_to_type(value_type, value, ast_node.line)
 
     # Assign the value to the container
     container.value[access_key.value] = value
@@ -217,7 +235,7 @@ module ExpressionsEvaluator
     if function.instance_of?(Symbol) && function == :native_func
       param_results = ast_node.params.map() { |param| 
         evaled = evaluate(param, call_env)
-        if !evaled.is_a?(HashVal) && evaled.instance_variable_defined?(:@value)
+        if !evaled.is_a?(HashVal) && !evaled.is_a?(ArrayVal) && evaled.instance_variable_defined?(:@value)
           evaled.value
         else
           evaled
@@ -322,6 +340,10 @@ module ExpressionsEvaluator
       key = evaluate(pair[:key], env)
       value = evaluate(pair[:value], env)
       # TODO check if correct for nested
+
+      key = coerce_value_to_type(ast_node.key_type, key, ast_node.line)
+      value = coerce_value_to_type(ast_node.value_type, value, ast_node.line)
+
       unless ast_node.value_type.is_a?(Array)
         # Check if the key type is correct
         raise "Line: #{ast_node.line}: Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
@@ -337,7 +359,7 @@ module ExpressionsEvaluator
 
   # Evaluate a container accessor expression and return its value.
   #
-  # @param ast_node [Stmt] the AST node representing the container accessor expression
+  # @param ast_node [ContainerAccessor] the AST node representing the container accessor expression
   # @param env [Environment] the environment to evaluate the expression in
   # @return [RunTimeVal] the value of the container accessor expression
   # @raise [NameError] if the container identifier is not found in the environment
@@ -349,8 +371,19 @@ module ExpressionsEvaluator
       raise "Line: #{ast_node.line}: Error: Invalid type for container accessor, #{container.class}"
     end
 
-    access_key = evaluate(ast_node.access_key, env)
-    value = container.value[access_key.value]
+    access_key = evaluate(ast_node.access_key, env).value
+
+    if container.is_a?(ArrayVal)
+      # Wrap around from the back if it is negative
+      access_key = access_key % container.length.value if access_key.negative?
+
+      if access_key >= container.length.value
+        raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+      end
+    end
+
+    value = container.value[access_key]
+
     raise "Line: #{ast_node.line}: Error: Key: #{access_key} does not exist in container" if value.nil?
     return value ? value : NullVal.new()
   end
@@ -369,49 +402,49 @@ module ExpressionsEvaluator
     return ClassVal.new(ast_node.value.symbol, class_instance)
   end
 
+  # Evaluates an array literal, ensuring that all elements have the correct type.
+  #
+  # @param ast_node [ArrayLiteral] The AST node representing the array literal.
+  # @param env [Environment] The environment in which the array is being evaluated.
+  # @return [ArrayVal] The resulting array value, with the appropriate type.
+  # @raise [RuntimeError] If an element in the array has the wrong type and cannot be coerced.
   def eval_array_literal(ast_node, env)
     values = []
 
     ast_node.value.each() { |val|
-      # p val
       value = evaluate(val, env)
-      # puts
-      # p ast_node.value_type
-      # p value.type
-      # p ast_node.value_type == "int" || ast_node.value_type == "float"
-      # puts
-      # if ast_node.value_type == 'int' || ast_node.value_type == 'float'
-      #   value = case ast_node.value_type
-      #   when 'int' then NumberVal.new(value.value.to_i, :int)
-      #   when 'float' then NumberVal.new(value.value.to_f, :float)
-      #   else value
-      #   end
-      # else
-      #   if value.type != ast_node.value_type.to_s
-      #     raise "Line:#{ast_node.line}: Error: Array expected value of type #{ast_node.value_type} but got #{value.type}"
-      #   end
-      # end
-
-
-
-      # if value.type != ast_node.value_type.to_sym && 
-      #   !(ast_node.value_type != "int" || ast_node.value_type != "float")
-      #   raise "Line:#{ast_node.line}: Error: Array expected value of type #{ast_node.value_type} but got #{value.type}"
-      # else
-        # TODO Check for correct type
-      #   value = case ast_node.value_type
-      #           when 'int' then NumberVal.new(value.value.to_i, :int)
-      #           when 'float' then NumberVal.new(value.value.to_f, :float)
-      #           else value
-      #           end
-      # # end
-      values << value
-
+      values << coerce_value_to_type(ast_node.value_type, value, ast_node.line)
     }
 
     type = "#{ast_node.value_type}[]"
     
-
     return ArrayVal.new(values, type)
+  end
+
+  # Coerces a value to a specified type, if possible.
+  #
+  # @param node_type [String, Symbol] The desired type, as a string or symbol.
+  # @param value [RunTimeVal] The value to be coerced.
+  # @param line [Integer] The line number of the code being evaluated (for error messages).
+  # @return [RunTimeVal] The coerced value, with the appropriate type.
+  # @raise [RuntimeError] If the value cannot be coerced to the specified type.
+  def coerce_value_to_type(node_type, value, line)
+    node_type = node_type.to_s
+  
+    # Check that the type of the value matches the declared type,
+    # or that it can be coerced to that type
+    unless (value.type.to_s == node_type) ||
+           (node_type == 'float' && value.type == :int) ||
+           (node_type == 'int' && value.type == :float)
+      raise "Line:#{line}: Error: Type mismatch: expected #{node_type}, but got #{value.type}"
+    end
+  
+    if node_type == "int" && value.type == :float
+      return value.to_int()
+    elsif node_type == "float" && value.type == :int
+      return value.to_float()
+    end
+  
+    return value
   end
 end
