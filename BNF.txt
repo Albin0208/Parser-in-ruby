@@ -10,7 +10,7 @@
          | <assign_stmt>
          | <loop>
          | <expr>
-         | "return" <expr>
+         | <return_stmt>
 
 <var_declaration> ::= "const" <type_specifier> <identifier> <var_declaration_tail>
                     | <type_specifier> <identifier> <var_declaration_tail>
@@ -85,6 +85,9 @@
 <opt_func_call_params> ::= "," <expr> <opt_func_call_params>
                          | empty
 
+<return_stmt> ::= "return" <expr>
+                | "return"
+
 <expr> ::= <logical_expr> 
          | <func_call>
          | <primary_expr>
@@ -110,7 +113,6 @@
                  | <boolean_literal>
                  | "(" <expr> ")"
                  | <class_instance>
-
 
 <class_instance> ::= <identifier> "." "new" "(" ")"
                    | <identifier> "." "new" "(" <func_call_params> ")"

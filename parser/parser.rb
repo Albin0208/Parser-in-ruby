@@ -15,6 +15,7 @@ class Parser
   include TokenNavigation
   include ExpressionValidation
   include HashValidation
+  include FunctionHelpers
   #
   # Creates the parser
   #
@@ -206,6 +207,7 @@ class Parser
   def parse_for_stmt
     @parsing_loop = true
     expect(TokenType::FOR)
+    return parse_for_loop_over_container() if next_token().type == TokenType::IN
     var_dec = parse_var_declaration()
     raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
     expect(TokenType::COMMA)
@@ -223,6 +225,19 @@ class Parser
 
     @parsing_loop = false
     return ForStmt.new(body, condition, var_dec, expr, @location)
+  end
+
+  def parse_for_loop_over_container
+    identifier = parse_identifier()
+    expect(TokenType::IN)
+    container = parse_expr()
+
+    expect(TokenType::LBRACE)
+    body = parse_conditional_body()
+    expect(TokenType::RBRACE)
+
+    @parsing_loop = false
+    return ForEachStmt.new(body, identifier, container, @location)
   end
 
   # Parses a while loop statement.
@@ -349,45 +364,6 @@ class Parser
     @parsing_function = false
 
     return FuncDeclaration.new(return_type, identifier, params, body, func_location)
-  end
-
-  #
-  # Parses a function body and gets if it has a return statement
-  #
-  # @return [Array & Boolean] Return the list of all statments and if the body has a return statment
-  #
-  def parse_function_body
-    body = []
-    has_return_stmt = false
-    while at().type != TokenType::RBRACE
-      stmt = parse_stmt()
-      # Don't allow for function declaration inside a function
-      raise "Line:#{stmt.line}: Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
-      
-      has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
-
-      body << stmt
-    end
-
-    return body, has_return_stmt
-  end
-
-  #
-  # Parses the functions params
-  #
-  # @return [Array] A list of all the params of the function
-  #
-  def parse_function_params
-    params = []
-    if at().type != TokenType::RPAREN
-      params << parse_var_declaration()
-      while at().type == TokenType::COMMA
-        expect(TokenType::COMMA)
-        params << parse_var_declaration()
-      end
-    end
-
-    return params
   end
 
   # Parses conditional statments such as if, else if and else

@@ -41,6 +41,7 @@ KEYWORDS = {
   break: TokenType::BREAK,
   continue: TokenType::CONTINUE,
   new: TokenType::NEW,
+  in: TokenType::IN,
 
   # Loops
   for: TokenType::FOR,
@@ -293,8 +294,6 @@ class Lexer
   #
   # @return [Token] A new identifier token
   def handle_identifier_match(match)
-    
-    
     # Check if it is a keyword
     return create_token(match, KEYWORDS[match.to_sym], 'Found keyword token') if KEYWORDS.key?(match.to_sym)
     # Check if a class type

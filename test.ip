@@ -30,3 +30,7 @@ Hash<string, int> tc =  Hash<string, int> { 'c' = 2}
 print("Keys")
 print(tc.keys())
 print()
+
+for item in a {
+    print(item)
+}

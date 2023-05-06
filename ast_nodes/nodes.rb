@@ -18,6 +18,7 @@ NODE_TYPES = {
   ELSIF: :ELSIF,
   WHILE_LOOP: :WHILE_LOOP,
   FOR_LOOP: :FOR_LOOP,
+  FOR_EACH_LOOP: :FOR_EACH_LOOP,
 
   # Expressions
   MethodCallExpr: :MethodCallExpr,

@@ -33,7 +33,7 @@ class TokenType
   VOID = :VOID
   RETURN = :RETURN
   HASH = :HASH
-
+  IN = :IN
   COMMA = :COMMA
   DOT = :DOT
   ASSIGN = :ASSIGN
