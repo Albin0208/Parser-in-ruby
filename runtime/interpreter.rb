@@ -97,6 +97,8 @@ class Interpreter
       eval_while_stmt(ast_node, env)
     when NODE_TYPES[:FOR_LOOP]
       eval_for_stmt(ast_node, env)
+    when NODE_TYPES[:FOR_EACH_LOOP]
+      eval_for_each_stmt(ast_node, env)
     when NODE_TYPES[:IF]
       eval_if_statement(ast_node, env)
     when NODE_TYPES[:ContainerAccessor]

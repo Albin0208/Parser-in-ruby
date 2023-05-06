@@ -185,6 +185,45 @@ module StatementsEvaluator
     return last_eval
   end
 
+  # Evaluates a for-each loop statement in the given environment.
+  #
+  # @param ast_node [ForEachStmt] The AST node representing the for-each loop statement.
+  # @param env [Environment] The environment in which to evaluate the statement.
+  # @return [RunTimeVal] The result of evaluating the last statement in the loop body, or NullVal if the body was empty.
+  def eval_for_each_stmt(ast_node, env)
+    last_eval = NullVal.new
+    container = evaluate(ast_node.container, env)
+    value_type = container.value_type.to_s.gsub('[]', '')
+
+    unless container.is_a?(ArrayVal)
+      raise "Line:#{ast_node.line}: Error: For-loop expected #{ast_node.container} to be of type Array but got #{container.type}"
+    end
+
+    container.value.each() do |item|
+      loop_env = Environment.new(env)
+      case item
+      when String
+        item = StringVal.new(item)
+      when Integer
+        item = NumberVal.new(item, :int)
+      when Float
+        item = NumberVal.new(item, :float)
+      when TrueClass, FalseClass
+        item = BooleanVal.new(item)
+      end
+
+      loop_env.declare_var(ast_node.identifier.symbol, item, value_type, ast_node.line)
+      begin
+        ast_node.body.each { |stmt| last_eval = evaluate(stmt, loop_env) }
+      rescue BreakSignal
+        break
+      rescue ContinueSignal
+      end
+    end
+    
+    return last_eval
+  end
+
   #
   # Evaluates a condition, For example for a if statement
   #

@@ -207,7 +207,10 @@ class Parser
   def parse_for_stmt
     @parsing_loop = true
     expect(TokenType::FOR)
+    for_start_location = @location
+
     return parse_for_loop_over_container() if next_token().type == TokenType::IN
+
     var_dec = parse_var_declaration()
     raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
     expect(TokenType::COMMA)
@@ -224,11 +227,12 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForStmt.new(body, condition, var_dec, expr, @location)
+    return ForStmt.new(body, condition, var_dec, expr, for_start_location)
   end
 
   def parse_for_loop_over_container
     identifier = parse_identifier()
+    for_start_location = @location
     expect(TokenType::IN)
     container = parse_expr()
 
@@ -237,7 +241,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForEachStmt.new(body, identifier, container, @location)
+    return ForEachStmt.new(body, identifier, container, for_start_location)
   end
 
   # Parses a while loop statement.
