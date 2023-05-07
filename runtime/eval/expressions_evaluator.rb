@@ -122,6 +122,7 @@ module Runtime
         access_nodes << access_nodes.last.identifier
       end
       # Grab the top container of the call chain
+      raise "Line:#{ast_node.line}: Error: Can't assign to a constant container" if env.is_constant?(access_nodes.last.identifier.symbol)
       container = env.lookup_identifier(access_nodes.last.identifier.symbol, ast_node.line)
       access_nodes.shift # Remove the node where the assignments is done since it is done later
 

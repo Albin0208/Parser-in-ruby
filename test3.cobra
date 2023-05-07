@@ -101,3 +101,12 @@ Hash_test(h_t)
 
 print(h_t)
 print(h_f)
+
+
+const int[] abc = int[1, 2, 3]
+
+print(abc)
+
+abc.append(4)
+abc[0] = 2
+print(abc)

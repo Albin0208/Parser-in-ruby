@@ -143,6 +143,12 @@ module Runtime
       return env.identifiers[identifier]
     end
 
+    def is_constant?(identifier)
+      env = find_scope(identifier)
+
+      return env.constants.include?(identifier)
+    end
+
     protected
 
     #
