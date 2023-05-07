@@ -38,11 +38,11 @@ module Nodes
 
       # Declare all instance variables
       @member_variables.each { |var|
-        value = var.value ? interpreter.evaluate(var.value, @instance_env) : NullVal.new
+        value = var.value ? interpreter.evaluate(var.value, @instance_env) : Runtime::Values::NullVal.new
         type_specifier = var.value_type
         if var.is_a?(HashDeclaration)
-          unless value.instance_of?(NullVal)
-            raise "Error: #{var.identifier} expected a hash of type: Hash<#{var.key_type}, #{var.value_type}> but got #{value.class}" if value.class != HashVal
+          unless value.instance_of?(Runtime::Values::NullVal)
+            raise "Error: #{var.identifier} expected a hash of type: Hash<#{var.key_type}, #{var.value_type}> but got #{value.class}" if value.class != Runtime::Values::HashVal
             # Check if key and value types match the type of the assigned hash
             if value.key_type != var.key_type || value.value_type != var.value_type
               raise "Error: #{var.identifier} expected a hash of type: Hash<#{var.key_type}, #{var.value_type}> but got Hash<#{value.key_type}, #{value.value_type}>"

@@ -73,11 +73,10 @@ module Runtime
       env.declare_func(ast_node.identifier, ast_node.type_specifier, ast_node, env)
     end
 
-
     def eval_array_declaration(ast_node, env)
       value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
-      unless value.is_a?(Values::ArrayVal)
+      unless value.is_a?(Values::ArrayVal) || value.is_a?(Values::NullVal)
         raise "Line:#{value.line}: Error: Can't assign value of none array type to array"
       end
 

@@ -20,7 +20,7 @@ TOKEN_TYPES = [
   [:rbrace, /\A\}/],
   [:lbracket, /\A\[/],
   [:rbracket, /\A\]/],
-  [:array_type, /\A([a-z]|_[a-z])\w*?\[\]/], # array_type
+  [:array_type, /\A([a-z]|_[a-z])\w*?\[\]/i], # array_type
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:comma, /\A,/],
   [:dot, /\A\./],
