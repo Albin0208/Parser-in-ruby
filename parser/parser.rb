@@ -2,7 +2,6 @@ require_relative '../ast_nodes/nodes'
 require_relative '../lexer/lexer'
 require_relative '../token_type'
 require_relative '../errors/errors'
-require_relative 'parser_helpers'
 require_relative 'helpers/helpers'
 
 require 'logger'
@@ -11,7 +10,6 @@ require 'logger'
 # This is the parser which produces a AST from a list of tokens
 #
 class Parser
-  include ParserHelpers
   include TokenNavigation
   include ExpressionValidation
   include HashValidation
@@ -321,6 +319,12 @@ class Parser
     return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
   end
 
+  # Parses an array declaration and returns an AST node representing the declaration.
+  #
+  # @param [Boolean] is_const A flag indicating whether the array is a constant
+  # @return [Nodes::ArrayDeclaration] An AST node representing the array declaration
+  # @raise [NameError] if a constant is not initialized upon creation
+  # @raise [SyntaxError] if the type of the assigned expression is not compatible with the declared type
   def parse_array_declaration(is_const)
     type = expect(TokenType::ARRAY_TYPE).value
 
