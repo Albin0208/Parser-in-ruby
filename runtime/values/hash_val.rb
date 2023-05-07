@@ -1,5 +1,3 @@
-require_relative 'runtime_val'
-
 module Runtime
 	module Values
 		# Represents an Hash value in the language

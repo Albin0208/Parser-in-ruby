@@ -1,5 +1,5 @@
 require_relative '../ast_nodes/nodes'
-require_relative 'values'
+require_relative 'values/values'
 require_relative 'eval/expressions_evaluator'
 require_relative 'eval/statements_evaluator'
 
@@ -36,6 +36,7 @@ module Runtime
   class Interpreter
     include StatementsEvaluator
     include ExpressionsEvaluator
+    include Values
 
     #
     # Evaluates an AST node in the given environment.

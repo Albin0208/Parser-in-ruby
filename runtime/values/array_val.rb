@@ -1,5 +1,3 @@
-require_relative 'runtime_val'
-
 module Runtime
 	module Values
 		# Represents a Array value in the language

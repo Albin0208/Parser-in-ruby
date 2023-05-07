@@ -1,1 +1,4 @@
-Dir.glob(File.join(File.dirname(__FILE__), '*.rb')).each { |f| require f }
+require_relative 'expression_validation'
+require_relative 'function_helpers'
+require_relative 'hash_validation'
+require_relative 'token_navigation'

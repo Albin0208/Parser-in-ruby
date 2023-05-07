@@ -6,6 +6,8 @@ def main
   debugging = ARGV[0] == '-debug'
   
   file = debugging ? ARGV[1] : ARGV[0]
+
+  raise "Error: File is required to have a extension of .cobra" unless File.extname(file) == '.cobra'
   
   if file
     debugging = ARGV[1] == '-debug'
@@ -14,7 +16,7 @@ def main
   env = Runtime::Environment.new
   env.setup_native_functions()
   parser = Parser.new(debugging)
-  interpreter = Interpreter.new
+  interpreter = Runtime::Interpreter.new
   input = ''
 
   if !file.nil?
