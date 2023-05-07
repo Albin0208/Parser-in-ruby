@@ -37,6 +37,8 @@
     - [ ] Inheritance
 - [ ] Array of Hashes not working
 
+- [ ] Add yarddoc generation for just the language parts, such as all the values and how to use them
+
 # Fix wonky stuff
 - [x] Fix problem when a identifier such as a class is printed it show the whole class node.
 - [x] Fix so when an hash is printed it prints the value if it exist

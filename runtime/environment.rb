@@ -128,21 +128,6 @@ class Environment
   end
 
   #
-  # Resolves a identifier name by finding what scope it exists in
-  #
-  # @param [String] identifier The name of the identifier
-  #
-  # @return [Environment | nil] The environment that the identifier exists in or nil if it does not exist
-  #
-  def find_scope(identifier)
-    return self if @identifiers.key?(identifier)
-
-    return nil if @parent_env.nil?
-
-    return @parent_env.find_scope(identifier)
-  end
-
-  #
   # Find the value of the identifier
   #
   # @param [String] identifier The name of the identifier
@@ -157,6 +142,23 @@ class Environment
     return env.identifiers[identifier]
   end
 
+  protected
+
+  #
+  # Resolves a identifier name by finding what scope it exists in
+  #
+  # @param [String] identifier The name of the identifier
+  #
+  # @return [Environment | nil] The environment that the identifier exists in or nil if it does not exist
+  #
+  def find_scope(identifier)
+    return self if @identifiers.key?(identifier)
+
+    return nil if @parent_env.nil?
+
+    return @parent_env.find_scope(identifier)
+  end
+  
   private
 
   # Checks if the variable in the given environment is a function.
@@ -167,4 +169,6 @@ class Environment
   def is_function?(varname, env)
     return env.identifiers.key?(varname) && env.identifiers[varname].type == NODE_TYPES[:FuncDeclaration]
   end
+
+
 end

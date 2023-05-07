@@ -1,6 +1,6 @@
 module Nodes
   class Stmt
-    attr_reader :type, :line
+    attr_reader :type, :line, :value
 
     def initialize(type, line)
       @type = type
