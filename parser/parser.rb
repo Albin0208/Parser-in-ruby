@@ -758,6 +758,9 @@ class Parser
     return expr
   end
 
+  # Parses an array literal expression.
+  #
+  # @return [ArrayLiteral] The array literal expression AST node.
   def parse_array_literal()
     if at().type == TokenType::ARRAY_TYPE
       type = expect(TokenType::ARRAY_TYPE).value.to_s.gsub('[]', '')
