@@ -2,16 +2,17 @@ require_relative 'stmt'
 module Nodes
   # Represents a class declaration in the AST, containing its name, member variables, and member functions.
   class ClassDeclaration < Stmt
-    attr_reader :class_name, :member_variables, :member_functions
+    attr_reader :class_name, :constructors, :member_variables, :member_functions
     attr_accessor :env, :instance_env
 
     # Initializes a ClassDeclaration object with the given name, member variables, and member functions.
     # @param class_name [String] The name of the class.
     # @param member_variables [Array<VarDeclaration>] An array of member variable declarations in the class.
     # @param member_functions [Array<FuncDeclaration>] An array of member function declarations in the class.
-    def initialize(class_name, member_variables, member_functions, line)
+    def initialize(class_name, constructors, member_variables, member_functions, line)
       super(NODE_TYPES[:ClassDeclaration], line)
       @class_name = class_name
+      @constructors = constructors
       @member_variables = member_variables
       @member_functions = member_functions
     end

@@ -44,7 +44,7 @@ class TestParserVarDeclarations < Test::Unit::TestCase
   end
 
   def test_parse_class_declaration
-    ast = @parser.produce_ast('Test x = new Test')
+    ast = @parser.produce_ast('Test x = new Test()')
     assert_equal('x', ast.body[0].identifier)
     assert_equal('Test', ast.body[0].value.value.symbol)
     assert_equal(ast.body[0].constant, false)

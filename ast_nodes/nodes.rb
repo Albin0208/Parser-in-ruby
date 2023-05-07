@@ -19,6 +19,7 @@ NODE_TYPES = {
   WHILE_LOOP: :WHILE_LOOP,
   FOR_LOOP: :FOR_LOOP,
   FOR_EACH_LOOP: :FOR_EACH_LOOP,
+  Constructor: :Constructor,
 
   # Expressions
   MethodCallExpr: :MethodCallExpr,

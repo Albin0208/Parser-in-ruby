@@ -31,7 +31,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 }
               }
 
-              MyClass obj = new MyClass"
+              MyClass obj = new MyClass()"
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
 
@@ -47,7 +47,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 }
               }
 
-              const MyClass obj = new MyClass
+              const MyClass obj = new MyClass()
               obj.add(5)
               obj.x"
     ast = @parser.produce_ast(input)
@@ -65,8 +65,8 @@ class TestInterpreterClass < Test::Unit::TestCase
                 }
               }
 
-              const MyClass obj = new MyClass
-              obj = new MyClass"
+              const MyClass obj = new MyClass()
+              obj = new MyClass()"
     ast = @parser.produce_ast(input)
     assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
   end
@@ -79,7 +79,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 }
               }
 
-              MyClass obj = new MyClass
+              MyClass obj = new MyClass()
               int result = obj.my_func()"
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
@@ -95,7 +95,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 }
               }
 
-              MyClass obj = new MyClass
+              MyClass obj = new MyClass()
               int result = obj.my_func(3)"
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
@@ -108,7 +108,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 int x = 5
               }
 
-              MyClass obj = new MyClass
+              MyClass obj = new MyClass()
               int result = obj.x"
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
@@ -121,7 +121,7 @@ class TestInterpreterClass < Test::Unit::TestCase
                 int x = 5
               }
 
-              MyClass obj = new MyClass
+              MyClass obj = new MyClass()
               obj.x = 100
               int result = obj.x"
     ast = @parser.produce_ast(input)

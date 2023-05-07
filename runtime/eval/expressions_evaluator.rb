@@ -289,7 +289,10 @@ module Runtime
     def validate_params(function, call_params, call_env)
       unless function.params.length == call_params.length
         types = function.params.map(&:value_type).join(", ")
-        raise "Line: #{ast_node.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
+        if function.is_a?(Nodes::Constructor)
+          raise "Error: Wrong number of arguments passed to constructor"
+        end
+        raise "Line: #{function.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
       end
 
       function.params.zip(call_params) { |func_param, call_param| 
@@ -298,9 +301,11 @@ module Runtime
         evaled_call_param = evaluate(call_param, call_env)
 
         unless evaled_call_param.type.downcase == type.downcase
-          raise "Line: #{ast_node.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
+          raise "Line: #{function.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
         end
       }
+      
+      return true
     end
 
     #
@@ -400,7 +405,47 @@ module Runtime
     def eval_class_instance(ast_node, env)
       class_instance = evaluate(ast_node.value, env).clone
       class_instance.create_instance(self)
+
+      # Eval the constructor if it exists
+      unless class_instance.constructors.empty?
+        eval_constructor(class_instance, ast_node.params, class_instance.instance_env, env)
+      end
       return Values::ClassVal.new(ast_node.value.symbol, class_instance)
+    end
+
+    # Evaluates a constructor with the given parameters in the context of the current instance environment and global environment.
+    #
+    # @param constructors [Array] an array of constructor statements
+    # @param params [Array] an array of parameter values to be passed to the constructor
+    # @param instance_env [Environment] the instance environment of the current object
+    # @param env [Environment] the global environment
+    # @param line [Integer] the line number of the constructor statement
+    #
+    # @raise [RuntimeError] if the wrong number or types of parameters are passed to the constructor
+    def eval_constructor(ast_node, params, instance_env, env)
+      matching_ctor = nil
+      ast_node.constructors.each do |ctor|
+        begin
+          if (ctor.params.empty? && params.empty?) || validate_params(ctor, params, env)
+            matching_ctor = ctor
+            break
+          end
+        rescue => e
+        end
+      end
+
+      
+      # Throw error if we have not found a constructor
+      if matching_ctor.nil?
+        param_types = params.map() { |param| param.is_a?(Nodes::NumericLiteral) ? param.numeric_type : param.type }.join(', ') 
+        raise "Line:#{ast_node.line}: Error: no matching constructor for #{ast_node.class_name.symbol}::Constructor(#{param_types})"
+      end
+      
+      ctor_env = Environment.new(instance_env)
+      
+      declare_params(matching_ctor, params, env, ctor_env) unless params.empty?
+    
+      matching_ctor.body.each() { |stmt| evaluate(stmt, ctor_env) }
     end
 
     # Evaluates an array literal, ensuring that all elements have the correct type.

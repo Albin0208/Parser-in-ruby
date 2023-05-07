@@ -3,6 +3,24 @@ class Test {
   int c = 2
   Hash<string, int> acc = Hash<string, int> {'a' = 2.0, 'b' = 4}
 
+  Constructor() {
+    c = 3
+  }
+
+  Constructor(int ac) {
+    c = ac
+  }
+
+  Constructor(int ac, int ca) {
+    c = ac
+  }
+  Constructor(int ac, string ca) {
+    c = 54
+    int test = 2
+  }
+
+
+
   func int test(int ass) {
     return ass
   }
@@ -19,39 +37,11 @@ class Test {
     return Hash<string, int> {'a' = 2, 'b' = 4}
   }
 
-  func Test get_class() {
-    return new Test
-  }
+
 }
 
-func Hash<string, int> geta_hash() {
-  return Hash<string, int> {'a' = 2, 'b' = 4}
-}
+Test a = new Test(1, 20, "strion")
 
-func int ass() {
-  return 1
-}
-
-func a assa() {
-
-  return 1
-}
-
-Test[] array
-
-#Test ts = new Test
-#const Test t = new Test
-
-#Test tc
-
-#print(tc)
-
-Test tc = new Test
-Test t = tc.copy()
-print(tc == t)
-
-print(Test)
-print(t.copy() == t.copy())
-
-print(ass)
-print(geta_hash)
+int acc = a.c
+print(a.c)
+print(a.test)

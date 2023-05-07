@@ -93,9 +93,15 @@ class Parser
     member_functions = []
     expect(TokenType::LBRACE)
 
+    constructors = []
+
     # Parse all class members
     while at().type != TokenType::RBRACE
-      stmt = parse_stmt()
+      if at().type == TokenType::CONSTRUCTOR
+        stmt = parse_constuctor()
+      else
+        stmt = parse_stmt()
+      end
 
       # Check if the stmt is a func- or varDeclaration
       case stmt.type
@@ -103,12 +109,57 @@ class Parser
         member_functions << stmt
       when :VarDeclaration, :HashDeclaration
         member_variables << stmt
+      when :Constructor
+        # Check if the same constructor already has been declared
+        if constructor_already_exists?(constructors, stmt)
+          raise "Line:#{stmt.line}: Error: Constructor already declared with the same parameters"
+        end
+
+        constructors << stmt
       end
     end
     expect(TokenType::RBRACE)
 
-    return Nodes::ClassDeclaration.new(class_name, member_variables, member_functions, decl_location)
+    return Nodes::ClassDeclaration.new(class_name, constructors, member_variables, member_functions, decl_location)
   end
+
+  # Checks if a constructor with the same signature as the given constructor statement
+  # already exists in the array of constructors.
+  #
+  # @param constructors [Array] The array of constructors to check.
+  # @param stmt [Constructor] The constructor statement to compare with existing constructors.
+  # @return [Boolean] Returns true if a constructor with the same signature exists, false otherwise.
+  def constructor_already_exists?(constructors, stmt)
+    constructors.each() do |c|
+      # If they have the same amount of params check if they are the same
+      if c.params.length == stmt.params.length
+        c.params.each_with_index() do |param, index|
+          # Return false if they have different value type
+          return false if param.value_type != stmt.params[index].value_type
+        end
+        # All the params have the same value type so return true
+        return true
+      end
+    end
+    return false
+  end
+
+  # Parses a constructor declaration.
+  #
+  # @return [Constructor] The parsed constructor.
+  def parse_constuctor
+    expect(TokenType::CONSTRUCTOR)
+    expect(TokenType::LPAREN)
+    line = @location
+    params = parse_function_params()
+    expect(TokenType::RPAREN)
+
+    expect(TokenType::LBRACE)
+    body, _ = parse_function_body()
+    expect(TokenType::RBRACE)
+
+    return Nodes::Constructor.new(params, body, line)
+  end 
 
   #
   # Parse a hash declaration
@@ -742,8 +793,7 @@ class Parser
       expect(TokenType::NULL)
       expr = Nodes::NullLiteral.new(@location)
     when TokenType::NEW
-      expect(TokenType::NEW)
-      expr = Nodes::ClassInstance.new(parse_identifier(), @location)
+      expr = parse_class_instance()
     else
       raise InvalidTokenError.new("Line:#{@location}: Unexpected token found: #{at().value}")
     end
@@ -760,6 +810,17 @@ class Parser
     end
 
     return expr
+  end
+
+  def parse_class_instance
+    expect(TokenType::NEW)
+    identifier = parse_identifier()
+
+    expect(TokenType::LPAREN)
+    params = parse_call_params()
+    expect(TokenType::RPAREN)
+
+    return Nodes::ClassInstance.new(identifier, params, @location)
   end
 
   # Parses an array literal expression.
