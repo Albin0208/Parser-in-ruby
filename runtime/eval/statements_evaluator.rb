@@ -73,6 +73,12 @@ module Runtime
       env.declare_func(ast_node.identifier, ast_node.type_specifier, ast_node, env)
     end
 
+    # Evaluates an array declaration AST node and assigns the resulting value to a variable in the given environment.
+    #
+    # @param ast_node [ArrayDeclaration] the AST node representing the array declaration
+    # @param env [Environment] the environment in which to assign the resulting value
+    #
+    # @raise [RuntimeError] if the resulting value is not an instance of `Values::ArrayVal`
     def eval_array_declaration(ast_node, env)
       value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
