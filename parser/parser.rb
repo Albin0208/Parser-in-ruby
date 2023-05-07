@@ -322,7 +322,7 @@ class Parser
   # Parses an array declaration and returns an AST node representing the declaration.
   #
   # @param [Boolean] is_const A flag indicating whether the array is a constant
-  # @return [Nodes::ArrayDeclaration] An AST node representing the array declaration
+  # @return [ArrayDeclaration] An AST node representing the array declaration
   # @raise [NameError] if a constant is not initialized upon creation
   # @raise [SyntaxError] if the type of the assigned expression is not compatible with the declared type
   def parse_array_declaration(is_const)
