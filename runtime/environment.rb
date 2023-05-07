@@ -114,9 +114,9 @@ class Environment
     if value.type == :int || value.type == :float
       case var_type
       when 'int'
-        value = NumberVal.new(value.value.to_i, :int)
+        value = Values::NumberVal.new(value.value.to_i, :int)
       when 'float'
-        value = NumberVal.new(value.value.to_f, :float)
+        value = Values::NumberVal.new(value.value.to_f, :float)
       end
     elsif value.type.to_sym != var_type.to_sym
       raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."

@@ -79,7 +79,7 @@ module ExpressionsEvaluator
     lhs = evaluate(binop.left, env)
     rhs = evaluate(binop.right, env)
 
-    raise "Line:#{binop.line} Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(RunTimeVal) && rhs.is_a?(RunTimeVal)
+    raise "Line:#{binop.line} Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(Values::RunTimeVal) && rhs.is_a?(Values::RunTimeVal)
 
     lhs.send(binop.op, rhs)
   end
@@ -97,7 +97,7 @@ module ExpressionsEvaluator
     when :PropertyCallExpr
       # Evaluate the class value and check if it's a ClassVal
       class_value = evaluate(ast_node.assigne.expr, env)
-      raise "Line: #{ast_node.line}: Error: Can't assign to property of non-class object" unless class_value.instance_of?(ClassVal)
+      raise "Line: #{ast_node.line}: Error: Can't assign to property of non-class object" unless class_value.instance_of?(Values::ClassVal)
   
       # Assign the value to the class instance environment
       value = evaluate(ast_node.value, env)
@@ -117,7 +117,7 @@ module ExpressionsEvaluator
   def eval_assignment_to_container_access(ast_node, env)
     access_nodes = [ast_node.assigne]
     # Extract all the chained container accesses
-    while access_nodes.last.identifier.is_a?(ContainerAccessor)
+    while access_nodes.last.identifier.is_a?(Nodes::ContainerAccessor)
       access_nodes << access_nodes.last.identifier
     end
     # Grab the top container of the call chain
@@ -127,7 +127,7 @@ module ExpressionsEvaluator
     # Reverse traverse through all the container accesses
     access_nodes.reverse_each { |access| 
       access_key = evaluate(access.access_key, env)
-      if container.is_a?(ArrayVal)
+      if container.is_a?(Values::ArrayVal)
         # Wrap around from the back if it is negative
         access_key = access_key % container.length.value if access_key.negative?
       
@@ -143,7 +143,7 @@ module ExpressionsEvaluator
 
     # Retrive the final access key
     access_key = evaluate(ast_node.assigne.access_key, env)
-    if container.is_a?(HashVal)
+    if container.is_a?(Values::HashVal)
       unless container.key_type == access_key.type
         raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
       end
@@ -161,7 +161,7 @@ module ExpressionsEvaluator
 
     # Evaluate the assigned value
     value = evaluate(ast_node.value, env)
-    if container.is_a?(ArrayVal)
+    if container.is_a?(Values::ArrayVal)
       value_type = container.value_type.to_s.gsub('[]', '')
     else
       value_type = container.value_type
@@ -185,7 +185,7 @@ module ExpressionsEvaluator
     evaled_expr = evaluate(ast_node.expr, call_env)
     err_class_name = evaled_expr.class
     # Check if we are calling a custom class
-    if evaled_expr.instance_of?(ClassVal)
+    if evaled_expr.instance_of?(Values::ClassVal)
       # Grab the method, if error occurs it does not exist then set method to nil
       method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name, ast_node.line) rescue nil
 
@@ -235,7 +235,7 @@ module ExpressionsEvaluator
     if function.instance_of?(Symbol) && function == :native_func
       param_results = ast_node.params.map() { |param| 
         evaled = evaluate(param, call_env)
-        if !evaled.is_a?(HashVal) && !evaled.is_a?(ArrayVal) && evaled.instance_variable_defined?(:@value)
+        if !evaled.is_a?(Values::HashVal) && !evaled.is_a?(Values::ArrayVal) && evaled.instance_variable_defined?(:@value)
           evaled.value
         else
           evaled
@@ -244,7 +244,7 @@ module ExpressionsEvaluator
       NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
       return nil
     end
-      raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(FuncDeclaration)
+      raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(Nodes::FuncDeclaration)
 
     return call_function(function, ast_node, call_env)
   end
@@ -367,13 +367,13 @@ module ExpressionsEvaluator
   def eval_container_accessor(ast_node, env)
     container = evaluate(ast_node.identifier, env)
  
-    unless container.is_a?(HashVal) || container.is_a?(ArrayVal)
+    unless container.is_a?(Values::HashVal) || container.is_a?(Values::ArrayVal)
       raise "Line: #{ast_node.line}: Error: Invalid type for container accessor, #{container.class}"
     end
 
     access_key = evaluate(ast_node.access_key, env).value
 
-    if container.is_a?(ArrayVal)
+    if container.is_a?(Values::ArrayVal)
       # Wrap around from the back if it is negative
       access_key = access_key % container.length.value if access_key.negative?
 

@@ -18,7 +18,7 @@ class TestInterpreterClass < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
 
-    assert_equal(@env.lookup_identifier('MyClass').class, ClassDeclaration)
+    assert_equal(@env.lookup_identifier('MyClass').class, Nodes::ClassDeclaration)
     assert_equal(@env.lookup_identifier('MyClass').member_variables.first.value.value, 5)
     assert_equal(@env.lookup_identifier('MyClass').member_functions.first.identifier, 'my_func')
   end
@@ -35,7 +35,7 @@ class TestInterpreterClass < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
 
-    assert_equal(@env.lookup_identifier('obj').class, ClassVal)
+    assert_equal(@env.lookup_identifier('obj').class, Values::ClassVal)
     assert_equal(@env.lookup_identifier('obj').type.to_s, @env.lookup_identifier('MyClass').class_name.symbol)
   end
 

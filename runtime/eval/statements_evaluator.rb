@@ -30,7 +30,7 @@ module StatementsEvaluator
   def eval_var_declaration(ast_node, env)
     value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
-    unless value.instance_of?(NullVal)
+    unless value.instance_of?(Values::NullVal)
       # Convert to correct data type for int and float calculations
       value = case ast_node.value_type
               when 'int' then Values::NumberVal.new(value.value.to_i, :int)
@@ -51,8 +51,8 @@ module StatementsEvaluator
   # @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
   def eval_hash_declaration(ast_node, env)
     value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
-    unless value.instance_of?(NullVal)
-      raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != HashVal
+    unless value.instance_of?(Values::NullVal)
+      raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != Values::HashVal
       # Check if key and value types match the type of the assigned hash
       if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
         raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got Hash<#{value.key_type}, #{value.value_type.to_s.gsub(',', ', ')}>"
@@ -76,7 +76,7 @@ module StatementsEvaluator
   def eval_array_declaration(ast_node, env)
     value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
-    unless value.is_a?(ArrayVal)
+    unless value.is_a?(Values::ArrayVal)
       raise "Line:#{value.line}: Error: Can't assign value of none array type to array"
     end
 
@@ -193,7 +193,7 @@ module StatementsEvaluator
     container = evaluate(ast_node.container, env)
     value_type = container.value_type.to_s.gsub('[]', '')
 
-    unless container.is_a?(ArrayVal)
+    unless container.is_a?(Values::ArrayVal)
       raise "Line:#{ast_node.line}: Error: For-loop expected #{ast_node.container} to be of type Array but got #{container.type}"
     end
 
@@ -233,7 +233,7 @@ module StatementsEvaluator
   def eval_condition(condition, env)
     evaled_condition = evaluate(condition, env)
 
-    if evaled_condition.instance_of?(NullVal)
+    if evaled_condition.instance_of?(Values::NullVal)
       return false
     end
       return evaled_condition.value

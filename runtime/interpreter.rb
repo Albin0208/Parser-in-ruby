@@ -52,9 +52,9 @@ class Interpreter
   def evaluate(ast_node, env)
     case ast_node.type
     when NODE_TYPES[:NumericLiteral]
-      NumberVal.new(ast_node.value, ast_node.numeric_type)
+      Values::NumberVal.new(ast_node.value, ast_node.numeric_type)
     when NODE_TYPES[:String]
-      StringVal.new(ast_node.value)
+      Values::StringVal.new(ast_node.value)
     when NODE_TYPES[:Identifier]
       eval_identifier(ast_node, env)
     when NODE_TYPES[:AssignmentExpr]
@@ -104,13 +104,13 @@ class Interpreter
     when NODE_TYPES[:ContainerAccessor]
       eval_container_accessor(ast_node, env)
     when NODE_TYPES[:Boolean]
-      BooleanVal.new(ast_node.value)
+      Values::BooleanVal.new(ast_node.value)
     when NODE_TYPES[:HashLiteral]
       eval_hash_literal(ast_node, env)
     when NODE_TYPES[:ArrayLiteral]
       eval_array_literal(ast_node, env)
     when NODE_TYPES[:Null]
-      NullVal.new
+      Values::NullVal.new
     else
       raise NotImplementedError, "This AST Node has not yet been setup for #{ast_node.type} #{ast_node}"
     end

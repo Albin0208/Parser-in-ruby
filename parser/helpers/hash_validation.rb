@@ -6,7 +6,7 @@ module HashValidation
 	# @param keys [Array<StringLiteral, SymbolLiteral>] the list of keys to search
 	# @return [Boolean] true if the key is present in the list of keys, false otherwise
 	def key_in_hash?(key, keys)
-			unless key.is_a?(StringLiteral) || key.is_a?(StringLiteral)
+			unless key.is_a?(Nodes::StringLiteral)
 					return false
 			end
 			keys.each() { |k|

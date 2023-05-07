@@ -72,14 +72,14 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
     input = '1.to_float()'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Values::NumberVal, result)
     assert_equal(:float, result.type)
     assert_equal(1.0, result.value)
 
     input = '1.4.to_int()'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Values::NumberVal, result)
     assert_equal(:int, result.type)
     assert_equal(1, result.value)
   end
