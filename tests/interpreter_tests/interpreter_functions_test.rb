@@ -4,8 +4,8 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterFunctions < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
   end
 
   def test_evaluate_func_declaration
@@ -57,7 +57,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              test()"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(Values::NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(2, result.value)
   end
 
@@ -66,7 +66,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              add(2, 3)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(Values::NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(5, result.value)
   end
 
@@ -78,7 +78,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              factorial(3)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(Values::NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(6, result.value)
   end
 
@@ -87,7 +87,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              add(2, 3) * add(3, 3) - add(-24, 24)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(Values::NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(30, result.value)
   end
 

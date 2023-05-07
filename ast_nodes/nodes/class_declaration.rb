@@ -34,7 +34,7 @@ module Nodes
     # Creates a new instance of the class and initializes its instance variables and instance methods.
     # @param interpreter [Interpreter] The interpreter used to evaluate the initial values of instance variables.
     def create_instance(interpreter)
-      @instance_env = Environment.new(@env.global_env)
+      @instance_env = Runtime::Environment.new(@env.global_env)
 
       # Declare all instance variables
       @member_variables.each { |var|

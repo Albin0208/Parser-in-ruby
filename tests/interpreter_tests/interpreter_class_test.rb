@@ -4,8 +4,8 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterClass < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
   end
 
   def test_class_declaration
@@ -35,7 +35,7 @@ class TestInterpreterClass < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     @interpreter.evaluate(ast, @env)
 
-    assert_equal(@env.lookup_identifier('obj').class, Values::ClassVal)
+    assert_equal(@env.lookup_identifier('obj').class, Runtime::Values::ClassVal)
     assert_equal(@env.lookup_identifier('obj').type.to_s, @env.lookup_identifier('MyClass').class_name.symbol)
   end
 
