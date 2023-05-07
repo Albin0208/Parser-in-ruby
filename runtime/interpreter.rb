@@ -105,7 +105,7 @@ module Runtime
         eval_if_statement(ast_node, env)
       when NODE_TYPES[:ContainerAccessor]
         eval_container_accessor(ast_node, env)
-      when NODE_TYPES[:Boolean]
+      when NODE_TYPES[:Bool]
         Values::BooleanVal.new(ast_node.value)
       when NODE_TYPES[:HashLiteral]
         eval_hash_literal(ast_node, env)

@@ -5,7 +5,7 @@ module ExpressionValidation
   # @param [Expr] expression The expression we want to validate
   # @param [String] type What type we are trying to assign to
   def validate_assignment_type(expression, type)
-    return unless [:NumericLiteral, :String, :Boolean, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
+    return unless [:NumericLiteral, :String, :Bool, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
 
     if !expression.instance_variable_defined?(:@value)
       if expression.type != NODE_TYPES[:CallExpr]
@@ -36,7 +36,7 @@ module ExpressionValidation
           when :int, :float
             [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
           when :bool
-            [NODE_TYPES[:Boolean], NODE_TYPES[:Identifier]].include?(expression_type)
+            [NODE_TYPES[:Bool], NODE_TYPES[:Identifier]].include?(expression_type)
           when :string
             [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
           else

@@ -40,9 +40,5 @@ NODE_TYPES = {
   Null: :Null,
   ClassInstance: :ClassInstance
 }.freeze
-  
-NODE_TYPES_CONVERTER = {
-  bool: :bool,
-}.freeze
 
 Dir.glob(File.join(File.dirname(__FILE__), 'nodes/*.rb')).each { |f| require f }

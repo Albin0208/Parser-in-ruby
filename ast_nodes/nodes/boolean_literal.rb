@@ -11,7 +11,7 @@ module Nodes
     # @param [Boolean] value The value of the boolean, true or false
     #
     def initialize(value, line)
-      super(NODE_TYPES[:Boolean], line)
+      super(NODE_TYPES[:Bool], line)
       @value = value
     end
 
