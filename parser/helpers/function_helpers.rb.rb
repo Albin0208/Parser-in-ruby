@@ -9,7 +9,7 @@ module FunctionHelpers
 	# @return [Boolean] True if ReturnStmt exits otherwise false
 	#
 	def has_return_statement?(stmt)
-		if stmt.instance_of?(ReturnStmt)
+		if stmt.instance_of?(Nodes::ReturnStmt)
 			return true
 		elsif stmt.instance_variable_defined?(:@body)
 			return stmt.body.any? { |s| has_return_statement?(s) }

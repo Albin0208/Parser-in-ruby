@@ -41,7 +41,7 @@ class Parser
   def produce_ast(source_code)
     @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list 
-    program = Program.new([], @location)
+    program = Nodes::Program.new([], @location)
     # Parse until end of file
     program.body.append(parse_stmt()) while not_eof()
 
@@ -73,11 +73,11 @@ class Parser
     when TokenType::BREAK
       raise "Line:#{at().line}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      return BreakStmt.new(at().line)
+      return Nodes::BreakStmt.new(at().line)
     when TokenType::CONTINUE
       raise "Line:#{at().line}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      return ContinueStmt.new(at().line)
+      return Nodes::ContinueStmt.new(at().line)
     else
       return parse_expr()
     end
@@ -109,7 +109,7 @@ class Parser
     end
     expect(TokenType::RBRACE)
 
-    return ClassDeclaration.new(class_name, member_variables, member_functions, decl_location)
+    return Nodes::ClassDeclaration.new(class_name, member_variables, member_functions, decl_location)
   end
 
   #
@@ -124,7 +124,7 @@ class Parser
     identifier = parse_identifier()
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, nil) unless is_const
+      return Nodes::HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
       raise NameError, "Line:#{identifier.line}: Error: Uninitialized Constant. Constants must be initialize upon creation"
@@ -139,7 +139,7 @@ class Parser
       expression = parse_hash_literal()
     end
 
-    return HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, expression)
+    return Nodes::HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, expression)
   end
 
   #
@@ -159,11 +159,11 @@ class Parser
     while at().type != TokenType::RBRACE
       key = parse_expr()
 
-      # Check if key allready has been defined
+      # Check if key already has been defined
       if key_in_hash?(key, keys)#keys.include?(key.value)
         raise "Line:#{@location}: Error: Key: #{key} already exists in hash"
       end
-      keys << key if key.is_a?(StringLiteral) || key.is_a?(StringLiteral) # Add the key
+      keys << key if key.is_a?(Nodes::StringLiteral) # Add the key
       validate_assignment_type(key, key_type) # Validate that the type is correct
 
       expect(TokenType::ASSIGN)
@@ -177,7 +177,7 @@ class Parser
 
     expect(TokenType::RBRACE) # Get the closing brace
 
-    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
+    return Nodes::HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
   end
 
 
@@ -219,7 +219,7 @@ class Parser
     expect(TokenType::COMMA)
     expr = parse_stmt()
     # Don't allow for every stmt, only assignstatement and expressions
-    unless expr.is_a?(Expr) || expr.is_a?(AssignmentStmt)
+    unless expr.is_a?(Nodes::Expr) || expr.is_a?(Nodes::AssignmentStmt)
       raise "Line:#{@location}: Error: Wrong type of expression given"
     end
 
@@ -228,7 +228,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForStmt.new(body, condition, var_dec, expr, for_start_location)
+    return Nodes::ForStmt.new(body, condition, var_dec, expr, for_start_location)
   end
 
   # Parses a for loop over a container and returns a ForEachStmt object.
@@ -245,7 +245,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForEachStmt.new(body, identifier, container, for_start_location)
+    return Nodes::ForEachStmt.new(body, identifier, container, for_start_location)
   end
 
   # Parses a while loop statement.
@@ -263,7 +263,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return WhileStmt.new(body, condition, @location)
+    return Nodes::WhileStmt.new(body, condition, @location)
   end
 
   #
@@ -272,7 +272,7 @@ class Parser
   # @return [Expr] An expression matching the tokens
   #
   def parse_identifier
-    return Identifier.new(expect(TokenType::IDENTIFIER).value, @location)
+    return Nodes::Identifier.new(expect(TokenType::IDENTIFIER).value, @location)
     
   end
 
@@ -287,7 +287,7 @@ class Parser
     expect(TokenType::RETURN)
     expr = parse_expr()
 
-    return ReturnStmt.new(expr, @location)
+    return Nodes::ReturnStmt.new(expr, @location)
   end
 
   # Parse a variable declaration
@@ -309,7 +309,7 @@ class Parser
     identifier = parse_identifier().symbol
     
     if at().type != TokenType::ASSIGN
-      return VarDeclaration.new(is_const, identifier, type_specifier, @location, nil) unless is_const
+      return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, @location, nil) unless is_const
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
@@ -318,7 +318,7 @@ class Parser
 
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
-    return VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
+    return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
   end
 
   def parse_array_declaration(is_const)
@@ -327,7 +327,7 @@ class Parser
     identifier = parse_identifier()
 
     if at().type != TokenType::ASSIGN
-      return ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, nil) unless is_const
+      return Nodes::ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, nil) unless is_const
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
@@ -336,7 +336,7 @@ class Parser
     
     validate_assignment_type(expression, type) # Validate that the type is correct
 
-    return ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, expression)
+    return Nodes::ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, expression)
   end
 
   #
@@ -371,7 +371,7 @@ class Parser
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
 
-    return FuncDeclaration.new(return_type, identifier, params, body, func_location)
+    return Nodes::FuncDeclaration.new(return_type, identifier, params, body, func_location)
   end
 
   # Parses conditional statments such as if, else if and else
@@ -389,7 +389,7 @@ class Parser
     elsif_stmts = parse_elsif_statements() # Parse else ifs
     else_body = parse_else_statement() # Parse Else
 
-    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts, @location)
+    return Nodes::IfStatement.new(if_body, if_condition, else_body, elsif_stmts, @location)
   end
 
   #
@@ -405,7 +405,7 @@ class Parser
       expect(TokenType::LBRACE) # eat lbrace token
       elsif_body = parse_conditional_body() # Parse elsif body
       expect(TokenType::RBRACE) # eat the rbrace token
-      elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition, @location)
+      elsif_stmts << Nodes::ElsifStatement.new(elsif_body, elsif_condition, @location)
     end
 
     return elsif_stmts
@@ -467,9 +467,9 @@ class Parser
       token = expect(TokenType::ASSIGN).value
       value = parse_expr()
       if token.length == 2
-        value = BinaryExpr.new(left, token[0], value, @location)
+        value = Nodes::BinaryExpr.new(left, token[0], value, @location)
       end
-      return AssignmentStmt.new(value, left, value.line)
+      return Nodes::AssignmentStmt.new(value, left, value.line)
     end
 
     return left
@@ -496,7 +496,7 @@ class Parser
     if at().type == TokenType::BINARYOPERATOR
       op = eat().value
       right = parse_expr()
-      expr = BinaryExpr.new(expr, op, right, @location)
+      expr = Nodes::BinaryExpr.new(expr, op, right, @location)
     end
 
     return expr
@@ -514,7 +514,7 @@ class Parser
     access_key = parse_expr()
     expect(TokenType::RBRACKET)
 
-    expr = ContainerAccessor.new(identifier, access_key, @location)
+    expr = Nodes::ContainerAccessor.new(identifier, access_key, @location)
     
     return at().type == TokenType::LBRACKET ? parse_accessor(expr) : expr
   end
@@ -548,7 +548,7 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
-    node = MethodCallExpr.new(expr, method_name.symbol, params, @location)
+    node = Nodes::MethodCallExpr.new(expr, method_name.symbol, params, @location)
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
     end
@@ -565,7 +565,7 @@ class Parser
   # @return [PropertyCallExpr] The property call
   #
   def parse_property_access(expr, property_name)
-    node = PropertyCallExpr.new(expr, property_name.symbol, @location)
+    node = Nodes::PropertyCallExpr.new(expr, property_name.symbol, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -585,7 +585,7 @@ class Parser
     params = parse_call_params()
 
     expect(TokenType::RPAREN) # Find ending paren
-    node = CallExpr.new(identifier, params, @location)
+    node = Nodes::CallExpr.new(identifier, params, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -623,7 +623,7 @@ class Parser
     while at().value == :"||"
       eat().value # eat the operator
       right = parse_logical_and_expr()
-      left = LogicalOrExpr.new(left, right, @location)
+      left = Nodes::LogicalOrExpr.new(left, right, @location)
     end
 
     return left
@@ -639,7 +639,7 @@ class Parser
     while at().value == :"&&"
       eat().value # eat the operator
       right = parse_comparison_expr()
-      left = LogicalAndExpr.new(left, right, @location)
+      left = Nodes::LogicalAndExpr.new(left, right, @location)
     end
 
     return left
@@ -654,7 +654,7 @@ class Parser
     while LOGICCOMPARISON.include?(at().value)
       comparetor = eat().value # eat the comparetor
       right = parse_additive_expr()
-      left = BinaryExpr.new(left, comparetor, right, @location)
+      left = Nodes::BinaryExpr.new(left, comparetor, right, @location)
     end
 
     return left
@@ -669,7 +669,7 @@ class Parser
     while ADD_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_multiplication_expr()
-      left = BinaryExpr.new(left, operator, right, @location)
+      left = Nodes::BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -684,7 +684,7 @@ class Parser
     while MULT_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_unary_expr()
-      left = BinaryExpr.new(left, operator, right, @location)
+      left = Nodes::BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -697,7 +697,7 @@ class Parser
     if %i[- + !].include?(at().value)
       operator = eat().value # eat the operator
       right = parse_primary_expr()
-      return UnaryExpr.new(right, operator, @location)
+      return Nodes::UnaryExpr.new(right, operator, @location)
     end
 
     return parse_primary_expr()
@@ -719,13 +719,13 @@ class Parser
         expr = parse_identifier()
       end
     when TokenType::INTEGER
-      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int, @location)
+      expr = Nodes::NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int, @location)
     when TokenType::FLOAT
-      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float, @location)
+      expr = Nodes::NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float, @location)
     when TokenType::BOOLEAN
-      expr = BooleanLiteral.new(eat().value == "true", @location)
+      expr = Nodes::BooleanLiteral.new(eat().value == "true", @location)
     when TokenType::STRING
-      expr = StringLiteral.new(expect(TokenType::STRING).value.to_s, @location)
+      expr = Nodes::StringLiteral.new(expect(TokenType::STRING).value.to_s, @location)
     when TokenType::HASH
       expr = parse_hash_literal()
     when TokenType::TYPE_SPECIFIER, TokenType::ARRAY_TYPE
@@ -736,10 +736,10 @@ class Parser
       expect(TokenType::RPAREN) # Eat closing paren
     when TokenType::NULL
       expect(TokenType::NULL)
-      expr = NullLiteral.new(@location)
+      expr = Nodes::NullLiteral.new(@location)
     when TokenType::NEW
       expect(TokenType::NEW)
-      expr = ClassInstance.new(parse_identifier(), @location)
+      expr = Nodes::ClassInstance.new(parse_identifier(), @location)
     else
       raise InvalidTokenError.new("Line:#{@location}: Unexpected token found: #{at().value}")
     end
@@ -751,7 +751,7 @@ class Parser
       if at().type == TokenType::BINARYOPERATOR
         op = eat().value
         right = parse_expr()
-        expr = BinaryExpr.new(expr, op, right, @location)
+        expr = Nodes::BinaryExpr.new(expr, op, right, @location)
       end
     end
 
@@ -778,6 +778,6 @@ class Parser
       expect(TokenType::RBRACKET)
     end
 
-    return ArrayLiteral.new(value, type, @location)
+    return Nodes::ArrayLiteral.new(value, type, @location)
   end
 end

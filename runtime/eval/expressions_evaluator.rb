@@ -30,7 +30,7 @@ module ExpressionsEvaluator
 
     rhs = evaluate(logic_and.right, env)
     # We have come here so we know the expr is true if the right side is true
-    BooleanVal.new(rhs.value == true)
+    Values::BooleanVal.new(rhs.value == true)
   end
 
   # Evaluates a logical OR expression.
@@ -46,7 +46,7 @@ module ExpressionsEvaluator
     end
     rhs = evaluate(logic_or.right, env)
 
-    return BooleanVal.new(rhs.value == true)
+    return Values::BooleanVal.new(rhs.value == true)
   end
 
   # Evaluates a unary expression and returns the result
@@ -58,11 +58,11 @@ module ExpressionsEvaluator
     lhs = evaluate(unary.left, env)
     case unary.op
     when :-
-      return NumberVal.new((-lhs).value, lhs.type)
+      return Values::NumberVal.new((-lhs).value, lhs.type)
     when :+
-      return NumberVal.new((+lhs).value, lhs.type)
+      return Values::NumberVal.new((+lhs).value, lhs.type)
     when :!
-      return BooleanVal.new((!lhs).value)
+      return Values::BooleanVal.new((!lhs).value)
     end
   end
 
@@ -152,7 +152,7 @@ module ExpressionsEvaluator
         raise "Line:#{ast_node.line}: Error: Array expected a index of type int but got #{access_key.type}"
       end
       # Wrap around from the back if it is negative
-      access_key = NumberVal.new(access_key.value % container.length.value, :int) if access_key.value.negative?
+      access_key = Values::NumberVal.new(access_key.value % container.length.value, :int) if access_key.value.negative?
     
       if access_key.value >= container.length.value
         raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
@@ -268,7 +268,7 @@ module ExpressionsEvaluator
     end
 
     expected_return_type = function.type_specifier.to_sym
-    return NullVal.new() if expected_return_type == :void
+    return Values::NullVal.new() if expected_return_type == :void
     
     # Check that the return value is the same type as the return type of the function
     if return_value.type != expected_return_type
@@ -317,9 +317,9 @@ module ExpressionsEvaluator
       # Convert int passed to float and float passed to int
       case func_param.value_type
       when 'int'
-        evaled_call_param = NumberVal.new(evaled_call_param.value.to_i, :int)
+        evaled_call_param = Values::NumberVal.new(evaled_call_param.value.to_i, :int)
       when 'float'
-        evaled_call_param = NumberVal.new(evaled_call_param.value.to_f, :float)
+        evaled_call_param = Values::NumberVal.new(evaled_call_param.value.to_f, :float)
       end
 
       # Declare any var params
@@ -354,7 +354,7 @@ module ExpressionsEvaluator
     # Build the hash type
     type = "Hash<#{ast_node.key_type},#{ast_node.value_type}>".to_sym
 
-    return HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
+    return Values::HashVal.new(value_hash, ast_node.key_type, ast_node.value_type, type)
   end
 
   # Evaluate a container accessor expression and return its value.
@@ -385,7 +385,7 @@ module ExpressionsEvaluator
     value = container.value[access_key]
 
     raise "Line: #{ast_node.line}: Error: Key: #{access_key} does not exist in container" if value.nil?
-    return value ? value : NullVal.new()
+    return value ? value : Values::NullVal.new()
   end
 
   #
@@ -399,7 +399,7 @@ module ExpressionsEvaluator
   def eval_class_instance(ast_node, env)
     class_instance = evaluate(ast_node.value, env).clone
     class_instance.create_instance(self)
-    return ClassVal.new(ast_node.value.symbol, class_instance)
+    return Values::ClassVal.new(ast_node.value.symbol, class_instance)
   end
 
   # Evaluates an array literal, ensuring that all elements have the correct type.
@@ -418,7 +418,7 @@ module ExpressionsEvaluator
 
     type = "#{ast_node.value_type}[]"
     
-    return ArrayVal.new(values, type)
+    return Values::ArrayVal.new(values, type)
   end
 
   # Coerces a value to a specified type, if possible.

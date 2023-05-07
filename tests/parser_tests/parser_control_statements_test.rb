@@ -94,15 +94,15 @@ class TestParserControlStatements < Test::Unit::TestCase
     ast = @parser.produce_ast('while i < 10 { i = i + 1 }')
     assert_equal(NODE_TYPES[:WHILE_LOOP], ast.body[0].type)
     condition = ast.body[0].conditions
-    assert_instance_of(BinaryExpr, condition)
+    assert_instance_of(Nodes::BinaryExpr, condition)
     assert_equal(:<, condition.op)
     assert_equal('i', condition.left.symbol)
     assert_equal(10, condition.right.value)
     body = ast.body[0].body[0]
-    assert_instance_of(AssignmentStmt, body)
+    assert_instance_of(Nodes::AssignmentStmt, body)
     assert_equal('i', body.assigne.symbol)
     assign_expr = body.value
-    assert_instance_of(BinaryExpr, assign_expr)
+    assert_instance_of(Nodes::BinaryExpr, assign_expr)
     assert_equal(:+, assign_expr.op)
     assert_equal('i', assign_expr.left.symbol)
     assert_equal(1, assign_expr.right.value)
@@ -113,14 +113,14 @@ class TestParserControlStatements < Test::Unit::TestCase
     assert_equal(NODE_TYPES[:FOR_LOOP], ast.body[0].type)
     node = ast.body[0]
     condition = node.condition
-    assert_instance_of(BinaryExpr, condition)
+    assert_instance_of(Nodes::BinaryExpr, condition)
     assert_equal(:<, condition.op)
     assert_equal('i', condition.left.symbol)
     assert_equal(10, condition.right.value)
-    assert_instance_of(AssignmentStmt, node.expr)
+    assert_instance_of(Nodes::AssignmentStmt, node.expr)
     assert_equal('i', node.expr.assigne.symbol)
     body = ast.body[0].body[0]
-    assert_instance_of(NumericLiteral, body)
+    assert_instance_of(Nodes::NumericLiteral, body)
   end
 
   def test_invalid_return_placement

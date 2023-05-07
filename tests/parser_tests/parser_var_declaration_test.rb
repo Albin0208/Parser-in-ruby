@@ -100,20 +100,20 @@ class TestParserVarDeclarations < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     class_decl = ast.body[0]
 
-    assert_instance_of(ClassDeclaration, class_decl)
+    assert_instance_of(Nodes::ClassDeclaration, class_decl)
     assert_equal('Test', class_decl.class_name.symbol)
     member_vars = class_decl.member_variables
     member_func = class_decl.member_functions
     assert_equal(2, member_vars.length)
     assert_equal(1, member_func.length)
-    assert_instance_of(VarDeclaration, member_vars[0])
+    assert_instance_of(Nodes::VarDeclaration, member_vars[0])
     assert_equal('var', member_vars[0].identifier)
     assert_equal(1, member_vars[0].value.value)
-    assert_instance_of(VarDeclaration, member_vars[1])
+    assert_instance_of(Nodes::VarDeclaration, member_vars[1])
     assert_equal('var2', member_vars[1].identifier)
     assert_equal(100, member_vars[1].value.value)
 
-    assert_instance_of(FuncDeclaration, member_func[0])
+    assert_instance_of(Nodes::FuncDeclaration, member_func[0])
     assert_equal('hello', member_func[0].identifier)
   end
 end

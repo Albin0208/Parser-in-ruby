@@ -14,7 +14,7 @@ module ExpressionValidation
       end
       return
     end
-    if expression.instance_of?(ClassInstance)
+    if expression.instance_of?(Nodes::ClassInstance)
       expression = expression.value.symbol
     else
       expression = expression.type

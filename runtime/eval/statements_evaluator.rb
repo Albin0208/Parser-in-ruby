@@ -15,7 +15,7 @@ module StatementsEvaluator
   # @param env [Environment] the environment to use for evaluation
   # @return [RunTimeVal] the result of evaluating the last statement in the program's body
   def eval_program(program, env)
-    last_eval = NullVal.new
+    last_eval = Values::NullVal.new
 
     program.body.each { |stmt| last_eval = evaluate(stmt, env) }
 
@@ -28,13 +28,13 @@ module StatementsEvaluator
   # @param env [Environment] The environment to declare the variable in.
   # @return [RunTimeVal] The evaluated value of the variable declaration.
   def eval_var_declaration(ast_node, env)
-    value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
+    value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
     unless value.instance_of?(NullVal)
       # Convert to correct data type for int and float calculations
       value = case ast_node.value_type
-              when 'int' then NumberVal.new(value.value.to_i, :int)
-              when 'float' then NumberVal.new(value.value.to_f, :float)
+              when 'int' then Values::NumberVal.new(value.value.to_i, :int)
+              when 'float' then Values::NumberVal.new(value.value.to_f, :float)
               else value
               end
     end
@@ -50,7 +50,7 @@ module StatementsEvaluator
   # 
   # @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
   def eval_hash_declaration(ast_node, env)
-    value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
+    value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
     unless value.instance_of?(NullVal)
       raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != HashVal
       # Check if key and value types match the type of the assigned hash
@@ -74,13 +74,11 @@ module StatementsEvaluator
 
 
   def eval_array_declaration(ast_node, env)
-    value = ast_node.value ? evaluate(ast_node.value, env) : NullVal.new
+    value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
     unless value.is_a?(ArrayVal)
       raise "Line:#{value.line}: Error: Can't assign value of none array type to array"
     end
-    # p ast_node.value_type
-    # p value
 
     env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.line, ast_node.constant)
   end
@@ -91,7 +89,7 @@ module StatementsEvaluator
   # @param env [Environment] the current execution environment
   # @return [RunTimeVal] the result of the last evaluated statement in the if statement
   def eval_if_statement(ast_node, env)
-    last_eval = NullVal.new
+    last_eval = Values::NullVal.new
 
     # Check if the conditions of the statement is evaled to true
     if eval_condition(ast_node.conditions, env)
@@ -143,7 +141,7 @@ module StatementsEvaluator
   # @return [RuntimeVal] The result of the evaluation
   #
   def eval_while_stmt(ast_node, env)
-    last_eval = NullVal.new
+    last_eval = Values::NullVal.new
     while eval_condition(ast_node.conditions, env)
       while_env = Environment.new(env) # Setup a new environment for the while loop
       begin
@@ -167,7 +165,7 @@ module StatementsEvaluator
   # @return [RuntimeVal] The result of the evaluation
   #
   def eval_for_stmt(ast_node, env)
-    last_eval = NullVal.new
+    last_eval = Values::NullVal.new
     cond_env = Environment.new(env)
     evaluate(ast_node.var_dec, cond_env)
     while eval_condition(ast_node.condition, cond_env)
@@ -191,7 +189,7 @@ module StatementsEvaluator
   # @param env [Environment] The environment in which to evaluate the statement.
   # @return [RunTimeVal] The result of evaluating the last statement in the loop body, or NullVal if the body was empty.
   def eval_for_each_stmt(ast_node, env)
-    last_eval = NullVal.new
+    last_eval = Values::NullVal.new
     container = evaluate(ast_node.container, env)
     value_type = container.value_type.to_s.gsub('[]', '')
 
@@ -203,13 +201,13 @@ module StatementsEvaluator
       loop_env = Environment.new(env)
       case item
       when String
-        item = StringVal.new(item)
+        item = Values::StringVal.new(item)
       when Integer
-        item = NumberVal.new(item, :int)
+        item = Values::NumberVal.new(item, :int)
       when Float
-        item = NumberVal.new(item, :float)
+        item = Values::NumberVal.new(item, :float)
       when TrueClass, FalseClass
-        item = BooleanVal.new(item)
+        item = Values::BooleanVal.new(item)
       end
 
       loop_env.declare_var(ast_node.identifier.symbol, item, value_type, ast_node.line)
