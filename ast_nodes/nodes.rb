@@ -35,14 +35,14 @@ NODE_TYPES = {
   NumericLiteral: :NumericLiteral,
   HashLiteral: :HashLiteral,
   ArrayLiteral: :ArrayLiteral,
-  Boolean: :Boolean,
+  Bool: :Bool,
   String: :String,
   Null: :Null,
   ClassInstance: :ClassInstance
 }.freeze
   
 NODE_TYPES_CONVERTER = {
-  bool: :boolean,
+  bool: :bool,
 }.freeze
 
 Dir.glob(File.join(File.dirname(__FILE__), 'nodes/*.rb')).each { |f| require f }

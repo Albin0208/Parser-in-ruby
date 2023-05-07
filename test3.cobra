@@ -40,8 +40,64 @@ class Test {
 
 }
 
-Test a = new Test(1, 20, "strion")
+func void array_test(int[] class_var) {
+  #print(class_var == as)
+  class_var.append(2)
+}
+
+func void bool_test(bool class_var) {
+  #print(class_var == as)
+  class_var = false
+}
+
+
+Test a = new Test(1, 20)
 
 int acc = a.c
 print(a.c)
 print(a.test)
+
+int[] as = int[3]
+
+int[] c = as.copy()
+as[0] = 2
+
+print(c)
+print(as)
+print()
+
+array_test(as)
+
+print(c)
+print(as)
+
+bool t = true
+
+bool f = t
+
+print(t)
+print(f)
+
+bool_test(t)
+
+print(t)
+print(f)
+
+print(a.c)
+
+func void Hash_test(Hash<string, int> class_var) {
+  #print(class_var == as)
+  class_var['3'] = 2
+}
+
+Hash<string, int> h_t = Hash<string, int>{}
+
+Hash<string, int> h_f = h_t.copy()
+
+print(h_t)
+print(h_f)
+
+Hash_test(h_t)
+
+print(h_t)
+print(h_f)

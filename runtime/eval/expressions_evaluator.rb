@@ -290,17 +290,22 @@ module Runtime
       unless function.params.length == call_params.length
         types = function.params.map(&:value_type).join(", ")
         if function.is_a?(Nodes::Constructor)
-          raise "Error: Wrong number of arguments passed to constructor"
+          raise "Error:"
         end
         raise "Line: #{function.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
       end
 
       function.params.zip(call_params) { |func_param, call_param| 
         # Grab the converter if it exits else convert to symbol
-        type = NODE_TYPES_CONVERTER[func_param.value_type.to_sym] || func_param.value_type.to_sym
+        if func_param.is_a?(Nodes::HashDeclaration)
+          # Build the hash type
+          type = "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+        else
+          type = func_param.value_type.to_sym
+        end
         evaled_call_param = evaluate(call_param, call_env)
 
-        unless evaled_call_param.type.downcase == type.downcase
+        unless evaled_call_param.type.to_s.downcase == type.to_s.downcase
           raise "Line: #{function.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
         end
       }
@@ -319,6 +324,13 @@ module Runtime
     def declare_params(function, call_params, call_env, env)
       function.params.zip(call_params) { |func_param, call_param| 
         evaled_call_param = evaluate(call_param, call_env)
+
+        if func_param.is_a?(Nodes::HashDeclaration)
+          # Build the hash type
+          type = "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+        else
+          type = func_param.value_type
+        end
         
         # Convert int passed to float and float passed to int
         case func_param.value_type
@@ -329,7 +341,7 @@ module Runtime
         end
 
         # Declare any var params
-        env.declare_var(func_param.identifier, evaled_call_param, func_param.value_type, function.line, false)
+        env.declare_var(func_param.identifier, evaled_call_param, type, function.line, false)
       }
     end
 
