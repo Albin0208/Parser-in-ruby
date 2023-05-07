@@ -11,6 +11,8 @@
          | <loop>
          | <expr>
          | <return_stmt>
+         | <break_stmt>
+         | <continue_stmt>
 
 <var_declaration> ::= "const" <type_specifier> <identifier> <var_declaration_tail>
                     | <type_specifier> <identifier> <var_declaration_tail>
@@ -73,9 +75,16 @@
 
 <loop> ::= "while" <expr> "{" <stmt_list> "}"
          | "for" <var_declaration> "," <logical_expr> "," <primary_expr> "{" <stmt_list> "}"
+         | "for" <identifier> "in" <identifier> "{" <stmt_list> "}"
 
-<assign_stmt> ::= <identifier> "=" <expr>
-                | <array_access> "=" <expr>
+<assign_stmt> ::= <identifier> <assign_operator> <expr>
+                | <array_access> <assign_operator> <expr>
+
+<assign_operator> ::= "+="
+                    | "-="
+                    | "*="
+                    | "/="
+                    | "="
 
 <func_call> ::= <identifier> "(" <func_call_params> ")"
 
@@ -87,6 +96,10 @@
 
 <return_stmt> ::= "return" <expr>
                 | "return"
+
+<break_stmt> ::= "break"
+
+<continue_stmt> ::= "continue
 
 <expr> ::= <logical_expr> 
          | <func_call>

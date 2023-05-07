@@ -209,6 +209,7 @@ class Parser
     expect(TokenType::FOR)
     for_start_location = @location
 
+    # We have a for loop over a container
     return parse_for_loop_over_container() if next_token().type == TokenType::IN
 
     var_dec = parse_var_declaration()
@@ -230,6 +231,9 @@ class Parser
     return ForStmt.new(body, condition, var_dec, expr, for_start_location)
   end
 
+  # Parses a for loop over a container and returns a ForEachStmt object.
+  #
+  # @return [ForEachStmt] The for loop statement object.
   def parse_for_loop_over_container
     identifier = parse_identifier()
     for_start_location = @location
