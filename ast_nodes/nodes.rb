@@ -8,6 +8,7 @@ NODE_TYPES = {
   Program: :Program,
   VarDeclaration: :VarDeclaration,
   HashDeclaration: :HashDeclaration,
+  ArrayDeclaration: :ArrayDeclaration,
   FuncDeclaration: :FuncDeclaration,
   ClassDeclaration: :ClassDeclaration,
   ReturnStmt: :ReturnStmt,
@@ -17,6 +18,8 @@ NODE_TYPES = {
   ELSIF: :ELSIF,
   WHILE_LOOP: :WHILE_LOOP,
   FOR_LOOP: :FOR_LOOP,
+  FOR_EACH_LOOP: :FOR_EACH_LOOP,
+  Constructor: :Constructor,
 
   # Expressions
   MethodCallExpr: :MethodCallExpr,
@@ -31,14 +34,11 @@ NODE_TYPES = {
   Identifier: :Identifier,
   NumericLiteral: :NumericLiteral,
   HashLiteral: :HashLiteral,
-  Boolean: :Boolean,
+  ArrayLiteral: :ArrayLiteral,
+  Bool: :Bool,
   String: :String,
   Null: :Null,
   ClassInstance: :ClassInstance
-}.freeze
-  
-NODE_TYPES_CONVERTER = {
-  bool: :boolean,
 }.freeze
 
 Dir.glob(File.join(File.dirname(__FILE__), 'nodes/*.rb')).each { |f| require f }

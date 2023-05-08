@@ -1,21 +1,22 @@
 require_relative 'stmt'
 
 module Nodes
-  # This class represents the ast node for a variable declaration
-  class VarDeclaration < Stmt
+    #
+    # A node representing an array declaration statement.
+    #
+  class ArrayDeclaration < Stmt
     attr_reader :value, :identifier, :constant, :value_type
 
     #
-    # Creates an var declaration node
+    # Creates a new instance of the ArrayDeclaration class.
     #
-    # @param [Boolean] constant If this var should be a constant
-    # @param [Identifier] identifier The identifier for the var
-    # @param [String] value_type What type this var is
-    # @param [Integer] line At what line the node is located
-    # @param [Expr] value The value that should be assigned or nil if only declaring
-    #
+    # @param constant [Boolean] whether this array is declared as a constant.
+    # @param identifier [Identifier] the identifier for this array.
+    # @param value_type [Symbol] the type of the values in this array.
+    # @param line [Integer] the line number where this node appears in the source code.
+    # @param value [Expr, nil] the value assigned to this array, if any.
     def initialize(constant, identifier, value_type, line, value = nil)
-      super(NODE_TYPES[:VarDeclaration], line)
+      super(NODE_TYPES[:ArrayDeclaration], line)
       @constant = constant
       @identifier = identifier
       @value_type = value_type
@@ -23,9 +24,9 @@ module Nodes
     end
 
     #
-    # Returns a string representation of the node
+    # Returns a string representation of this ArrayDeclaration node.
     #
-    # @return [String] A string representation of the node
+    # @return [String] a string representation of this ArrayDeclaration node.
     #
     def to_s
       "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"

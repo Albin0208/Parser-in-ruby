@@ -28,6 +28,9 @@ ruby main.rb
 ```
 
 ### Debug mode
+
+***Important***: Debug mode is only intended for developing the parser and not for using the language.
+
 The parser can be run in debug mode, which prints additional information to the console. To run the parser in debug mode, pass the ``-debug`` flag as follows:
 
 ```bash
@@ -41,20 +44,39 @@ ruby main.rb file_name -debug
 ```
 
 ## Generating documentations
-To generate documentation for the project, ``yard`` has to be installed. To install ``yard``, run the following command in your terminal:
+To generate documentation for the project, ``rake`` and ``yard`` has to be installed.
+If you don't have ``rake``, you can run the following command in your terminal:
+
+```bash
+gem install rake
+```
+
+To install ``yard``, run the following command in your terminal:
 
 ```bash
 gem install yard
 ```
 
-To generate the documentation, execute the following command:
+To generate the documentation for the language part use execute the following command:
 
 ```bash
-yardoc ./**/*.rb --private
+rake doc
+```
+
+
+To generate the documentation for the parser, execute the following command:
+
+***Important***: the parser documentation is only intended for developing the parser.
+
+```bash
+rake parser_doc
 ```
 
 ## Running unit tests
-To run the unit tests, you'll need to have Rake installed on your system. If you don't have Rake, you can run the following command in your terminal:
+
+***Important***: The test are only intended to be used if developing the parser and has no effect on how your code in the language is working.
+
+To run the unit tests, you'll need to have ``rake`` installed on your system. If you don't have ``rake``, you can run the following command in your terminal:
 
 ```bash
 gem install rake

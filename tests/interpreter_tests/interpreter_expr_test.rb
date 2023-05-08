@@ -4,31 +4,31 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterExpr < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
   end
 
   def test_evaluate_numeric_literal
     input = '42'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(42, result.value)
 
     # Test negative number
     input = '-42'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(-42, result.value)
   end
 
   def test_evaluate_identifier
-    @env.declare_var('x', NumberVal.new(10, :int), 'int', false)
+    @env.declare_var('x', Runtime::Values::NumberVal.new(10, :int), 'int', false)
     input = 'x'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(10, result.value)
   end
 
@@ -37,28 +37,28 @@ class TestInterpreterExpr < Test::Unit::TestCase
     input = 'true && true'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test true && false
     input = 'true && false'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
 
     # Test false && true
     input = 'false && true'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
 
     # Test false && false
     input = 'false && false'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
   end
 
@@ -67,28 +67,28 @@ class TestInterpreterExpr < Test::Unit::TestCase
     input = 'true || true'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test true || false
     input = 'true || false'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test false || true
     input = 'false || true'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     # Test false || false
     input = 'false || false'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
   end
 
@@ -97,14 +97,14 @@ class TestInterpreterExpr < Test::Unit::TestCase
     input = '-5'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(-5, result.value)
 
     # Test logical negation
     input = '!true'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
   end
 
@@ -112,32 +112,32 @@ class TestInterpreterExpr < Test::Unit::TestCase
     input = '3 - 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(-7, result.value)
 
     input = '3 * 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(30, result.value)
 
     input = '3.0 / 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(0.3, result.value)
 
     input = '3 % 2'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(1, result.value)
 
     # Test for precedence
     input = '3 + 10 * 2'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(23, result.value)
   end
 
@@ -145,49 +145,49 @@ class TestInterpreterExpr < Test::Unit::TestCase
     input = '3 < 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     input = '3 > 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
 
     input = '3.0 == 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(false, result.value)
 
     input = '3 != 2'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     input = '3 >= -4'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     input = '3 >= 3'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     input = '3 <= 3'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
 
     input = '3 <= 10'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(BooleanVal, result)
+    assert_instance_of(Runtime::Values::BooleanVal, result)
     assert_equal(true, result.value)
   end
 end

@@ -4,14 +4,14 @@
     - [x] Allow escaping a string
 - [x] Elsif
 - [x] Add new env to if statements
-- [ ] Arrays
-    - [ ] ArrayLiteral
-    - [ ] Array accessor
-- [ ] Loops
+- [x] Arrays
+    - [x] ArrayLiteral
+    - [x] Array accessor
+- [x] Loops
     - [x] While loop
     - [x] For loop
         - [x] Fix so not every stmt are ok to have in the expr part
-    - [ ] Loop over containers
+    - [x] Loop over containers
     - [x] Break statement to exit early
     - [x] Continue statement to continue next iteration instead
 - [x] Native functions, like print() and so on
@@ -33,11 +33,14 @@
 - [x] Don't allow returns outside functions
 - [x] Fixa så att continue och break inte finns utanför loopar
 - [x] Property access for objects (Probably best to implement classes first)
-- [ ] Classes
+- [x] Classes
     - [ ] Inheritance
+- [ ] Array of Hashes not working
+
+- [ ] Add yarddoc generation for just the language parts, such as all the values and how to use them
 
 # Fix wonky stuff
-- [ ] Fix problem when a identifier such as a class is printed it show the whole class node.
+- [x] Fix problem when a identifier such as a class is printed it show the whole class node.
 - [x] Fix so when an hash is printed it prints the value if it exist
 - [x] Fix so a hash of hashes are ok
 - [x] Fix with nested hashes so the expected error msg is correct

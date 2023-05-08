@@ -1,0 +1,44 @@
+int[] a = int[1, 2.0]
+
+a[-2] = 3.0
+print(a)
+
+print(a[-2])
+print(a[-3])
+
+print("")
+a.append(3).append(4)
+print(a)
+print(a == int[3, 2])
+
+print(a.pop())
+print("")
+print(a)
+print("")
+
+print(a.remove_at(1))
+
+print()
+print(a)
+
+#Hash<string, int>[] abc = Hash<string, int>[]
+
+#abc.append(Hash<string, int>{'a'= 2})
+
+
+Hash<string, int> tc =  Hash<string, int> { 'c' = 2, 'v' = 4}
+print("Keys")
+print(tc.keys())
+print()
+
+print(a)
+int[] c = int[]
+
+for item in tc.values(){
+    print(item)
+    c.append(item)
+}
+
+
+print(a)
+print(c)

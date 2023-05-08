@@ -10,10 +10,12 @@
          | <assign_stmt>
          | <loop>
          | <expr>
-         | "return" <expr>
+         | <return_stmt>
+         | <break_stmt>
+         | <continue_stmt>
 
-<var_declaration> ::= "const" <type_specifier> <identifier> <var_declaration_tail>
-                    | <type_specifier> <identifier> <var_declaration_tail>
+<var_declaration> ::= "const" <type_specifier | identifier> <identifier> <var_declaration_tail>
+                    | <type_specifier | identifier> <identifier> <var_declaration_tail>
                     | "const" <array_type_specifier> <identifier> <array_declaration_tail>
                     | <array_type_specifier> <identifier> <array_declaration_tail>
                     | "const" <hash_type_specifier> <identifier> <hash_declaration_tail>
@@ -25,8 +27,8 @@
 <array_declaration_tail> ::= "=" <array_literal>
                            | empty
 
-<array_literal> ::= "[" <expr> <array_literal_tail> "]"
-                  | "[" "]"
+<array_literal> ::= <type_specifier>"[" <expr> <array_literal_tail> "]"
+                  | <type_specifier>"[" "]"
 
 <array_literal_tail> ::= "," <expr> <array_literal_tail>
                        | empty
@@ -34,8 +36,8 @@
 <hash_declaration_tail> ::= "=" <hash_literal>
                            | empty
 
-<hash_literal> ::= "{" <identifier> "=" <expr> <hash_literal_tail> "}"
-                  | "{" "}"
+<hash_literal> ::= <hash_type_specifier>"{" <identifier> "=" <expr> <hash_literal_tail> "}"
+                  | <hash_type_specifier>"{" "}"
 
 <hash_literal_tail> ::= "," <identifier> "=" <expr>  <hash_literal_tail>
                        | empty
@@ -60,8 +62,9 @@
 <type_specifier> ::= "int" | "float" | "bool" | "string" | <array_type_specifier>
 
 <array_type_specifier> ::= <type_specifier> "[]"
+                         | <identifier> "[]"
 
-<hash_type_specifier> ::= "Hash<" <type_specifier> "," <type_specifier | array_type_specifier> ">"
+<hash_type_specifier> ::= "Hash<" <type_specifier> "," <type_specifier | identifier> ">"
 
 <conditional> ::= "if" <expr> "{" <stmt_list> "}" <elsif_block> <else_block>
 
@@ -73,9 +76,16 @@
 
 <loop> ::= "while" <expr> "{" <stmt_list> "}"
          | "for" <var_declaration> "," <logical_expr> "," <primary_expr> "{" <stmt_list> "}"
+         | "for" <identifier> "in" <identifier> "{" <stmt_list> "}"
 
-<assign_stmt> ::= <identifier> "=" <expr>
-                | <array_access> "=" <expr>
+<assign_stmt> ::= <identifier> <assign_operator> <expr>
+                | <container_access> <assign_operator> <expr>
+
+<assign_operator> ::= "+="
+                    | "-="
+                    | "*="
+                    | "/="
+                    | "="
 
 <func_call> ::= <identifier> "(" <func_call_params> ")"
 
@@ -85,9 +95,22 @@
 <opt_func_call_params> ::= "," <expr> <opt_func_call_params>
                          | empty
 
+<return_stmt> ::= "return" <expr>
+                | "return"
+
+<break_stmt> ::= "break"
+
+<continue_stmt> ::= "continue"
+
 <expr> ::= <logical_expr> 
          | <func_call>
+         | <method_call>
+         | <property_call>
          | <primary_expr>
+
+<method_call> ::= <expr> "." <func_call>
+
+<property_call> ::= <expr> "." <expr>
 
 <logical_expr> ::= <logical_and_expr> | <logical_or_expr>
 
@@ -104,27 +127,27 @@
 <unary_expr> ::= ("+" | "-" | "!") <primary_expr>
 
 <primary_expr> ::= <identifier> 
-                 | <array_access>
-                 | <hash_access>
+                 | <container_access>
                  | <numeric_literal> 
                  | <boolean_literal>
+                 | <string_literal>
+                 | <hash_literal>
+                 | <array_literal>
                  | "(" <expr> ")"
                  | <class_instance>
 
+<class_instance> ::= "new" <identifier>
+                   | "new" <identifier> "(" <func_call_params> ")"
 
-<class_instance> ::= <identifier> "." "new" "(" ")"
-                   | <identifier> "." "new" "(" <func_call_params> ")"
-<class_instance> ::= new <identifier>
-                   | new <identifier> "(" <func_call_params> ")"
-
-<array_access> ::= <identifier> "[" <expr> "]"
-
-<hash_access> ::= <identifier> "[" <expr> "]"
+<container_access> ::= <identifier> "[" <expr> "]"
 
 <identifier> ::= /[a-zA-Z_][a-zA-Z0-9_]*/
 
 <numeric_literal> ::= /[0-9]+ ( "." [0-9]+ )?/
 
 <boolean_literal> ::= "true" | "false"
+
+<string_literal> ::= '"' /.*/ '"'
+                   | "'" /.*/ "'"
 
 <logical_comparator> ::= "<" | ">" | "<=" | ">=" | "==" | "!="

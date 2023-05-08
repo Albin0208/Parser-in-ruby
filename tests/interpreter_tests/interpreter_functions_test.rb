@@ -4,8 +4,8 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterFunctions < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
   end
 
   def test_evaluate_func_declaration
@@ -17,7 +17,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
     assert_equal(1, identifiers.length)
     assert_true(identifiers.key?('test'))
     test_func = identifiers['test']
-    assert_instance_of(FuncDeclaration, test_func)
+    assert_instance_of(Nodes::FuncDeclaration, test_func)
     assert_equal('void', test_func.type_specifier)
     assert_empty(test_func.params)
     assert_empty(test_func.body)
@@ -30,7 +30,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
     assert_equal(2, identifiers.length)
     assert_true(identifiers.key?('test2'))
     test_func = identifiers['test2']
-    assert_instance_of(FuncDeclaration, test_func)
+    assert_instance_of(Nodes::FuncDeclaration, test_func)
     assert_equal('int', test_func.type_specifier)
     assert_empty(test_func.params)
     assert_equal(1, test_func.body.length)
@@ -44,12 +44,12 @@ class TestInterpreterFunctions < Test::Unit::TestCase
     assert_equal(1, identifiers.length)
     assert_true(identifiers.key?('add'))
     test_func = identifiers['add']
-    assert_instance_of(FuncDeclaration, test_func)
+    assert_instance_of(Nodes::FuncDeclaration, test_func)
     assert_equal('int', test_func.type_specifier)
     assert_equal(2, test_func.params.length)
-    assert_instance_of(VarDeclaration, test_func.params[0])
-    assert_instance_of(VarDeclaration, test_func.params[1])
-    assert_instance_of(ReturnStmt, test_func.body[0])
+    assert_instance_of(Nodes::VarDeclaration, test_func.params[0])
+    assert_instance_of(Nodes::VarDeclaration, test_func.params[1])
+    assert_instance_of(Nodes::ReturnStmt, test_func.body[0])
   end
 
   def test_evaluate_func_call
@@ -57,7 +57,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              test()"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(2, result.value)
   end
 
@@ -66,7 +66,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              add(2, 3)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(5, result.value)
   end
 
@@ -78,7 +78,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              factorial(3)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(6, result.value)
   end
 
@@ -87,7 +87,7 @@ class TestInterpreterFunctions < Test::Unit::TestCase
              add(2, 3) * add(3, 3) - add(-24, 24)"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(30, result.value)
   end
 

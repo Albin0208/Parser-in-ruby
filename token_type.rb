@@ -12,9 +12,6 @@ class TokenType
   BOOLEAN = :BOOLEAN
   STRING = :STRING
   ##########################
-  #        Literals        #
-  ##########################
-  ##########################
   #   Control Statements   #
   ##########################
   IF = :IF
@@ -33,7 +30,12 @@ class TokenType
   VOID = :VOID
   RETURN = :RETURN
   HASH = :HASH
-
+  IN = :IN
+  CLASS = :CLASS
+  CONSTRUCTOR = :CONSTRUCTOR
+  ##########################
+  #        Other        #
+  ##########################
   COMMA = :COMMA
   DOT = :DOT
   ASSIGN = :ASSIGN
@@ -42,7 +44,6 @@ class TokenType
   UNARYOPERATOR = :UNARYOPERATOR
   BINARYOPERATOR = :BINARYOPERATOR
   IDENTIFIER = :IDENTIFIER
-  CLASS = :CLASS
   LPAREN = :LPAREN
   RPAREN = :RPAREN
   LBRACE = :LBRACE
@@ -51,7 +52,6 @@ class TokenType
   RBRACKET = :RBRACKET
   EOF = :EOF
   NEW = :NEW
-
   FUNC_CALL = :FUNC_CALL
 end
 

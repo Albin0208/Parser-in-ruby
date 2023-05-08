@@ -10,7 +10,7 @@ TOKEN_TYPES = [
   [:integer, /\A\d+(\.\d+)?/],
   [:string, /\A("|')(?:\\.|[^\\"])*?("|')/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
-  [:assign, /\A(\+=)|(\-=)|(\*=)|(\/=)|(=)/],
+  [:assign, /\A([\+\-\/\*]=)|(=)/],
   [:unaryOperator, /\A[-+!]/],
   [:binaryoperator, %r{\A[+\-*/%]}],
   [:logical, /\A((&&)|(\|\|))/],
@@ -20,15 +20,17 @@ TOKEN_TYPES = [
   [:rbrace, /\A\}/],
   [:lbracket, /\A\[/],
   [:rbracket, /\A\]/],
-  [:array_type, /\A.*?\[\]/], # array_type
+  [:array_type, /\A([a-z]|_[a-z])\w*?\[\]/i], # array_type
   [:identifier, /\A([a-z]|_[a-z])\w*/i],
   [:comma, /\A,/],
   [:dot, /\A\./],
 ].to_h.freeze
 
+# @return [Symbol] The matching tokentype for that keyword
 KEYWORDS = {
   const: TokenType::CONST,
   class: TokenType::CLASS,
+  Constructor: TokenType::CONSTRUCTOR,
   func: TokenType::FUNC,
   if: TokenType::IF,
   elsif: TokenType::ELSIF,
@@ -41,6 +43,7 @@ KEYWORDS = {
   break: TokenType::BREAK,
   continue: TokenType::CONTINUE,
   new: TokenType::NEW,
+  in: TokenType::IN,
 
   # Loops
   for: TokenType::FOR,
@@ -295,8 +298,6 @@ class Lexer
   def handle_identifier_match(match)
     # Check if it is a keyword
     return create_token(match, KEYWORDS[match.to_sym], 'Found keyword token') if KEYWORDS.key?(match.to_sym)
-    # Check if a class type
-    # return create_token(match, TokenType::CLASS_TYPE, 'Found class type token') if match.match?(/[A-Z][a-zA-Z0-9_]*/) && @tokens[-2]&.type != TokenType::FUNC
 
     # If not it is a user defined keyword
     return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')

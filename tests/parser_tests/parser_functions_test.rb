@@ -40,7 +40,7 @@ class TestParserFunctions < Test::Unit::TestCase
   def test_parse_void_function
     ast = @parser.produce_ast('func void test() { 1 }')
     body = ast.body[0]
-    assert_instance_of(FuncDeclaration, body)
+    assert_instance_of(Nodes::FuncDeclaration, body)
     assert_equal(body.identifier, 'test')
     assert_equal(body.type_specifier, 'void')
     assert_empty(body.params)
@@ -55,20 +55,20 @@ class TestParserFunctions < Test::Unit::TestCase
   def test_parse_func_with_return_stmt
     ast = @parser.produce_ast('func int test() { return 1 }')
     body = ast.body[0]
-    assert_instance_of(FuncDeclaration, body)
+    assert_instance_of(Nodes::FuncDeclaration, body)
     assert_equal(body.identifier, 'test')
     assert_equal(body.type_specifier, 'int')
     assert_empty(body.params)
     assert_equal(1, body.body.length)
     return_stmt = body.body[0]
-    assert_instance_of(NumericLiteral, return_stmt.body)
+    assert_instance_of(Nodes::NumericLiteral, return_stmt.body)
     assert_equal(1, return_stmt.body.value)
   end
 
   def test_parse_func_call
     ast = @parser.produce_ast('test()')
     body = ast.body[0]
-    assert_instance_of(CallExpr, body)
+    assert_instance_of(Nodes::CallExpr, body)
     assert_equal('test', body.func_name.symbol)
     assert_empty(body.params)
   end
@@ -76,12 +76,12 @@ class TestParserFunctions < Test::Unit::TestCase
   def test_parse_func_call_with_params
     ast = @parser.produce_ast('test(bot(), 2)')
     body = ast.body[0]
-    assert_instance_of(CallExpr, body)
+    assert_instance_of(Nodes::CallExpr, body)
     assert_equal('test', body.func_name.symbol)
     params = body.params
     assert_not_empty(params)
     assert_equal(2, params.length)
-    assert_instance_of(CallExpr, params[0])
+    assert_instance_of(Nodes::CallExpr, params[0])
     assert_equal('bot', params[0].func_name.symbol)
     assert_empty(params[0].params)
     assert_equal(2, params[1].value)

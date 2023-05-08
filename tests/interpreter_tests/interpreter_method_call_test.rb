@@ -4,18 +4,10 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterMethodCall < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
     @env.setup_native_functions
   end
-
-  #   def test_evaluate_print_method
-  #     input = "print(2)"
-
-  #     ast = @parser.produce_ast(input)
-
-  #     @interpreter.evaluate(ast, @env)
-  #   end
 
   def test_evaluate_type_method
     input = '1.type()'
@@ -72,14 +64,14 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
     input = '1.to_float()'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(:float, result.type)
     assert_equal(1.0, result.value)
 
     input = '1.4.to_int()'
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(:int, result.type)
     assert_equal(1, result.value)
   end

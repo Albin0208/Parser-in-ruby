@@ -2,6 +2,7 @@ require_relative '../ast_nodes/nodes'
 require_relative '../lexer/lexer'
 require_relative '../token_type'
 require_relative '../errors/errors'
+require_relative 'helpers/helpers'
 
 require 'logger'
 
@@ -9,6 +10,10 @@ require 'logger'
 # This is the parser which produces a AST from a list of tokens
 #
 class Parser
+  include TokenNavigation
+  include ExpressionValidation
+  include HashValidation
+  include FunctionHelpers
   #
   # Creates the parser
   #
@@ -34,7 +39,7 @@ class Parser
   def produce_ast(source_code)
     @tokens = Lexer.new(source_code, @logging).tokenize
     puts @tokens.map(&:to_s).inspect if @logging # Display the tokens list 
-    program = Program.new([])
+    program = Nodes::Program.new([], @location)
     # Parse until end of file
     program.body.append(parse_stmt()) while not_eof()
 
@@ -48,7 +53,7 @@ class Parser
   # @return [Stmt] The statement parsed as a AST node
   def parse_stmt
     case at().type
-    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER
+    when TokenType::CONST, TokenType::TYPE_SPECIFIER, TokenType::HASH, TokenType::IDENTIFIER, TokenType::ARRAY_TYPE
       if at().type == TokenType::IDENTIFIER && next_token().type != TokenType::IDENTIFIER
         return parse_assignment_stmt()
       end
@@ -64,13 +69,13 @@ class Parser
     when TokenType::RETURN
       return parse_return()
     when TokenType::BREAK
-      raise "Line:#{@location}: Error: Break cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().line}: Error: Break cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::BREAK)
-      return BreakStmt.new()
+      return Nodes::BreakStmt.new(at().line)
     when TokenType::CONTINUE
-      raise "Line:#{@location}: Error: Continue cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().line}: Error: Continue cannot be used outside of loops" unless @parsing_loop
       expect(TokenType::CONTINUE)
-      return ContinueStmt.new()
+      return Nodes::ContinueStmt.new(at().line)
     else
       return parse_expr()
     end
@@ -81,15 +86,22 @@ class Parser
   # @return [ClassDeclaration] The ClassDeclaration AST node.
   def parse_class_declaration 
     expect(TokenType::CLASS)
-
+    
     class_name = parse_identifier()
+    decl_location = class_name.line
     member_variables = []
     member_functions = []
     expect(TokenType::LBRACE)
 
+    constructors = []
+
     # Parse all class members
     while at().type != TokenType::RBRACE
-      stmt = parse_stmt()
+      if at().type == TokenType::CONSTRUCTOR
+        stmt = parse_constuctor()
+      else
+        stmt = parse_stmt()
+      end
 
       # Check if the stmt is a func- or varDeclaration
       case stmt.type
@@ -97,12 +109,57 @@ class Parser
         member_functions << stmt
       when :VarDeclaration, :HashDeclaration
         member_variables << stmt
+      when :Constructor
+        # Check if the same constructor already has been declared
+        if constructor_already_exists?(constructors, stmt)
+          raise "Line:#{stmt.line}: Error: Constructor already declared with the same parameters"
+        end
+
+        constructors << stmt
       end
     end
     expect(TokenType::RBRACE)
 
-    return ClassDeclaration.new(class_name, member_variables, member_functions)
+    return Nodes::ClassDeclaration.new(class_name, constructors, member_variables, member_functions, decl_location)
   end
+
+  # Checks if a constructor with the same signature as the given constructor statement
+  # already exists in the array of constructors.
+  #
+  # @param constructors [Array] The array of constructors to check.
+  # @param stmt [Constructor] The constructor statement to compare with existing constructors.
+  # @return [Boolean] Returns true if a constructor with the same signature exists, false otherwise.
+  def constructor_already_exists?(constructors, stmt)
+    constructors.each() do |c|
+      # If they have the same amount of params check if they are the same
+      if c.params.length == stmt.params.length
+        c.params.each_with_index() do |param, index|
+          # Return false if they have different value type
+          return false if param.value_type != stmt.params[index].value_type
+        end
+        # All the params have the same value type so return true
+        return true
+      end
+    end
+    return false
+  end
+
+  # Parses a constructor declaration.
+  #
+  # @return [Constructor] The parsed constructor.
+  def parse_constuctor
+    expect(TokenType::CONSTRUCTOR)
+    expect(TokenType::LPAREN)
+    line = @location
+    params = parse_function_params()
+    expect(TokenType::RPAREN)
+
+    expect(TokenType::LBRACE)
+    body, _ = parse_function_body()
+    expect(TokenType::RBRACE)
+
+    return Nodes::Constructor.new(params, body, line)
+  end 
 
   #
   # Parse a hash declaration
@@ -113,13 +170,13 @@ class Parser
   def parse_hash_declaration(is_const)
     key_type, value_type = parse_hash_type_specifier()
 
-    identifier = parse_identifier().symbol
+    identifier = parse_identifier()
 
     if at().type != TokenType::ASSIGN
-      return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, nil) unless is_const
+      return Nodes::HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, nil) unless is_const
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
+      raise NameError, "Line:#{identifier.line}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
     expect(TokenType::ASSIGN)
@@ -131,7 +188,7 @@ class Parser
       expression = parse_hash_literal()
     end
 
-    return HashDeclaration.new(is_const, identifier, key_type.to_sym, value_type, expression)
+    return Nodes::HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, expression)
   end
 
   #
@@ -151,64 +208,28 @@ class Parser
     while at().type != TokenType::RBRACE
       key = parse_expr()
 
-      # Check if key allready has been defined
-      if key.type != NODE_TYPES[:Identifier] && keys.include?(key)
-        raise "Line:#{@location}: Error: Key: '#{key}' already exists in hash"
+      # Check if key already has been defined
+      if key_in_hash?(key, keys)#keys.include?(key.value)
+        raise "Line:#{@location}: Error: Key: #{key} already exists in hash"
       end
+      keys << key if key.is_a?(Nodes::StringLiteral) # Add the key
       validate_assignment_type(key, key_type) # Validate that the type is correct
 
       expect(TokenType::ASSIGN)
       value = parse_expr()
 
-      #validate_assignment_type(value, value_type) # Validate that the type is correct
+      # validate_assignment_type(value, value_type) # Validate that the type is correct
       key_value_pairs << { key: key, value: value} # Create a new pair
 
-      keys << key # Add the key
       eat() if at().type == TokenType::COMMA # The comma token
     end
 
     expect(TokenType::RBRACE) # Get the closing brace
 
-    return HashLiteral.new(key_value_pairs, key_type.to_sym, value_type)
+    return Nodes::HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
   end
 
-  #
-  # Parses the hash_type specifier
-  #
-  # @return [String & String] The key and value types
-  #
-  def parse_hash_type_specifier
-    expect(TokenType::HASH)
 
-    hash_type = expect(TokenType::HASH_TYPE).value.to_s
-
-    hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
-    hash_type = parse_nested_hash(hash_type)
-    value_type = hash_type[1]
-    if value_type.is_a?(Array)
-      pretty_type = ""
-      flatt_type = value_type.flatten
-      flatt_type.flatten.each_with_index() { |type, index| 
-        if index < flatt_type.flatten.length - 1
-          pretty_type << "Hash<#{type},"
-        else
-          pretty_type << "#{type}"
-        end
-      }
-      pretty_type << '>' * (flatt_type.flatten.length - 1)
-      value_type = pretty_type
-    end
-
-    return hash_type[0], value_type.to_sym
-  end
-
-  def parse_nested_hash(hash_type)
-    if hash_type.length == 1
-      return hash_type.first.to_sym
-    end
-
-    return [hash_type.shift.to_sym, parse_nested_hash(hash_type)]
-  end
 
   #
   # Parse loops
@@ -235,6 +256,11 @@ class Parser
   def parse_for_stmt
     @parsing_loop = true
     expect(TokenType::FOR)
+    
+    # We have a for loop over a container
+    return parse_for_loop_over_container() if next_token().type == TokenType::IN
+    
+    for_start_location = @location
     var_dec = parse_var_declaration()
     raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
     expect(TokenType::COMMA)
@@ -242,7 +268,7 @@ class Parser
     expect(TokenType::COMMA)
     expr = parse_stmt()
     # Don't allow for every stmt, only assignstatement and expressions
-    unless expr.is_a?(Expr) || expr.is_a?(AssignmentStmt)
+    unless expr.is_a?(Nodes::Expr) || expr.is_a?(Nodes::AssignmentStmt)
       raise "Line:#{@location}: Error: Wrong type of expression given"
     end
 
@@ -251,7 +277,24 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return ForStmt.new(body, condition, var_dec, expr)
+    return Nodes::ForStmt.new(body, condition, var_dec, expr, for_start_location)
+  end
+
+  # Parses a for loop over a container and returns a ForEachStmt object.
+  #
+  # @return [ForEachStmt] The for loop statement object.
+  def parse_for_loop_over_container
+    identifier = parse_identifier()
+    for_start_location = @location
+    expect(TokenType::IN)
+    container = parse_expr()
+
+    expect(TokenType::LBRACE)
+    body = parse_conditional_body()
+    expect(TokenType::RBRACE)
+
+    @parsing_loop = false
+    return Nodes::ForEachStmt.new(body, identifier, container, for_start_location)
   end
 
   # Parses a while loop statement.
@@ -269,7 +312,7 @@ class Parser
     expect(TokenType::RBRACE)
 
     @parsing_loop = false
-    return WhileStmt.new(body, condition)
+    return Nodes::WhileStmt.new(body, condition, @location)
   end
 
   #
@@ -278,7 +321,7 @@ class Parser
   # @return [Expr] An expression matching the tokens
   #
   def parse_identifier
-    return Identifier.new(expect(TokenType::IDENTIFIER).value)
+    return Nodes::Identifier.new(expect(TokenType::IDENTIFIER).value, @location)
     
   end
 
@@ -293,7 +336,7 @@ class Parser
     expect(TokenType::RETURN)
     expr = parse_expr()
 
-    return ReturnStmt.new(expr)
+    return Nodes::ReturnStmt.new(expr, @location)
   end
 
   # Parse a variable declaration
@@ -308,12 +351,14 @@ class Parser
 
     return parse_hash_declaration(is_const) if at().type == TokenType::HASH
 
+    return parse_array_declaration(is_const) if at().type == TokenType::ARRAY_TYPE
+
     type_specifier = expect(TokenType::TYPE_SPECIFIER, TokenType::IDENTIFIER).value # Get what type the var should be
 
     identifier = parse_identifier().symbol
     
     if at().type != TokenType::ASSIGN
-      return VarDeclaration.new(is_const, identifier, type_specifier, nil) unless is_const
+      return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, @location, nil) unless is_const
       raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
@@ -322,51 +367,31 @@ class Parser
 
     validate_assignment_type(expression, type_specifier) # Validate that the type is correct
 
-    return VarDeclaration.new(is_const, identifier, type_specifier, expression)
+    return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, expression.line, expression)
   end
 
-  # Validate that we are trying to assign a correct type to our variable.
+  # Parses an array declaration and returns an AST node representing the declaration.
   #
-  # @param [Expr] expression The expression we want to validate
-  # @param [String] type What type we are trying to assign to
-  def validate_assignment_type(expression, type)
-    return unless [:NumericLiteral, :String, :Boolean, :HashLiteral].include?(expression.type) # We can't know what type will be given until runtime of it is a func call and so on
+  # @param [Boolean] is_const A flag indicating whether the array is a constant
+  # @return [ArrayDeclaration] An AST node representing the array declaration
+  # @raise [NameError] if a constant is not initialized upon creation
+  # @raise [SyntaxError] if the type of the assigned expression is not compatible with the declared type
+  def parse_array_declaration(is_const)
+    type = expect(TokenType::ARRAY_TYPE).value
 
-    if !expression.instance_variable_defined?(:@value)
-      if expression.type != NODE_TYPES[:CallExpr]
-        validate_assignment_type(expression.left, type)
-        validate_assignment_type(expression.right, type) if expression.instance_variable_defined?(:@right)
-      end
-      return
-    end
-    if expression.instance_of?(ClassInstance)
-      expression = expression.value.symbol
-    else
-      expression = expression.type
+    identifier = parse_identifier()
+
+    if at().type != TokenType::ASSIGN
+      return Nodes::ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, nil) unless is_const
+      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
     end
 
-    unless valid_assignment_type?(expression, type)
-      raise InvalidTokenError, "Line:#{@location}: Error: Can't assign #{expression} value to value of type #{type}"
-    end
-  end
+    expect(TokenType::ASSIGN)
+    expression = parse_expr()
+    
+    validate_assignment_type(expression, type) # Validate that the type is correct
 
-  # Checks whether a given expression type is valid for a variable of a certain type.
-  #
-  # @param expression_type [String] What type the expression is
-  # @param expected_type [String] The expected type for the expression
-  #
-  # @return [Boolean] true if the expression type is valid for the variable type otherwise false
-  def valid_assignment_type?(expression_type, expected_type)
-    return case expected_type.to_sym
-          when :int, :float
-            [NODE_TYPES[:NumericLiteral], NODE_TYPES[:Identifier]].include?(expression_type)
-          when :bool
-            [NODE_TYPES[:Boolean], NODE_TYPES[:Identifier]].include?(expression_type)
-          when :string
-            [NODE_TYPES[:String], NODE_TYPES[:Identifier]].include?(expression_type)
-          else
-            expression_type.to_sym == expected_type.to_sym
-          end
+    return Nodes::ArrayDeclaration.new(is_const, identifier.symbol, type, identifier.line, expression)
   end
 
   #
@@ -377,6 +402,7 @@ class Parser
   def parse_function_declaration
     expect(TokenType::FUNC) # Eat the func keyword
     @parsing_function = true
+    func_location = @location
 
     if at().type == TokenType::HASH
       return_type = "#{expect(TokenType::HASH).value}#{expect(TokenType::HASH_TYPE).value.to_s.delete(' ')}"
@@ -399,63 +425,8 @@ class Parser
     end
     expect(TokenType::RBRACE) # End of function body
     @parsing_function = false
-    return FuncDeclaration.new(return_type, identifier, params, body)
-  end
 
-  #
-  # Parses a function body and gets if it has a return statement
-  #
-  # @return [Array & Boolean] Return the list of all statments and if the body has a return statment
-  #
-  def parse_function_body
-    body = []
-    has_return_stmt = false
-    while at().type != TokenType::RBRACE
-      stmt = parse_stmt()
-      # Don't allow for function declaration inside a function
-      raise "Line:#{@location}: Error: A function declaration is not allowed inside another function" if stmt.type == NODE_TYPES[:FuncDeclaration]
-      
-      has_return_stmt ||= has_return_statement?(stmt) # ||= Sets has_return to true if it is false and keeps it true even if has_return_statements returns false
-
-      body << stmt
-    end
-
-    return body, has_return_stmt
-  end
-
-  #
-  # Recursivly check if the statment has any return statments
-  #
-  # @param [Stmt] stmt The statement to check
-  #
-  # @return [Boolean] True if ReturnStmt exits otherwise false
-  #
-  def has_return_statement?(stmt)
-    if stmt.instance_of?(ReturnStmt)
-      return true
-    elsif stmt.instance_variable_defined?(:@body)
-      return stmt.body.any? { |s| has_return_statement?(s) }
-    else
-      return false
-    end
-  end
-
-  #
-  # Parses the functions params
-  #
-  # @return [Array] A list of all the params of the function
-  #
-  def parse_function_params
-    params = []
-    if at().type != TokenType::RPAREN
-      params << parse_var_declaration()
-      while at().type == TokenType::COMMA
-        expect(TokenType::COMMA)
-        params << parse_var_declaration()
-      end
-    end
-
-    return params
+    return Nodes::FuncDeclaration.new(return_type, identifier, params, body, func_location)
   end
 
   # Parses conditional statments such as if, else if and else
@@ -473,7 +444,7 @@ class Parser
     elsif_stmts = parse_elsif_statements() # Parse else ifs
     else_body = parse_else_statement() # Parse Else
 
-    return IfStatement.new(if_body, if_condition, else_body, elsif_stmts)
+    return Nodes::IfStatement.new(if_body, if_condition, else_body, elsif_stmts, @location)
   end
 
   #
@@ -489,7 +460,7 @@ class Parser
       expect(TokenType::LBRACE) # eat lbrace token
       elsif_body = parse_conditional_body() # Parse elsif body
       expect(TokenType::RBRACE) # eat the rbrace token
-      elsif_stmts << ElsifStatement.new(elsif_body, elsif_condition)
+      elsif_stmts << Nodes::ElsifStatement.new(elsif_body, elsif_condition, @location)
     end
 
     return elsif_stmts
@@ -551,9 +522,9 @@ class Parser
       token = expect(TokenType::ASSIGN).value
       value = parse_expr()
       if token.length == 2
-        value = BinaryExpr.new(left, token[0], value)
+        value = Nodes::BinaryExpr.new(left, token[0], value, @location)
       end
-      return AssignmentStmt.new(value, left)
+      return Nodes::AssignmentStmt.new(value, left, value.line)
     end
 
     return left
@@ -580,7 +551,7 @@ class Parser
     if at().type == TokenType::BINARYOPERATOR
       op = eat().value
       right = parse_expr()
-      expr = BinaryExpr.new(expr, op, right)
+      expr = Nodes::BinaryExpr.new(expr, op, right, @location)
     end
 
     return expr
@@ -589,7 +560,7 @@ class Parser
   #
   # Parses an accessor for a array or hash
   #
-  # @params [ContainerAccessor] prev_node if we have a chained access, get the last node
+  # @param [ContainerAccessor, nil] prev_node if we have a chained access, get the last node
   # @return [ContainerAccessor] The accessor for a container
   #
   def parse_accessor(prev_node = nil)
@@ -598,7 +569,7 @@ class Parser
     access_key = parse_expr()
     expect(TokenType::RBRACKET)
 
-    expr = ContainerAccessor.new(identifier, access_key)
+    expr = Nodes::ContainerAccessor.new(identifier, access_key, @location)
     
     return at().type == TokenType::LBRACKET ? parse_accessor(expr) : expr
   end
@@ -632,7 +603,7 @@ class Parser
     expect(TokenType::LPAREN)
     params = parse_call_params()
     expect(TokenType::RPAREN)
-    node = MethodCallExpr.new(expr, method_name.symbol, params)
+    node = Nodes::MethodCallExpr.new(expr, method_name.symbol, params, @location)
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
     end
@@ -649,7 +620,7 @@ class Parser
   # @return [PropertyCallExpr] The property call
   #
   def parse_property_access(expr, property_name)
-    node = PropertyCallExpr.new(expr, property_name.symbol)
+    node = Nodes::PropertyCallExpr.new(expr, property_name.symbol, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -669,7 +640,7 @@ class Parser
     params = parse_call_params()
 
     expect(TokenType::RPAREN) # Find ending paren
-    node = CallExpr.new(identifier, params)
+    node = Nodes::CallExpr.new(identifier, params, @location)
 
     while at().type == TokenType::LBRACKET
       node = parse_accessor(node)
@@ -707,7 +678,7 @@ class Parser
     while at().value == :"||"
       eat().value # eat the operator
       right = parse_logical_and_expr()
-      left = LogicalOrExpr.new(left, right)
+      left = Nodes::LogicalOrExpr.new(left, right, @location)
     end
 
     return left
@@ -723,7 +694,7 @@ class Parser
     while at().value == :"&&"
       eat().value # eat the operator
       right = parse_comparison_expr()
-      left = LogicalAndExpr.new(left, right)
+      left = Nodes::LogicalAndExpr.new(left, right, @location)
     end
 
     return left
@@ -738,7 +709,7 @@ class Parser
     while LOGICCOMPARISON.include?(at().value)
       comparetor = eat().value # eat the comparetor
       right = parse_additive_expr()
-      left = BinaryExpr.new(left, comparetor, right)
+      left = Nodes::BinaryExpr.new(left, comparetor, right, @location)
     end
 
     return left
@@ -753,7 +724,7 @@ class Parser
     while ADD_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_multiplication_expr()
-      left = BinaryExpr.new(left, operator, right)
+      left = Nodes::BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -768,7 +739,7 @@ class Parser
     while MULT_OPS.include?(at().value)
       operator = eat().value # eat the operator
       right = parse_unary_expr()
-      left = BinaryExpr.new(left, operator, right)
+      left = Nodes::BinaryExpr.new(left, operator, right, @location)
     end
 
     return left
@@ -781,7 +752,7 @@ class Parser
     if %i[- + !].include?(at().value)
       operator = eat().value # eat the operator
       right = parse_primary_expr()
-      return UnaryExpr.new(right, operator)
+      return Nodes::UnaryExpr.new(right, operator, @location)
     end
 
     return parse_primary_expr()
@@ -803,25 +774,26 @@ class Parser
         expr = parse_identifier()
       end
     when TokenType::INTEGER
-      expr = NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int)
+      expr = Nodes::NumericLiteral.new(expect(TokenType::INTEGER).value.to_i, :int, @location)
     when TokenType::FLOAT
-      expr = NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float)
+      expr = Nodes::NumericLiteral.new(expect(TokenType::FLOAT).value.to_f, :float, @location)
     when TokenType::BOOLEAN
-      expr = BooleanLiteral.new(eat().value == "true")
+      expr = Nodes::BooleanLiteral.new(eat().value == "true", @location)
     when TokenType::STRING
-      expr = StringLiteral.new(expect(TokenType::STRING).value.to_s)
+      expr = Nodes::StringLiteral.new(expect(TokenType::STRING).value.to_s, @location)
     when TokenType::HASH
       expr = parse_hash_literal()
+    when TokenType::TYPE_SPECIFIER, TokenType::ARRAY_TYPE
+      expr = parse_array_literal()
     when TokenType::LPAREN
       expect(TokenType::LPAREN) # Eat opening paren
       expr = parse_expr()
       expect(TokenType::RPAREN) # Eat closing paren
     when TokenType::NULL
       expect(TokenType::NULL)
-      expr = NullLiteral.new()
+      expr = Nodes::NullLiteral.new(@location)
     when TokenType::NEW
-      expect(TokenType::NEW)
-      expr = ClassInstance.new(parse_identifier())
+      expr = parse_class_instance()
     else
       raise InvalidTokenError.new("Line:#{@location}: Unexpected token found: #{at().value}")
     end
@@ -833,58 +805,49 @@ class Parser
       if at().type == TokenType::BINARYOPERATOR
         op = eat().value
         right = parse_expr()
-        expr = BinaryExpr.new(expr, op, right)
+        expr = Nodes::BinaryExpr.new(expr, op, right, @location)
       end
     end
 
     return expr
   end
 
-
-  ##################################################
-  # 				       Helper functions				         #
-  ##################################################
-
-  # Check if we are not at the end of file
   #
-  # @return [Boolean] Return of we are at the end of file or not
-  def not_eof
-    return at().type != TokenType::EOF
+  # Parses an instance of a class
+  #
+  # @return [ClassInstance] The ast node for the class instance
+  #
+  def parse_class_instance
+    expect(TokenType::NEW)
+    identifier = parse_identifier()
+
+    expect(TokenType::LPAREN)
+    params = parse_call_params()
+    expect(TokenType::RPAREN)
+
+    return Nodes::ClassInstance.new(identifier, params, @location)
   end
 
-  # Get what token we are at
+  # Parses an array literal expression.
   #
-  # @return [Token] What token we have right now
-  def at
-    @location = @tokens[0].line
-    return @tokens[0]
-  end
-
-  def next_token
-    return @tokens[1]
-  end
-
-  # Eat the next token
-  #
-  # @return [Token] The token eaten
-  def eat
-    @logger.debug("Eating token: #{at()}")
-    token = @tokens.shift()
-    @location = token.line
-    return token
-  end
-
-  # Eat the next token and make sure we have eaten the correct type
-  #
-  # @param token_types [Array] A list of token which we can expect
-  #
-  # @return [Token] Returns the expected token
-  def expect(*token_types)
-    token = eat() # Get the token
-
-    if token_types.include?(token.type)
-      return token
+  # @return [ArrayLiteral] The array literal expression AST node.
+  def parse_array_literal()
+    if at().type == TokenType::ARRAY_TYPE
+      type = expect(TokenType::ARRAY_TYPE).value.to_s.gsub('[]', '')
+      value = []
+    else
+      type = expect(TokenType::TYPE_SPECIFIER).value
+      expect(TokenType::LBRACKET)
+      value = []
+      while at().type != TokenType::RBRACKET
+        expr = parse_expr()
+        value << expr
+        expect(TokenType::COMMA) if at().type == TokenType::COMMA
+      end
+      
+      expect(TokenType::RBRACKET)
     end
-    raise "Line:#{@location}: Error: Expected a token of type #{token_types.join(' or ')}, but found #{token.type} instead"
+
+    return Nodes::ArrayLiteral.new(value, type, @location)
   end
 end

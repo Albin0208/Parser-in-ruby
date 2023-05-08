@@ -7,8 +7,8 @@ class Token
   #
   # @param [Symbol] type What type of token this is
   # @param [String] value The value of the token
-  # @param [int] line At what line the token begins at
-  # @param [int] column At what column the token begins at
+  # @param [Integer] line At what line the token begins at
+  # @param [Integer] column At what column the token begins at
   #
   def initialize(type, value, line, column)
     @type = type

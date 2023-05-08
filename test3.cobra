@@ -1,0 +1,59 @@
+class Test {
+  int var = 1
+  int c = 2
+  Hash<string, int> acc = Hash<string, int> {'a' = 2.0, 'b' = 4}
+
+  Constructor() {
+    c = 3
+  }
+
+  Constructor(int ac) {
+    c = ac
+  }
+
+  Constructor(int ac, int ca) {
+    c = ac
+  }
+  Constructor(int ac, string ca) {
+    c = 54
+    int test = 2
+  }
+
+
+
+  func int test(int ass) {
+    return ass
+  }
+
+  func void hello() {
+    print("Hello world")
+  }
+
+  func void set(int c) {
+    var = c
+  }
+
+  func Hash<string, int> get_hash() {
+    return Hash<string, int> {'a' = 2, 'b' = 4}
+  }
+
+
+}
+
+func void array_test(int[] class_var) {
+  #print(class_var == as)
+  class_var.append(2)
+}
+
+func void bool_test(bool class_var) {
+  #print(class_var == as)
+  class_var = false
+}
+
+
+Test a = new Test(1, 20)
+
+int var = 2
+int ass = 2
+
+print(a.test(ass))

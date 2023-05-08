@@ -4,8 +4,8 @@ require_relative '../../runtime/interpreter'
 class TestInterpreterHash < Test::Unit::TestCase
   def setup
     @parser = Parser.new
-    @interpreter = Interpreter.new
-    @env = Environment.new
+    @interpreter = Runtime::Interpreter.new
+    @env = Runtime::Environment.new
   end
 
   def test_interpret_hash_declaration
@@ -13,7 +13,7 @@ class TestInterpreterHash < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
 
-    assert_instance_of(HashVal, result)
+    assert_instance_of(Runtime::Values::HashVal, result)
     assert_equal(%w[a b], result.value.keys)
     values = result.value
     assert_equal(2, values.length)
@@ -27,7 +27,7 @@ class TestInterpreterHash < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
 
-    assert_instance_of(StringVal, result)
+    assert_instance_of(Runtime::Values::StringVal, result)
     assert_equal('A', result.value)
   end
 
@@ -45,7 +45,7 @@ class TestInterpreterHash < Test::Unit::TestCase
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
 
-    assert_instance_of(NumberVal, result)
+    assert_instance_of(Runtime::Values::NumberVal, result)
     assert_equal(2, result.value)
     hash = @env.lookup_identifier('my_hash').value
     assert_equal(2, hash.length)
