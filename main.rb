@@ -2,6 +2,11 @@ require_relative 'parser/parser'
 require_relative 'runtime/interpreter'
 require_relative 'runtime/environment'
 
+#
+# The entrypoint in to the language
+#
+# @return [<Type>] <description>
+#
 def main
   debugging = ARGV[0] == '-debug'
   

@@ -50,6 +50,7 @@ module Runtime
 			end
 
 			# Removes the element at the specified index.
+			#
 			# @param [NumberVal] index The index of the element to be removed.
 			# @return [RunTimeVal] The removed element.
 			def remove_at(index)
@@ -58,12 +59,14 @@ module Runtime
 			end
 
 			# Returns the length of the array.
+			#
 			# @return [NumberVal] The length of the array.
 			def length
 				Values::NumberVal.new(@value.length(), :int)
 			end
 
 			# Returns a string representation of the array.
+			#
 			# @return [String] The string representation of the array.
 			def to_s
 				string = '['

@@ -19,12 +19,10 @@ module Runtime
 			end
 
 			#
-			# Create a new instance of HashVal.
+			# Compare two HashVal objects for equality.
 			#
-			# @param [Hash] value The value of the hash.
-			# @param [Symbol] key_type The data type of the hash keys.
-			# @param [Symbol] value_type The data type of the hash values.
-			# @param [Symbol] type The type of the HashVal object.
+			# @param [RunTimeVal] other The other value to compare.
+			# @return [BooleanVal] true if the two HashVal objects are not equal, false otherwise.
 			#
 			def ==(other)
 				return Values::BooleanVal.new(false) if @type != other.type
