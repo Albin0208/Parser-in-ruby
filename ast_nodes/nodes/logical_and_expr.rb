@@ -8,8 +8,9 @@ module Nodes
     #
     # Creates a logical and node
     #
-    # @param [Stmt] left The left side of the and expression
-    # @param [Stmt] right The right side of the and expression
+    # @param [Expr] left The left side of the and expression
+    # @param [Expr] right The right side of the and expression
+    # @param[Integer] line At what line the expr is declared at
     #
     def initialize(left, right, line)
       super(NODE_TYPES[:LogicalAnd], line)
@@ -18,6 +19,11 @@ module Nodes
       @right = right
     end
 
+    #
+    # Return a string representation of the and expr
+    #
+    # @return [String]
+    #
     def to_s
       "(#{@left} && #{@right})"
     end

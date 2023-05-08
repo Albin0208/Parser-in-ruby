@@ -12,6 +12,7 @@ module Nodes
     # @param [Expr] conditions The conditions of the if
     # @param [Array] else_body A list of all the nodes inside the else body
     # @param [Array] elsif_stmts A list of all the elsif statements
+    # @param [Integer] line The line where the if starts
     #
     def initialize(body, conditions, else_body, elsif_stmts, line)
       super(NODE_TYPES[:IF], line)
@@ -21,6 +22,11 @@ module Nodes
       @elsif_stmts = elsif_stmts
     end
 
+    #
+    # Return a string representation of the ifstatement
+    #
+    # @return [String]
+    #
     def to_s
       @body.map(&:to_s)
     end

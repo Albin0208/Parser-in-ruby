@@ -1,10 +1,22 @@
 require_relative 'stmt'
 
 module Nodes
+  #
+  # A node representing a functiondeclaration
+  #
   class FuncDeclaration < Stmt
     attr_reader :type_specifier, :identifier, :params, :body
     attr_accessor :env
 
+    #
+    # Creates an instance of a funcdeclaration
+    #
+    # @param [Symbol] type_specifier What return type the function has
+    # @param [Identifier] identifier The name of the function
+    # @param [Array] params All the params that the function takes
+    # @param [Array] body All the statements in the function body
+    # @param [Integer] line At what line the function is declared
+    #
     def initialize(type_specifier, identifier, params, body, line)
       super(NODE_TYPES[:FuncDeclaration], line)
       @type_specifier = type_specifier
@@ -13,6 +25,11 @@ module Nodes
       @body = body
     end
 
+    #
+    # Returns a string representation of the function
+    #
+    # @return [String]
+    #
     def to_s
       "Function declaration: Type: #{@type_specifier.gsub(',', ', ')}"
     end

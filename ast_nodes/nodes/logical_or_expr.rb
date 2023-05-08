@@ -8,8 +8,9 @@ module Nodes
     #
     # Creates a logical or node
     #
-    # @param [Stmt] left The left side of the or expression
-    # @param [Stmt] right The right side of the or expression
+    # @param [Expr] left The left side of the or expression
+    # @param [Expr] right The right side of the or expression
+    # @param [Integer] line At what line the expr is declared at
     #
     def initialize(left, right, line)
       super(NODE_TYPES[:LogicalOr], line)
@@ -18,6 +19,11 @@ module Nodes
       @right = right
     end
 
+    #
+    # Returns a string representation of the or expr
+    #
+    # @return [String]
+    #
     def to_s
       "(#{@left} || #{@right})"
     end

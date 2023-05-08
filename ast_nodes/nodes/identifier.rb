@@ -9,12 +9,18 @@ module Nodes
     # Creates an identifier node
     #
     # @param [Symbol] symbol A symbol of the name for the identifier
+    # @param [Integer] line The line where the identifier exists
     #
     def initialize(symbol, line)
       super(NODE_TYPES[:Identifier], line)
       @symbol = symbol
     end
 
+    #
+    # Returns a string representation of the identifier
+    #
+    # @return [String]
+    #
     def to_s
       @symbol
     end

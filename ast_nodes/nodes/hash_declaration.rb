@@ -1,6 +1,9 @@
 require_relative 'stmt'
 
 module Nodes
+  #
+  # The node representing a hashdeclaration
+  #
   class HashDeclaration < Stmt
     attr_reader :value, :identifier, :constant, :key_type, :value_type
 
@@ -11,6 +14,7 @@ module Nodes
     # @param [Identifier] identifier The identifier for the var
     # @param [string] key_type What type the key has
     # @param [string] value_type What type the value is
+    # @param [Integer] line The line at which the hash is declared
     # @param [Expr] value The value that should be assigned or nil if only declaring
     #
     def initialize(constant, identifier, key_type, value_type, line, value = nil)
@@ -22,6 +26,11 @@ module Nodes
       @value = value
     end
 
+    #
+    # Returns a string representation of the hashdeclaration
+    #
+    # @return [String]
+    #
     def to_s
       "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"
     end

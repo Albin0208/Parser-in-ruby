@@ -1,6 +1,9 @@
 require_relative 'expr'
 
 module Nodes
+  #
+  # The node representing a hashliteral
+  #
   class HashLiteral < Expr
     attr_reader :key_value_pairs, :key_type, :value_type
 
@@ -16,6 +19,11 @@ module Nodes
       @value_type = value_type
     end
 
+    #
+    # Returns a string representation of the hashliteral
+    #
+    # @return [String]
+    #
     def to_s
       "HashLiteral"
     end

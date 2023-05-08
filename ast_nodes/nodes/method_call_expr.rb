@@ -10,6 +10,7 @@ module Nodes
     # @param [Expr] expr The expression the method should be called on
     # @param [String] method_name The name of the method to call
     # @param [Array] params A list of params that should be sent to the function later
+    # @param [Integer] line At what line the expr is declared at
     #
     def initialize(expr, method_name, params, line)
       super(NODE_TYPES[:MethodCallExpr], line)
@@ -18,6 +19,11 @@ module Nodes
       @params = params
     end
 
+    #
+    # Returns a string representation of the Method call
+    #
+    # @return [String]
+    #
     def to_s
       "Method name: #{@method_name}, Params: #{@params}"
     end
