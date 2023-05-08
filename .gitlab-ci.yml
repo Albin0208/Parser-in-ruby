@@ -23,6 +23,7 @@ test_ver_2.7:
   stage: test
   image: ruby:2.7
   script:
+    - gem install yard
     - rake test
   only:
     - main
@@ -38,6 +39,7 @@ test_ver_latest:
   stage: test
   image: ruby:latest
   script:
+    - gem install yard
     - rake test
   only:
     - main
