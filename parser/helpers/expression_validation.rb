@@ -1,3 +1,6 @@
+#
+# All the expression valdiation helper functions for the parser
+#
 module ExpressionValidation
 	private
 	# Validate that we are trying to assign a correct type to our variable.

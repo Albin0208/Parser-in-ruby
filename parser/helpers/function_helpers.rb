@@ -1,3 +1,6 @@
+#
+# All the functions helpers for the parser
+#
 module FunctionHelpers
 	private
 

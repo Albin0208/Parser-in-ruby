@@ -12,9 +12,6 @@ class TokenType
   BOOLEAN = :BOOLEAN
   STRING = :STRING
   ##########################
-  #        Literals        #
-  ##########################
-  ##########################
   #   Control Statements   #
   ##########################
   IF = :IF
@@ -36,7 +33,9 @@ class TokenType
   IN = :IN
   CLASS = :CLASS
   CONSTRUCTOR = :CONSTRUCTOR
-
+  ##########################
+  #        Other        #
+  ##########################
   COMMA = :COMMA
   DOT = :DOT
   ASSIGN = :ASSIGN
@@ -53,7 +52,6 @@ class TokenType
   RBRACKET = :RBRACKET
   EOF = :EOF
   NEW = :NEW
-
   FUNC_CALL = :FUNC_CALL
 end
 

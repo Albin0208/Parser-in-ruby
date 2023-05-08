@@ -560,7 +560,7 @@ class Parser
   #
   # Parses an accessor for a array or hash
   #
-  # @params [ContainerAccessor] prev_node if we have a chained access, get the last node
+  # @param [ContainerAccessor, nil] prev_node if we have a chained access, get the last node
   # @return [ContainerAccessor] The accessor for a container
   #
   def parse_accessor(prev_node = nil)
@@ -812,6 +812,11 @@ class Parser
     return expr
   end
 
+  #
+  # Parses an instance of a class
+  #
+  # @return [ClassInstance] The ast node for the class instance
+  #
   def parse_class_instance
     expect(TokenType::NEW)
     identifier = parse_identifier()

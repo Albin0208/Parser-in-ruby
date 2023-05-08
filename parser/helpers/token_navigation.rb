@@ -1,3 +1,7 @@
+#
+# All the navigation helper for the parser
+# These functions are used to navigate thorugh the list of tokens
+#
 module TokenNavigation
 	private
 	# Check if we are not at the end of file

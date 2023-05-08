@@ -12,7 +12,7 @@ module Runtime
 
     # Evaluates the statements in the given program's body in the given environment.
     #
-    # @param program [Program] the program node to evaluate
+    # @param program [Nodes::Program] the program node to evaluate
     # @param env [Environment] the environment to use for evaluation
     # @return [RunTimeVal] the result of evaluating the last statement in the program's body
     def eval_program(program, env)
@@ -25,7 +25,7 @@ module Runtime
 
     # Evaluates a variable declaration AST node and declares the variable in the environment.
     #
-    # @param ast_node [VarDeclaration] The variable declaration AST node to evaluate.
+    # @param ast_node [Nodes::VarDeclaration] The variable declaration AST node to evaluate.
     # @param env [Environment] The environment to declare the variable in.
     # @return [RunTimeVal] The evaluated value of the variable declaration.
     def eval_var_declaration(ast_node, env)
@@ -46,7 +46,7 @@ module Runtime
 
     # Evaluates a hash declaration AST node and declares a new variable in the given environment.
     #
-    # @param ast_node [HashDeclaration] the hash declaration node to evaluate
+    # @param ast_node [Nodes::HashDeclaration] the hash declaration node to evaluate
     # @param env [Environment] the environment in which to declare the new variable
     # 
     # @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
@@ -66,7 +66,7 @@ module Runtime
 
     # Evaluates a function declaration and adds it to the current environment.
     #
-    # @param ast_node [FuncDeclaration] The AST node representing the function declaration to be evaluated.
+    # @param ast_node [Nodes::FuncDeclaration] The AST node representing the function declaration to be evaluated.
     # @param env [Environment] The current environment.
     #
     def eval_func_declaration(ast_node, env)
@@ -75,7 +75,7 @@ module Runtime
 
     # Evaluates an array declaration AST node and assigns the resulting value to a variable in the given environment.
     #
-    # @param ast_node [ArrayDeclaration] the AST node representing the array declaration
+    # @param ast_node [Nodes::ArrayDeclaration] the AST node representing the array declaration
     # @param env [Environment] the environment in which to assign the resulting value
     #
     # @raise [RuntimeError] if the resulting value is not an instance of `Values::ArrayVal`
@@ -91,7 +91,7 @@ module Runtime
 
     # Evaluates an if statement AST node
     #
-    # @param ast_node [IfStatement] the AST node to evaluate
+    # @param ast_node [Nodes::IfStatement] the AST node to evaluate
     # @param env [Environment] the current execution environment
     # @return [RunTimeVal] the result of the last evaluated statement in the if statement
     def eval_if_statement(ast_node, env)
@@ -128,7 +128,7 @@ module Runtime
     # Evaluate a return statement by evaluating its body expression and raising a ReturnSignal
     # with the resulting value to indicate that a return statement has been encountered.
     #
-    # @param ast_node [ReturnStmt] The AST node representing the return statement
+    # @param ast_node [Nodes::ReturnStmt] The AST node representing the return statement
     # @param env [Environment] The environment in which the statement is being evaluated
     #
     # @raise [ReturnSignal] The raised signal contains the value of the last evaluated expression
@@ -141,7 +141,7 @@ module Runtime
     #
     # Evaluate a while statement
     #
-    # @param [WhileStmt] ast_node The while statement
+    # @param [Nodes::WhileStmt] ast_node The while statement
     # @param [Environment] env The current environment
     #
     # @return [RuntimeVal] The result of the evaluation
@@ -165,7 +165,7 @@ module Runtime
     #
     # Evaluate a for statement
     #
-    # @param [ForStmt] ast_node The for statement
+    # @param [Nodes::ForStmt] ast_node The for statement
     # @param [Environment] env The current environment
     #
     # @return [RuntimeVal] The result of the evaluation
@@ -191,7 +191,7 @@ module Runtime
 
     # Evaluates a for-each loop statement in the given environment.
     #
-    # @param ast_node [ForEachStmt] The AST node representing the for-each loop statement.
+    # @param ast_node [Nodes::ForEachStmt] The AST node representing the for-each loop statement.
     # @param env [Environment] The environment in which to evaluate the statement.
     # @return [RunTimeVal] The result of evaluating the last statement in the loop body, or NullVal if the body was empty.
     def eval_for_each_stmt(ast_node, env)
@@ -231,7 +231,7 @@ module Runtime
     #
     # Evaluates a condition, For example for a if statement
     #
-    # @param [Expr | NullLiteral] condition The condition to be evaluated
+    # @param [Nodes::Expr, Nodes::NullLiteral] condition The condition to be evaluated
     # @param [Environment] env The current environment
     #
     # @return [Boolean] True or false depinding on the result of the condition

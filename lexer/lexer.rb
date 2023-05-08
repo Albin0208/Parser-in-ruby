@@ -26,6 +26,7 @@ TOKEN_TYPES = [
   [:dot, /\A\./],
 ].to_h.freeze
 
+# @return [Symbol] The matching tokentype for that keyword
 KEYWORDS = {
   const: TokenType::CONST,
   class: TokenType::CLASS,

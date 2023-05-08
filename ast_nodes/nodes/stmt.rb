@@ -1,3 +1,6 @@
+#
+# The module which containts all the ast_nodes required to build the AST
+#
 module Nodes
   #
   # The class representing the parent for all statments

@@ -1,5 +1,16 @@
+#
+# The module for all the runtime related classes and functions
+#
 module Runtime
+	#
+	# The module which contains all the runtime values.
+	# These are the values that the user interacts with such as ints, floats, bools and so on
+	#
 	module Values
+		#
+		# The superclass for all the runtime values
+		# @abstract
+		#
 		class RunTimeVal
 			attr_accessor :value#, :type
 

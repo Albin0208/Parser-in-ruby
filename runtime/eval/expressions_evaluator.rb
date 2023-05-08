@@ -13,8 +13,9 @@ module Runtime
 
     # Evaluates an identifier expression.
     #
-    # @param [Identifier] ast_node The identifier to look up.
+    # @param [Nodes::Identifier] ast_node The identifier to look up.
     # @param [Environment] env The environment to evaluate the expression in.
+    #
     # @return [RunTimeVal] The value of the identifier in the environment.
     def eval_identifier(ast_node, env)
       return env.lookup_identifier(ast_node.symbol, ast_node.line)
@@ -22,8 +23,9 @@ module Runtime
 
     # Evaluates a logical AND expression.
     #
-    # @param [LogicalAndExpr] logic_and The logical AND expression to evaluate.
+    # @param [Nodes::LogicalAndExpr] logic_and The logical AND expression to evaluate.
     # @param [Environment] env The environment to evaluate the expression in.
+    #
     # @return [BooleanVal] The result of the logical AND operation.
     def eval_logical_and_expr(logic_and, env)
       lhs = evaluate(logic_and.left, env)
@@ -36,8 +38,9 @@ module Runtime
 
     # Evaluates a logical OR expression.
     #
-    # @param [LogicalOrExpr] logic_or The logical OR expression to evaluate.
+    # @param [Nodes::LogicalOrExpr] logic_or The logical OR expression to evaluate.
     # @param [Environment] env The environment to evaluate the expression in.
+    #
     # @return [BooleanVal] The result of the logical OR operation.
     def eval_logical_or_expr(logic_or, env)
       lhs = evaluate(logic_or.left, env)
@@ -52,8 +55,9 @@ module Runtime
 
     # Evaluates a unary expression and returns the result
     #
-    # @param unary [UnaryExpr] the unary expression to evaluate
+    # @param unary [Nodes::UnaryExpr] the unary expression to evaluate
     # @param env [Environment] the environment to use for variable lookups
+    #
     # @return [NumberVal, BooleanVal] the result of the evaluation
     def eval_unary_expr(unary, env)
       lhs = evaluate(unary.left, env)
@@ -71,7 +75,7 @@ module Runtime
     # Evaluates a binary expression by evaluation the left and right operands,
     # then performing the specified operation on the two.
     #
-    # @param [BinaryExpr] binop The binary expression node to be evaluated
+    # @param [Nodes::BinaryExpr] binop The binary expression node to be evaluated
     # @param [Environment] env The environment in which we are evaluating
     #
     # @return [NumberVal, BooleanVal] the result of the binary operation
@@ -87,8 +91,9 @@ module Runtime
 
     # Evaluates an assignment expression and updates the environment accordingly.
     #
-    # @param ast_node [AssignmentExpr] The AST node representing the assignment expression
+    # @param ast_node [Nodes::AssignmentExpr] The AST node representing the assignment expression
     # @param env [Environment] The environment in which to evaluate the expression
+    #
     # @return [RunTimeVal] The new value of the assigned variable or container
     # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
     def eval_assignment_expr(ast_node, env)
@@ -112,8 +117,9 @@ module Runtime
     end
 
     # Evaluates an assignment to a container access expression, which can be a single access or a chain of accesses.
-    # @param ast_node [AssignmentExpr] The AST node representing the assignment to a container access expression.
+    # @param ast_node [Nodes::AssignmentExpr] The AST node representing the assignment to a container access expression.
     # @param env [Environment] The environment in which the assignment should be evaluated.
+    #
     # @return [RunTimeVal] The container value that was assigned to.
     def eval_assignment_to_container_access(ast_node, env)
       access_nodes = [ast_node.assigne]
@@ -179,8 +185,9 @@ module Runtime
     # Evaluate a method call expression by first evaluating the receiver expression and
     # then looking up the method in the class hierarchy or the receiver's metaclass.
     #
-    # @param ast_node [MethodCallExpr] the AST node representing the method call expression
+    # @param ast_node [Nodes::MethodCallExpr] the AST node representing the method call expression
     # @param call_env [Environment] the environment in which the method call is evaluated
+    #
     # @return [RunTimeVal] the result of calling the method with the given arguments
     # @raise [RuntimeError] if the method is not defined or the receiver is not a valid object or class
     def eval_method_call_expr(ast_node, call_env)
@@ -211,7 +218,7 @@ module Runtime
     # Evaluates a property call ast node by evaluating the expression and looking
     # up the property name in the instance environment
     #
-    # @param [PropertyCallExpr] ast_node The property call node
+    # @param [Nodes::PropertyCallExpr] ast_node The property call node
     # @param [Environment] call_env From where the call is made
     #
     # @return [RunTimeVal] The value of the property being called
@@ -225,7 +232,7 @@ module Runtime
 
     # Evaluates a call expression in the specified environment.
     #
-    # @param ast_node [CallExpr] the call expression node to evaluate
+    # @param ast_node [Nodes::CallExpr] the call expression node to evaluate
     # @param call_env [Environment] the environment to evaluate the call expression in
     # @raise [RuntimeError] if the specified function is not defined in the current environment
     # @raise [RuntimeError] if the return value of the function is not of the expected type
@@ -253,9 +260,10 @@ module Runtime
 
     # Calls a function with the given arguments.
     #
-    # @param [FuncDeclaration] function The function to call.
-    # @param [CallExpr] ast_node The function call AST node.
+    # @param [Nodes::FuncDeclaration] function The function to call.
+    # @param [Nodes::CallExpr] ast_node The function call AST node.
     # @param [Environment] call_env The environment in which the function call occurs.
+    #
     # @return [RunTimeVal] The value returned by the function.
     def call_function(function, ast_node, call_env)
       env = Runtime::Environment.new(function.env)
@@ -283,7 +291,7 @@ module Runtime
     #
     # Validate the params to the function. Raises error if not valid params
     #
-    # @param [FuncDeclaration] function The declaration of the function called
+    # @param [Nodes::FuncDeclaration] function The declaration of the function called
     # @param [Array] call_params A list of all the params passed to the function
     # @param [Environment] call_env Where the function was called
     #
@@ -317,7 +325,7 @@ module Runtime
     #
     # Declares all params passed to a function
     #
-    # @param [FuncDeclaration] function The declaration of the function called
+    # @param [Nodes::FuncDeclaration] function The declaration of the function called
     # @param [Array] call_params A list of all the params passed to the function
     # @param [Environment] call_env Where the function was called
     # @param [Environment] env The environment for the current call of the function
@@ -348,7 +356,7 @@ module Runtime
 
     # Evaluates a hash literal expression.
     #
-    # @param [HashLiteral] ast_node The hash literal to evaluate.
+    # @param [Nodes::HashLiteral] ast_node The hash literal to evaluate.
     # @param [Environment] env The environment to evaluate the expression in.
     # @return [HashVal] The result of the hash literal evaluation.
     def eval_hash_literal(ast_node, env)
@@ -378,7 +386,7 @@ module Runtime
 
     # Evaluate a container accessor expression and return its value.
     #
-    # @param ast_node [ContainerAccessor] the AST node representing the container accessor expression
+    # @param ast_node [Nodes::ContainerAccessor] the AST node representing the container accessor expression
     # @param env [Environment] the environment to evaluate the expression in
     # @return [RunTimeVal] the value of the container accessor expression
     # @raise [NameError] if the container identifier is not found in the environment
@@ -410,7 +418,7 @@ module Runtime
     #
     # Evaluates a creation of a class instance
     #
-    # @param [ClassInstance] ast_node The ast node
+    # @param [Nodes::ClassInstance] ast_node The ast node
     # @param [Environment] env The environment where the class instance is created
     #
     # @return [ClassVal] The class we wanted a instance of
@@ -428,11 +436,10 @@ module Runtime
 
     # Evaluates a constructor with the given parameters in the context of the current instance environment and global environment.
     #
-    # @param constructors [Array] an array of constructor statements
+    # @param ast_node [Nodes::ClassDeclaration] an array of constructor statements
     # @param params [Array] an array of parameter values to be passed to the constructor
     # @param instance_env [Environment] the instance environment of the current object
     # @param env [Environment] the global environment
-    # @param line [Integer] the line number of the constructor statement
     #
     # @raise [RuntimeError] if the wrong number or types of parameters are passed to the constructor
     def eval_constructor(ast_node, params, instance_env, env)
@@ -443,10 +450,9 @@ module Runtime
             matching_ctor = ctor
             break
           end
-        rescue => e
+        rescue => e # Recover if the validate params fails
         end
       end
-
       
       # Throw error if we have not found a constructor
       if matching_ctor.nil?
@@ -463,8 +469,9 @@ module Runtime
 
     # Evaluates an array literal, ensuring that all elements have the correct type.
     #
-    # @param ast_node [ArrayLiteral] The AST node representing the array literal.
+    # @param ast_node [Nodes::ArrayLiteral] The AST node representing the array literal.
     # @param env [Environment] The environment in which the array is being evaluated.
+    #
     # @return [ArrayVal] The resulting array value, with the appropriate type.
     # @raise [RuntimeError] If an element in the array has the wrong type and cannot be coerced.
     def eval_array_literal(ast_node, env)

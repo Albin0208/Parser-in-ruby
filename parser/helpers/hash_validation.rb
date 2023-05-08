@@ -1,3 +1,6 @@
+#
+# All the hash validation helper functions for the parser
+#
 module HashValidation
 	private
 	# Determines whether a given key is present in a list of keys.

@@ -1,7 +1,8 @@
 require_relative 'stmt'
 
 module Nodes
-    # This class represents the ast node for a expression
+    # This superclass for all expressions
+    # @abstract
     class Expr < Stmt
     end
 end
