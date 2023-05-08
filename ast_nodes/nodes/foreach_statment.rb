@@ -4,6 +4,13 @@ module Nodes
   # A node representing a for-each loop in the code.
   class ForEachStmt < Stmt
     attr_reader :body, :identifier, :container
+
+    # Initializes a new ForEachStmt object.
+    #
+    # @param [Array<Stmt>] body A list of statements that make up the body of the for-each loop.
+    # @param [Symbol] identifier The identifier used in the loop.
+    # @param [Expr] container An expression representing the container for the loop.
+    # @param [Integer] line The line number of the for-each loop.
     def initialize(body, identifier, container, line)
       super(NODE_TYPES[:FOR_EACH_LOOP], line)
       @body = body # A list of all statements
@@ -11,6 +18,9 @@ module Nodes
       @container = container
     end
 
+    # Returns a string representation of the for-each loop.
+    #
+    # @return [String] A string representation of the for-each loop.
     def to_s
       @body.map(&:to_s)
     end

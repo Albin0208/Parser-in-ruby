@@ -9,12 +9,18 @@ module Nodes
     # Creates a string node
     #
     # @param [String] value The value of the string node
+    # @param [Integer] line at what the line the node is declared
     #
     def initialize(value, line)
       super(NODE_TYPES[:String], line)
       @value = value
     end
 
+    #
+    # Return a string representation of the node
+    #
+    # @return [String] The string representation of the node
+    #
     def to_s
       "\"#{@value}\""
     end

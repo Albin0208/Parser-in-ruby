@@ -10,7 +10,8 @@ module Nodes
     #
     # @param [Boolean] constant If this var should be a constant
     # @param [Identifier] identifier The identifier for the var
-    # @param [<Type>] value_type What type this var is
+    # @param [String] value_type What type this var is
+    # @param [Integer] line At what line the node is located
     # @param [Expr] value The value that should be assigned or nil if only declaring
     #
     def initialize(constant, identifier, value_type, line, value = nil)
@@ -21,6 +22,11 @@ module Nodes
       @value = value
     end
 
+    #
+    # Returns a string representation of the node
+    #
+    # @return [String] A string representation of the node
+    #
     def to_s
       "Const: #{@constant}, Ident: #{@identifier}, Value: #{@value}, Type: #{@value_type}"
     end

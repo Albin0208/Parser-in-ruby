@@ -4,15 +4,21 @@ module Nodes
   # This class represents the ast node for a null literal
   class NullLiteral < Expr
     attr_reader :value
-
     #
     # Creates a null node
+    #
+    # @param [Integer] line At what line the node exists at
     #
     def initialize(line)
       super(NODE_TYPES[:Null], line)
       @value = 'null'
     end
 
+    #
+    # Return a string representation of the null node
+    #
+    # @return [String] A string representaion of the node
+    #
     def to_s
       @value.to_s
     end

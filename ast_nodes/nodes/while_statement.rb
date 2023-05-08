@@ -1,6 +1,9 @@
 require_relative 'stmt'
 
 module Nodes
+  #
+  # The node for a while statment
+  #
   class WhileStmt < Stmt
     attr_reader :body, :conditions
 
@@ -9,6 +12,7 @@ module Nodes
     #
     # @param [Array] body A list of all the nodes inside the while loop
     # @param [Expr] conditions The conditions of the loop
+    # @param [Integer] line At what line the while loop starts
     #
     def initialize(body, conditions, line)
       super(NODE_TYPES[:WHILE_LOOP], line)
@@ -16,6 +20,11 @@ module Nodes
       @conditions = conditions
     end
 
+    #
+    # Returns a string representation of the node
+    #
+    # @return [String] A string representation of the node
+    #
     def to_s
       @body.map(&:to_s)
     end

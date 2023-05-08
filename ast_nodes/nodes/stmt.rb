@@ -1,12 +1,27 @@
 module Nodes
+  #
+  # The class representing the parent for all statments
+  # @abstract
+  #
   class Stmt
     attr_reader :type, :line, :value
 
+    #
+    # Creates a new stmt node
+    #
+    # @param [Symbol] type What type of node it is
+    # @param [Integer] line At what line the node is at
+    #
     def initialize(type, line)
       @type = type
       @line = line
     end
 
+    #
+    # Creates a string representation of the node
+    #
+    # @return [String]
+    #
     def to_s
       raise NotImplementedError, "to_s method is not implemented for #{self.class}"
     end

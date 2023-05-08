@@ -5,11 +5,22 @@ module Nodes
   class Program < Stmt
     attr_reader :body
 
+    #
+    # Creates a new program node
+    #
+    # @param [Array] body A list with all the statments of the program
+    # @param [Integer] line The line at which the program starts
+    #
     def initialize(body, line)
       super(NODE_TYPES[:Program], line)
       @body = body # A list of all statements
     end
 
+    #
+    # Return a string representation of the program
+    #
+    # @return [String] A string representation of the program
+    #
     def to_s
       @body.map(&:to_s)
     end

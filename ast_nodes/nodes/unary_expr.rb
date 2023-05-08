@@ -10,6 +10,7 @@ module Nodes
     #
     # @param [Expr] left The expression
     # @param [Symbol] op The operator for the expression
+    # @param [Integer] line At what line the node is declared at
     #
     def initialize(left, op, line)
       super(NODE_TYPES[:UnaryExpr], line)
@@ -17,6 +18,11 @@ module Nodes
       @op = op
     end
 
+    #
+    # Returns a string representation of the node
+    #
+    # @return [String] A string representation of the node
+    #
     def to_s
       "(#{@op}#{@left})"
     end

@@ -10,12 +10,26 @@ module Nodes
     #
     # @param [int, float] value The number the numeric node, can be an int or float
     #
+    a = 2
+
+    #
+    # Creates a numeric node
+    #
+    # @param [Integer, float] value The number value of the node
+    # @param [Symbol] type What type it is i.e int or float
+    # @param [Integer] line At what line the node is declared
+    #
     def initialize(value, type, line)
       super(NODE_TYPES[:NumericLiteral], line)
       @value = value
       @numeric_type = type
     end
 
+    #
+    # Returns a string representation of the node
+    #
+    # @return [String] A string representaion of the node
+    #
     def to_s
       @value.to_s
     end
