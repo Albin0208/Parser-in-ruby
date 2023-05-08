@@ -1,16 +1,9 @@
 require_relative 'stmt'
 
 module Nodes
+  # A node representing a for-each loop in the code.
   class ForEachStmt < Stmt
     attr_reader :body, :identifier, :container
-    #
-    # Creates an While statment node
-    #
-    # @param [Array] body A list of all the nodes inside the while loop
-    # @param [Expr] condition The condition of the loop
-    # @param [VarDeclaration] var_dec Variable declaration to be used in loop
-    # @param [Expr] expr What to do after each iteration
-    #
     def initialize(body, identifier, container, line)
       super(NODE_TYPES[:FOR_EACH_LOOP], line)
       @body = body # A list of all statements

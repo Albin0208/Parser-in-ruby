@@ -19,6 +19,9 @@ module Nodes
       @right = right
     end
 
+    # Returns a string representation of the BinaryExpr.
+    #
+    # @return [String] A string representation of the BinaryExpr.
     def to_s
       "(#{@left} #{@op} #{@right})"
     end

@@ -1,25 +1,26 @@
 require_relative 'expr'
 
 module Nodes
+  # A node representing an array literal expression.
   class ArrayLiteral < Expr
     attr_reader :value, :value_type
 
+    # Creates a new ArrayLiteral node.
     #
-    # Creates an var declaration node
-    #
-    # @param [Boolean] constant If this var should be a constant
-    # @param [Identifier] identifier The identifier for the var
-    # @param [<Type>] value_type What type this var is
-    # @param [Expr] value The value that should be assigned or nil if only declaring
-    #
+    # @param [Array] value The elements of the array literal.
+    # @param [Symbol] value_type The data type of the elements of the array.
+    # @param [Integer] line The line number of the array literal in the source code.
     def initialize(value, value_type, line)
       super(NODE_TYPES[:ArrayLiteral], line)
       @value = value
       @value_type = value_type
     end
 
+    # Returns a string representation of the ArrayLiteral node.
+    #
+    # @return [String] A string representation of the ArrayLiteral node.
     def to_s
-      "Const: #{}, Ident: #{}, Value: #{@value}, Type: #{@value_type}"
+      "ArrayLiteral: #{@value}"
     end
 
     #

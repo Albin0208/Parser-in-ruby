@@ -1,11 +1,24 @@
 require_relative 'stmt'
 
 module Nodes
+  #
+  # A representation of a continue
+  #
   class ContinueStmt < Stmt
+    #
+    # Creates a new Continue node
+    #
+    # @param [Integer] line At what line the continue lies
+    #
     def initialize(line)
       super(NODE_TYPES[:ContinueStmt], line)
     end
 
+    #
+    # Returns a string representation of the continue
+    #
+    # @return [String]
+    #
     def to_s
       "Continue Stmt"
     end

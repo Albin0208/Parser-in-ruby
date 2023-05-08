@@ -256,11 +256,11 @@ class Parser
   def parse_for_stmt
     @parsing_loop = true
     expect(TokenType::FOR)
-    for_start_location = @location
-
+    
     # We have a for loop over a container
     return parse_for_loop_over_container() if next_token().type == TokenType::IN
-
+    
+    for_start_location = @location
     var_dec = parse_var_declaration()
     raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop" if var_dec.value.nil?
     expect(TokenType::COMMA)

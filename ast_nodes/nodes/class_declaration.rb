@@ -6,9 +6,12 @@ module Nodes
     attr_accessor :env, :instance_env
 
     # Initializes a ClassDeclaration object with the given name, member variables, and member functions.
+    #
     # @param class_name [String] The name of the class.
-    # @param member_variables [Array<VarDeclaration>] An array of member variable declarations in the class.
-    # @param member_functions [Array<FuncDeclaration>] An array of member function declarations in the class.
+    # @param constructors [Array] An array of constructor function declarations for the class.
+    # @param member_variables [Array] An array of member variable declarations in the class.
+    # @param member_functions [Array] An array of member function declarations in the class.
+    # @param line [Integer] The line number where the class declaration appears in the source code.
     def initialize(class_name, constructors, member_variables, member_functions, line)
       super(NODE_TYPES[:ClassDeclaration], line)
       @class_name = class_name
@@ -17,11 +20,15 @@ module Nodes
       @member_functions = member_functions
     end
 
+    # Returns a string representation of the class declaration.
+    #
+    # @return [String] A string representation of the class declaration.
     def to_s
       "Class: #{@class_name}"
     end
 
     # Displays information about the class declaration, including its name, member variables, and member functions.
+    #
     # @param indent [Integer] The indentation level for the displayed information.
     def display_info(indent = 0)
       puts "#{' ' * indent} #{self.class.name}"
@@ -33,6 +40,7 @@ module Nodes
     end
 
     # Creates a new instance of the class and initializes its instance variables and instance methods.
+    #
     # @param interpreter [Interpreter] The interpreter used to evaluate the initial values of instance variables.
     def create_instance(interpreter)
       @instance_env = Runtime::Environment.new(@env.global_env)

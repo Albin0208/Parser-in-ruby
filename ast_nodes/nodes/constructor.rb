@@ -1,16 +1,27 @@
 require_relative 'stmt'
 
 module Nodes
+  # A node representing a constructor definition in a class.
   class Constructor < Stmt
     attr_reader :params, :body
     attr_accessor :env
 
+    #
+    # Creates a new instance of a construcot
+    #
+    # @param [Array] params The list of all params that the constructor takes
+    # @param [Array] body A list of all the statments in the body
+    # @param [Integer] line At what line the constructor stars
+    #
     def initialize(params, body, line)
       super(NODE_TYPES[:Constructor], line)
       @params = params
       @body = body
     end
 
+    # Returns a string representation of the constructor
+    #
+    # @return [String]
     def to_s
       "Constructor"
     end

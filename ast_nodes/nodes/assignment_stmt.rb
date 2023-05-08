@@ -1,21 +1,24 @@
 require_relative 'stmt'
 
 module Nodes
+  # Represents an assignment statement, where a value is assigned to a variable.
   class AssignmentStmt < Stmt
     attr_reader :value, :assigne
 
+    # Creates a new AssignmentStmt instance.
     #
-    # Creates an assignment expression
-    #
-    # @param [Expr] value The expr we want the result of to assign to the variable
-    # @param [Identifier] assigne To what identifier we want to do the assignment to
-    #
+    # @param [Expr] value The expression whose result will be assigned to the variable.
+    # @param [Identifier] assigne The identifier of the variable to which the value will be assigned.
+    # @param [Integer] line The line number of the assignment statement in the source code.
     def initialize(value, assigne, line)
       super(NODE_TYPES[:AssignmentExpr], line)
       @value = value
       @assigne = assigne
     end
 
+    # Returns a string representation of the AssignmentStmt instance.
+    #
+    # @return [String] A string representation of the AssignmentStmt instance.
     def to_s
       "Value: #{@value}, Assigne: #{@assigne}"
     end

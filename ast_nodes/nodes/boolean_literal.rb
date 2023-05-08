@@ -15,6 +15,10 @@ module Nodes
       @value = value
     end
 
+    # Returns a string representation of the Booleanliteral.
+    #
+    # @return [String] A string representation of the booleanLiteral.
+
     def to_s
       @value.to_s
     end

@@ -1,15 +1,18 @@
 require_relative 'stmt'
 
 module Nodes
+  # A node representing a for loop in the code.
   class ForStmt < Stmt
     attr_reader :body, :condition, :var_dec, :expr
+
     #
-    # Creates an While statment node
+    # Creates a For loop
     #
-    # @param [Array] body A list of all the nodes inside the while loop
-    # @param [Expr] condition The condition of the loop
-    # @param [VarDeclaration] var_dec Variable declaration to be used in loop
-    # @param [Expr] expr What to do after each iteration
+    # @param [Array] body The list of all statments in the body
+    # @param [Expr] condition The condition for the loop to run
+    # @param [VarDeclaration] var_dec The variabel declaren at the start of the for
+    # @param [Expr] expr The expr that will run after every iteration
+    # @param [Integer] line At what line the for loop starts
     #
     def initialize(body, condition, var_dec, expr, line)
       super(NODE_TYPES[:FOR_LOOP], line)
@@ -19,6 +22,11 @@ module Nodes
       @expr = expr
     end
 
+    #
+    # Returns a string representation fo the for loop
+    #
+    # @return [String]
+    #
     def to_s
       @body.map(&:to_s)
     end

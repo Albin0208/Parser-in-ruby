@@ -17,6 +17,11 @@ module Nodes
       @conditions = conditions
     end
 
+    #
+    # Return a string representation of the elsif
+    #
+    # @return [String]
+    #
     def to_s
       @body.map(&:to_s)
     end

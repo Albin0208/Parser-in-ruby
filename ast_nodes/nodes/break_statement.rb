@@ -1,10 +1,18 @@
 require_relative 'stmt'
 module Nodes
   class BreakStmt < Stmt
+      #
+    # Creates a break statement node
+    #
+    # @param [Integer] line The line number of the break statement
+    #
     def initialize(line)
       super(NODE_TYPES[:BreakStmt], line)
     end
 
+    # Display the break as a string
+    #
+    # @return [String] The break as a string
     def to_s
       "Break Stmt"
     end

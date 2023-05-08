@@ -1,15 +1,30 @@
 require_relative 'expr'
 
 module Nodes
+  #
+  # A representation of a ContainerAccess
+  #
   class ContainerAccessor < Expr
     attr_reader :identifier, :access_key
 
+    #
+    # Creates a new container accessor
+    #
+    # @param [Identifier] identifier The identifier of the container we want to access
+    # @param [Expr] access_key The key of the container
+    # @param [Integer] line At what line the access is done
+    #
     def initialize(identifier, access_key, line)
       super(NODE_TYPES[:ContainerAccessor], line)
       @identifier = identifier
       @access_key = access_key
     end
 
+    #
+    # Retuns a string representation of the access
+    #
+    # @return [String]
+    #
     def to_s
       "Identifier: #{@identifier}, Key: #{@access_key}"
     end
