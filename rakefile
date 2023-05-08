@@ -7,11 +7,6 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-desc "Run unit tests"
-task :test do
-  Rake::Task[:test].invoke
-end
-
 desc "Generate parser documentation"
 YARD::Rake::YardocTask.new(:parser_doc) do |t|
   t.files   = ['./**/*.rb']   # optional
