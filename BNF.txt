@@ -96,7 +96,6 @@
                          | empty
 
 <return_stmt> ::= "return" <expr>
-                | "return"
 
 <break_stmt> ::= "break"
 
