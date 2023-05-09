@@ -29,8 +29,11 @@ class Test {
     print("Hello world")
   }
 
-  func void set(int c) {
-    var = c
+  func void set(int y) {
+    if y > 3 {
+      return 3
+    }
+    var = y
   }
 
   func Hash<string, int> get_hash() {
@@ -55,5 +58,7 @@ Test a = new Test(1, 20)
 
 int var = 2
 int ass = 2
+print(a.set(4))
+print(a.var)
 
 print(a.test(ass))

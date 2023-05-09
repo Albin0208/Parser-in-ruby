@@ -9,6 +9,10 @@ class TestInterpreterMethodCall < Test::Unit::TestCase
     @env.setup_native_functions
   end
 
+  def teardown
+    @env::global_env = nil
+  end
+
   def test_evaluate_type_method
     input = '1.type()'
     ast = @parser.produce_ast(input)

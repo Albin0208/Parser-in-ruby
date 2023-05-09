@@ -22,12 +22,27 @@ module Runtime
       @constants = Set.new
     end
 
+    #
+    # Declares all the native functions in this scope
+    #
+    #
     def setup_native_functions
+      raise "The native functions has already been setup in another scope: #{@@global_env}" unless @@global_env.nil?
+
       @@global_env = self
       NativeFunctions::FUNCTIONS.each() { |func_name| 
                                           @constants.add(func_name)
                                           @identifiers[func_name] = :native_func
                                         }
+    end
+
+    #
+    # Setter for @@global_env
+    #
+    # @param [Object] other What we want to assign
+    #
+    def global_env=(other)
+      @@global_env = other
     end
 
     #

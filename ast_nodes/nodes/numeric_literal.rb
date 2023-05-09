@@ -8,13 +8,6 @@ module Nodes
     #
     # Creates a numeric node
     #
-    # @param [int, float] value The number the numeric node, can be an int or float
-    #
-    a = 2
-
-    #
-    # Creates a numeric node
-    #
     # @param [Integer, float] value The number value of the node
     # @param [Symbol] type What type it is i.e int or float
     # @param [Integer] line At what line the node is declared
