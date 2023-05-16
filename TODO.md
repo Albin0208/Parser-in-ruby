@@ -37,7 +37,7 @@
     - [ ] Inheritance
 - [ ] Array of Hashes not working
 
-- [ ] Add yarddoc generation for just the language parts, such as all the values and how to use them
+- [x] Add yarddoc generation for just the language parts, such as all the values and how to use them
 
 # Fix wonky stuff
 - [x] Fix problem when a identifier such as a class is printed it show the whole class node.
@@ -88,9 +88,9 @@
 - [x] Function invocation: add(2,3)
 ### Test arrays:
 
-- [ ] Array creation: int[] arr = [1, 2, 3]
-- [ ] Array indexing: arr[1]
-- [ ] Array length: arr.length
+- [x] Array creation: int[] arr = [1, 2, 3]
+- [x] Array indexing: arr[1]
+- [x] Array length: arr.length
 - [ ] Array iteration: arr.each {|a| puts a}
 ### Test hashes:
 
