@@ -2,7 +2,7 @@ require 'logger'
 
 require_relative 'token'
 require_relative '../errors/errors'
-require_relative '../token_type'
+require_relative '../utilities/token_type'
 
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
@@ -26,35 +26,35 @@ TOKEN_TYPES = [
   [:dot, /\A\./],
 ].to_h.freeze
 
-# @return [Symbol] The matching tokentype for that keyword
+# @return [Symbol] The matching Utilities::TokenType for that keyword
 KEYWORDS = {
-  const: TokenType::CONST,
-  class: TokenType::CLASS,
-  Constructor: TokenType::CONSTRUCTOR,
-  func: TokenType::FUNC,
-  if: TokenType::IF,
-  elsif: TokenType::ELSIF,
-  else: TokenType::ELSE,
-  true: TokenType::BOOLEAN,
-  false: TokenType::BOOLEAN,
-  null: TokenType::NULL,
-  return: TokenType::RETURN,
-  Hash: TokenType::HASH,
-  break: TokenType::BREAK,
-  continue: TokenType::CONTINUE,
-  new: TokenType::NEW,
-  in: TokenType::IN,
+  const: Utilities::TokenType::CONST,
+  class: Utilities::TokenType::CLASS,
+  Constructor: Utilities::TokenType::CONSTRUCTOR,
+  func: Utilities::TokenType::FUNC,
+  if: Utilities::TokenType::IF,
+  elsif: Utilities::TokenType::ELSIF,
+  else: Utilities::TokenType::ELSE,
+  true: Utilities::TokenType::BOOLEAN,
+  false: Utilities::TokenType::BOOLEAN,
+  null: Utilities::TokenType::NULL,
+  return: Utilities::TokenType::RETURN,
+  Hash: Utilities::TokenType::HASH,
+  break: Utilities::TokenType::BREAK,
+  continue: Utilities::TokenType::CONTINUE,
+  new: Utilities::TokenType::NEW,
+  in: Utilities::TokenType::IN,
 
   # Loops
-  for: TokenType::FOR,
-  while: TokenType::WHILE,
+  for: Utilities::TokenType::FOR,
+  while: Utilities::TokenType::WHILE,
 
   # Type Specifiers
-  int: TokenType::TYPE_SPECIFIER,
-  float: TokenType::TYPE_SPECIFIER,
-  bool: TokenType::TYPE_SPECIFIER,
-  string: TokenType::TYPE_SPECIFIER,
-  void: TokenType::VOID
+  int: Utilities::TokenType::TYPE_SPECIFIER,
+  float: Utilities::TokenType::TYPE_SPECIFIER,
+  bool: Utilities::TokenType::TYPE_SPECIFIER,
+  string: Utilities::TokenType::TYPE_SPECIFIER,
+  void: Utilities::TokenType::VOID
 }.freeze
 
 #
@@ -90,9 +90,9 @@ class Lexer
 
     while (token = next_token())
       case token.type
-      when TokenType::LPAREN
+      when Utilities::TokenType::LPAREN
         stack.push(token)
-      when TokenType::RPAREN
+      when Utilities::TokenType::RPAREN
         stack.empty? ? raise_unmatched_paren_error(token) : stack.pop()
       end
 
@@ -103,7 +103,7 @@ class Lexer
       raise_unmatched_paren_error(stack.last)
     end
 
-    @tokens << Token.new(TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
+    @tokens << Token.new(Utilities::TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
     return @tokens
   end
 
@@ -119,7 +119,7 @@ class Lexer
     tmp_line = @string.each_line.to_a[line_num - 1] # Get the line where the error was
 
     # We have an unmatched parenthesis
-    error_type = token.type == TokenType::LPAREN ? "opening" : "closing"
+    error_type = token.type == Utilities::TokenType::LPAREN ? "opening" : "closing"
     raise UnmatchedParenthesisError, "Unmatched #{error_type} parenthesis at line #{line_num}, column #{token.column} in #{tmp_line}"
   end
 
@@ -182,19 +182,19 @@ class Lexer
     match = to_symbol ? match.to_sym : match
     
     # Handle unary operators
-    if type == TokenType::UNARYOPERATOR
+    if type == Utilities::TokenType::UNARYOPERATOR
       # Check if the previous token is a binary operator, a left parenthesis or the beginning of the input
       previous_token = @tokens.last
       type = if previous_token.nil? ||
-                previous_token.type == TokenType::LPAREN ||
-                previous_token.type == TokenType::BINARYOPERATOR ||
+                previous_token.type == Utilities::TokenType::LPAREN ||
+                previous_token.type == Utilities::TokenType::BINARYOPERATOR ||
                 match == :! ||
                 previous_token.line < @line
                # This is a unary operator
-               TokenType::UNARYOPERATOR
+               Utilities::TokenType::UNARYOPERATOR
              else
                # This is a binary operator
-               TokenType::BINARYOPERATOR
+               Utilities::TokenType::BINARYOPERATOR
              end
     end
 
@@ -221,7 +221,7 @@ class Lexer
           when :identifier
             handle_identifier_match(match)
           else
-            create_token(match, TokenType.const_get(type.to_s.upcase), "Found #{type} token", true)
+            create_token(match, Utilities::TokenType.const_get(type.to_s.upcase), "Found #{type} token", true)
           end
   end
 
@@ -239,9 +239,9 @@ class Lexer
 
     return case number_str
           when /^\d+\.\d+$/ # Match a float
-            create_token(number_str.to_f, TokenType::FLOAT, 'Found float token')
+            create_token(number_str.to_f, Utilities::TokenType::FLOAT, 'Found float token')
           when /^\d+$/ # Match a integer
-            create_token(number_str.to_i, TokenType::INTEGER, 'Found integer token')
+            create_token(number_str.to_i, Utilities::TokenType::INTEGER, 'Found integer token')
           else
             raise InvalidTokenError, "Unrecognized number format at line #{@line}, column #{@column} in #{@current_line}"
           end
@@ -262,7 +262,7 @@ class Lexer
     match_length = match.length
     match = match[1..-2] # Remove quotes
     match = replace_escape_sequences(match) # Replace escape sequences
-    tok = create_token(match, TokenType::STRING, 'Found string token')
+    tok = create_token(match, Utilities::TokenType::STRING, 'Found string token')
     advance(match_length - match.length) # Advance for the quotes since we don't save them and the differnece if we have remove any escaping chars
     return tok
   end
@@ -300,7 +300,7 @@ class Lexer
     return create_token(match, KEYWORDS[match.to_sym], 'Found keyword token') if KEYWORDS.key?(match.to_sym)
 
     # If not it is a user defined keyword
-    return create_token(match, TokenType::IDENTIFIER, 'Found identifier token')
+    return create_token(match, Utilities::TokenType::IDENTIFIER, 'Found identifier token')
   end
 
   #

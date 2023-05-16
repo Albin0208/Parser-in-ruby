@@ -1,6 +1,6 @@
 #
 # All the navigation helper for the parser
-# These functions are used to navigate thorugh the list of tokens
+# These functions are used to navigate through the list of tokens
 #
 module TokenNavigation
 	private
@@ -8,7 +8,7 @@ module TokenNavigation
   #
   # @return [Boolean] Return of we are at the end of file or not
   def not_eof
-    return at().type != TokenType::EOF
+    return at().type != Utilities::TokenType::EOF
   end
 
   # Get what token we are at

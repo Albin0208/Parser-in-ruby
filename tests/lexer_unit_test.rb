@@ -1,71 +1,71 @@
 require 'test/unit'
 require_relative '../lexer/lexer'
-require_relative '../token_type'
+require_relative '../utilities/token_type'
 
 class TestLexer < Test::Unit::TestCase
   def test_tokens
     input = '1'
     lexer = Lexer.new(input)
 
-    assert_equal(TokenType::INTEGER, lexer.tokenize[0].type,
+    assert_equal(Utilities::TokenType::INTEGER, lexer.tokenize[0].type,
                  'Assert that given a number a INTEGER token is returned')
 
     input = '11.34'
     lexer = Lexer.new(input)
 
-    assert_equal(TokenType::FLOAT, lexer.tokenize[0].type,
+    assert_equal(Utilities::TokenType::FLOAT, lexer.tokenize[0].type,
                  'Assert that given a decimal number a FLOAT token is returned')
 
     # Test that all the BINARYOPERATORs are converted to BINARYOPERATORs
     ['*', '/'].each do |op|
       lexer = Lexer.new(op)
-      assert_equal(TokenType::BINARYOPERATOR, lexer.tokenize[0].type,
+      assert_equal(Utilities::TokenType::BINARYOPERATOR, lexer.tokenize[0].type,
                    "The token '#{op}' was not correctly tokenized")
     end
 
     ['+', '-'].each do |op|
       lexer = Lexer.new(op)
-      assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
+      assert_equal(Utilities::TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
                    "The token '#{op}' was not correctly tokenized")
     end
 
     ['<', '>', '>=', '<=', '==', '!='].each do |op|
       lexer = Lexer.new(op)
-      assert_equal(TokenType::COMPARISON, lexer.tokenize[0].type,
+      assert_equal(Utilities::TokenType::COMPARISON, lexer.tokenize[0].type,
                    "The token '#{op}' was not correctly tokenized")
     end
 
     input = '-3'
     lexer = Lexer.new(input)
 
-    assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
+    assert_equal(Utilities::TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
                  'Assert that given a negative number a unary operator is returned')
 
     input = '+3'
     lexer = Lexer.new(input)
 
-    assert_equal(TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
+    assert_equal(Utilities::TokenType::UNARYOPERATOR, lexer.tokenize[0].type,
                  'Assert that given a negative number a unary operator is returned')
 
     lexer = Lexer.new('()')
-    assert_equal(TokenType::LPAREN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
-    assert_equal(TokenType::RPAREN, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::LPAREN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::RPAREN, lexer.tokenize[1].type, 'The token was not correctly tokenized')
 
     lexer = Lexer.new('{}')
-    assert_equal(TokenType::LBRACE, lexer.tokenize[0].type, 'The token was not correctly tokenized')
-    assert_equal(TokenType::RBRACE, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::LBRACE, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::RBRACE, lexer.tokenize[1].type, 'The token was not correctly tokenized')
     lexer = Lexer.new('[]')
-    assert_equal(TokenType::LBRACKET, lexer.tokenize[0].type, 'The token was not correctly tokenized')
-    assert_equal(TokenType::RBRACKET, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::LBRACKET, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::RBRACKET, lexer.tokenize[1].type, 'The token was not correctly tokenized')
 
     lexer = Lexer.new('=')
-    assert_equal(TokenType::ASSIGN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::ASSIGN, lexer.tokenize[0].type, 'The token was not correctly tokenized')
 
     lexer = Lexer.new('aas')
-    assert_equal(TokenType::IDENTIFIER, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::IDENTIFIER, lexer.tokenize[0].type, 'The token was not correctly tokenized')
     lexer = Lexer.new(',.')
-    assert_equal(TokenType::COMMA, lexer.tokenize[0].type, 'The token was not correctly tokenized')
-    assert_equal(TokenType::DOT, lexer.tokenize[1].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::COMMA, lexer.tokenize[0].type, 'The token was not correctly tokenized')
+    assert_equal(Utilities::TokenType::DOT, lexer.tokenize[1].type, 'The token was not correctly tokenized')
   end
 
   def test_tokenize_keywords
