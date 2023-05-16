@@ -34,5 +34,8 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Install Yard
+      run: gem install yard
+      
     - name: Run tests
       run: rake test
