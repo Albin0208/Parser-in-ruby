@@ -127,9 +127,7 @@ module Runtime
     def eval_assignment_to_container_access(ast_node, env)
       access_nodes = [ast_node.assigne]
       # Extract all the chained container accesses
-      while access_nodes.last.identifier.is_a?(Nodes::ContainerAccessor)
-        access_nodes << access_nodes.last.identifier
-      end
+      access_nodes << access_nodes.last.identifier while access_nodes.last.identifier.is_a?(Nodes::ContainerAccessor)
       # Grab the top container of the call chain
       if env.is_constant?(access_nodes.last.identifier.symbol)
         raise "Line:#{ast_node.line}: Error: Can't assign to a constant container"
@@ -180,9 +178,9 @@ module Runtime
       # Evaluate the assigned value
       value = evaluate(ast_node.value, env)
       value_type = if container.is_a?(Values::ArrayVal)
-        container.value_type.to_s.gsub('[]', '')
-      else
-        container.value_type
+                     container.value_type.to_s.gsub('[]', '')
+                   else
+                     container.value_type
                    end
 
       value = coerce_value_to_type(value_type, value, ast_node.line)
@@ -206,7 +204,11 @@ module Runtime
       # Check if we are calling a custom class
       if evaled_expr.instance_of?(Values::ClassVal)
         # Grab the method, if error occurs it does not exist then set method to nil
-        method = evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name, ast_node.line) rescue nil
+        method = begin
+                   evaled_expr.class_instance.instance_env.lookup_identifier(ast_node.method_name, ast_node.line)
+                 rescue StandardError
+                   nil
+                 end
 
         return call_function(method, ast_node, call_env) unless method.nil?
       end
@@ -263,9 +265,9 @@ module Runtime
         NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
         return nil
       end
-        unless function.instance_of?(Nodes::FuncDeclaration)
-          raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function"
-        end
+      unless function.instance_of?(Nodes::FuncDeclaration)
+        raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function"
+      end
 
       return call_function(function, ast_node, call_env)
     end
@@ -285,8 +287,8 @@ module Runtime
       return_value = nil
       begin
         function.body.each() { |stmt| evaluate(stmt, env) }
-      rescue ReturnSignal => signal
-        return_value = signal.return_node
+      rescue ReturnSignal => e
+        return_value = e.return_node
       end
 
       expected_return_type = function.type_specifier.to_sym
@@ -307,10 +309,11 @@ module Runtime
     # @param [Array] call_params A list of all the params passed to the function
     # @param [Environment] call_env Where the function was called
     #
+    # @raise StandardError Error if the params are not valid
     def validate_params(function, call_params, call_env)
       unless function.params.length == call_params.length
-        types = function.params.map(&:value_type).join(", ")
-        raise "Error:" if function.is_a?(Nodes::Constructor)
+        types = function.params.map(&:value_type).join(', ')
+        raise 'Error:' if function.is_a?(Nodes::Constructor)
 
         raise "Line: #{function.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
       end
@@ -318,10 +321,10 @@ module Runtime
       function.params.zip(call_params) { |func_param, call_param|
         # Grab the converter if it exits else convert to symbol
         type = if func_param.is_a?(Nodes::HashDeclaration)
-          # Build the hash type
-          "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
-        else
-          func_param.value_type.to_sym
+                 # Build the hash type
+                 "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+               else
+                 func_param.value_type.to_sym
                end
         evaled_call_param = evaluate(call_param, call_env)
 
@@ -346,10 +349,10 @@ module Runtime
         evaled_call_param = evaluate(call_param, call_env)
 
         type = if func_param.is_a?(Nodes::HashDeclaration)
-          # Build the hash type
-          "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
-        else
-          func_param.value_type
+                 # Build the hash type
+                 "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+               else
+                 func_param.value_type
                end
 
         # Convert int passed to float and float passed to int
@@ -377,7 +380,7 @@ module Runtime
       key_values.map() { |pair|
         key = evaluate(pair[:key], env)
         value = evaluate(pair[:value], env)
-        # TODO check if correct for nested
+        # TODO: check if correct for nested
 
         key = coerce_value_to_type(ast_node.key_type, key, ast_node.line)
         value = coerce_value_to_type(ast_node.value_type, value, ast_node.line)
@@ -428,7 +431,8 @@ module Runtime
 
       raise "Line: #{ast_node.line}: Error: Key: #{access_key} does not exist in container" if value.nil?
 
-      return value ? value : Values::NullVal.new()
+      # Return the value unless it is nil
+      return value || Values::NullVal.new()
     end
 
     #
@@ -466,7 +470,7 @@ module Runtime
             matching_ctor = ctor
             break
           end
-        rescue => e # Recover if the validate params fails
+        rescue StandardError => e # Recover if the validate params fails
         end
       end
 
@@ -516,14 +520,14 @@ module Runtime
       # Check that the type of the value matches the declared type,
       # or that it can be coerced to that type
       unless (value.type.to_s == node_type) ||
-            (node_type == 'float' && value.type == :int) ||
-            (node_type == 'int' && value.type == :float)
+             (node_type == 'float' && value.type == :int) ||
+             (node_type == 'int' && value.type == :float)
         raise "Line:#{line}: Error: Type mismatch: expected #{node_type}, but got #{value.type}"
       end
 
-      if node_type == "int" && value.type == :float
+      if node_type == 'int' && value.type == :float
         return value.to_int()
-      elsif node_type == "float" && value.type == :int
+      elsif node_type == 'float' && value.type == :int
         return value.to_float()
       end
 

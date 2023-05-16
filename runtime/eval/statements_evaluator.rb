@@ -48,12 +48,14 @@ module Runtime
     #
     # @param ast_node [Nodes::HashDeclaration] the hash declaration node to evaluate
     # @param env [Environment] the environment in which to declare the new variable
-    # 
+    #
     # @raise [RuntimeError] if the evaluated value is not a HashVal or if its key and value types do not match the expected types
     def eval_hash_declaration(ast_node, env)
       value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
       unless value.instance_of?(Values::NullVal)
-        raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}" if value.class != Values::HashVal
+        if value.class != Values::HashVal
+          raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got #{value.class}"
+        end
         # Check if key and value types match the type of the assigned hash
         if value.key_type != ast_node.key_type || value.value_type != ast_node.value_type
           raise "Line: #{ast_node.line}: Error: #{ast_node.identifier} expected a hash of type: Hash<#{ast_node.key_type}, #{ast_node.value_type.to_s.gsub(',', ', ')}> but got Hash<#{value.key_type}, #{value.value_type.to_s.gsub(',', ', ')}>"
@@ -105,17 +107,15 @@ module Runtime
         ast_node.body.each { |stmt| last_eval = evaluate(stmt, if_env) }
         return last_eval
       end
-      if !ast_node.elsif_stmts.nil?
-        ast_node.elsif_stmts.each do |elsif_stmt|
-          if eval_condition(elsif_stmt.conditions, env)
-            # Set up new env for if so vars die after if is done
-            elsif_env = Runtime::Environment.new(env)
-            elsif_stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
-            return last_eval
-          end
+      ast_node.elsif_stmts&.each do |elsif_stmt|
+        if eval_condition(elsif_stmt.conditions, env)
+          # Set up new env for if so vars die after if is done
+          elsif_env = Runtime::Environment.new(env)
+          elsif_stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
+          return last_eval
         end
       end
-      if !ast_node.else_body.nil?
+      unless ast_node.else_body.nil?
         # Set up new env for if so vars die after if is done
         else_env = Runtime::Environment.new(env)
         # Eval the body of the else
@@ -134,8 +134,8 @@ module Runtime
     # @raise [ReturnSignal] The raised signal contains the value of the last evaluated expression
     #   and is caught by the calling function to return this value from the current function.
     def eval_return_stmt(ast_node, env)
-      result = evaluate(ast_node.body, env) 
-      raise ReturnSignal.new(result)
+      result = evaluate(ast_node.body, env)
+      raise ReturnSignal, result
     end
 
     #
@@ -224,7 +224,7 @@ module Runtime
         rescue ContinueSignal
         end
       end
-      
+
       return last_eval
     end
 
@@ -239,10 +239,9 @@ module Runtime
     def eval_condition(condition, env)
       evaled_condition = evaluate(condition, env)
 
-      if evaled_condition.instance_of?(Values::NullVal)
-        return false
-      end
-        return evaled_condition.value
+      return false if evaled_condition.instance_of?(Values::NullVal)
+
+      return evaled_condition.value
     end
 
     # Evaluates a class declaration AST node and declares the class in the given environment.
