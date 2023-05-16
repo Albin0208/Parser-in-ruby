@@ -41,4 +41,4 @@ NODE_TYPES = {
   ClassInstance: :ClassInstance
 }.freeze
 
-Dir.glob(File.join(File.dirname(__FILE__), 'nodes/*.rb')).each { |f| require f }
+Dir.glob(File.join(File.dirname(__FILE__), 'nodes/*.rb')).sort.each { |f| require f }

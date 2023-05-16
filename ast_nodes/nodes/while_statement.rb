@@ -2,13 +2,13 @@ require_relative 'stmt'
 
 module Nodes
   #
-  # The node for a while statment
+  # The node for a while statement
   #
   class WhileStmt < Stmt
     attr_reader :body, :conditions
 
     #
-    # Creates an While statment node
+    # Creates an While statement node
     #
     # @param [Array] body A list of all the nodes inside the while loop
     # @param [Expr] conditions The conditions of the loop

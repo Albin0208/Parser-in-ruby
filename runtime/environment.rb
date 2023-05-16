@@ -30,10 +30,10 @@ module Runtime
       raise "The native functions has already been setup in another scope: #{@@global_env}" unless @@global_env.nil?
 
       @@global_env = self
-      NativeFunctions::FUNCTIONS.each() { |func_name| 
+      NativeFunctions::FUNCTIONS.each() do |func_name|
                                           @constants.add(func_name)
                                           @identifiers[func_name] = :native_func
-                                        }
+                                        end
     end
 
     #
@@ -121,10 +121,10 @@ module Runtime
     #
     def assign_var(varname, value, line)
       env = find_scope(varname)
-    
+
       raise "Line: #{line}: Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
       raise "Line: #{line}: Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
-    
+
       var_type = env.identifiers_type[varname]
 
       if value.type == :int || value.type == :float
@@ -137,9 +137,9 @@ module Runtime
       elsif value.type.to_sym != var_type.to_sym
         raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{var_type}\"."
       end
-    
+
       env.identifiers[varname] = value
-    
+
       return value
     end
 

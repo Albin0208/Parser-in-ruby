@@ -10,7 +10,7 @@ TOKEN_TYPES = [
   [:integer, /\A\d+(\.\d+)?/],
   [:string, /\A("|')(?:\\.|[^\\"])*?("|')/],
   [:comparison, /\A((>=)|(<=)|(==)|(!=)|(<)|(>))/],
-  [:assign, /\A([\+\-\/\*]=)|(=)/],
+  [:assign, %r{\A([+\-/*]=)|(=)}],
   [:unaryOperator, /\A[-+!]/],
   [:binaryoperator, %r{\A[+\-*/%]}],
   [:logical, /\A((&&)|(\|\|))/],
@@ -99,9 +99,7 @@ class Lexer
       @tokens << token
     end
 
-    unless stack.empty?
-      raise_unmatched_paren_error(stack.last)
-    end
+    raise_unmatched_paren_error(stack.last) unless stack.empty?
 
     @tokens << Token.new(Utilities::TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
     return @tokens
@@ -119,7 +117,7 @@ class Lexer
     tmp_line = @string.each_line.to_a[line_num - 1] # Get the line where the error was
 
     # We have an unmatched parenthesis
-    error_type = token.type == Utilities::TokenType::LPAREN ? "opening" : "closing"
+    error_type = token.type == Utilities::TokenType::LPAREN ? 'opening' : 'closing'
     raise UnmatchedParenthesisError, "Unmatched #{error_type} parenthesis at line #{line_num}, column #{token.column} in #{tmp_line}"
   end
 
@@ -156,9 +154,7 @@ class Lexer
 
     # Match and handle tokens
     TOKEN_TYPES.each do |type, regex|
-      if @string[@position..] =~ /\A#{regex}/
-        return handle_token_match(type, $&)
-      end
+      return handle_token_match(type, $&) if @string[@position..] =~ /\A#{regex}/
     end
 
     # If we get here, no token was matched, so we have an invalid character or token
@@ -180,7 +176,7 @@ class Lexer
   # @return [Token] A new Token if type @type
   def create_token(match, type, message, to_symbol = false)
     match = to_symbol ? match.to_sym : match
-    
+
     # Handle unary operators
     if type == Utilities::TokenType::UNARYOPERATOR
       # Check if the previous token is a binary operator, a left parenthesis or the beginning of the input
@@ -214,14 +210,14 @@ class Lexer
   #
   def handle_token_match(type, match)
     return case type
-          when :integer
-            handle_number_match(match)
-          when :string, :string_esc
-            handle_string_match(match)
-          when :identifier
-            handle_identifier_match(match)
-          else
-            create_token(match, Utilities::TokenType.const_get(type.to_s.upcase), "Found #{type} token", true)
+           when :integer
+             handle_number_match(match)
+           when :string, :string_esc
+             handle_string_match(match)
+           when :identifier
+             handle_identifier_match(match)
+           else
+             create_token(match, Utilities::TokenType.const_get(type.to_s.upcase), "Found #{type} token", true)
           end
   end
 
@@ -238,12 +234,12 @@ class Lexer
     end
 
     return case number_str
-          when /^\d+\.\d+$/ # Match a float
-            create_token(number_str.to_f, Utilities::TokenType::FLOAT, 'Found float token')
-          when /^\d+$/ # Match a integer
-            create_token(number_str.to_i, Utilities::TokenType::INTEGER, 'Found integer token')
-          else
-            raise InvalidTokenError, "Unrecognized number format at line #{@line}, column #{@column} in #{@current_line}"
+           when /^\d+\.\d+$/ # Match a float
+             create_token(number_str.to_f, Utilities::TokenType::FLOAT, 'Found float token')
+           when /^\d+$/ # Match a integer
+             create_token(number_str.to_i, Utilities::TokenType::INTEGER, 'Found integer token')
+           else
+             raise InvalidTokenError, "Unrecognized number format at line #{@line}, column #{@column} in #{@current_line}"
           end
   end
 
@@ -256,14 +252,14 @@ class Lexer
   def handle_string_match(match)
     # Make sure that quotes of same type is used in starting and end
     if match[0] != match[-1]
-      raise InvalidStringError, "Missmatched quotes expected matching #{match[0]} at line #{@line}, column #{@column + match.length - 1} in #{@current_line}"
+      raise InvalidStringError, "Mismatched quotes expected matching #{match[0]} at line #{@line}, column #{@column + match.length - 1} in #{@current_line}"
     end
 
     match_length = match.length
     match = match[1..-2] # Remove quotes
     match = replace_escape_sequences(match) # Replace escape sequences
     tok = create_token(match, Utilities::TokenType::STRING, 'Found string token')
-    advance(match_length - match.length) # Advance for the quotes since we don't save them and the differnece if we have remove any escaping chars
+    advance(match_length - match.length) # Advance for the quotes since we don't save them and the difference if we have remove any escaping chars
     return tok
   end
 
@@ -277,12 +273,12 @@ class Lexer
   def replace_escape_sequences(str)
     # Table of all escape mappings
     escape_table = {
-      "\\n" => "\n",
-      "\\r" => "\r",
-      "\\t" => "\t",
+      '\\n' => "\n",
+      '\\r' => "\r",
+      '\\t' => "\t",
       '\\"' => '"',
       "\\'" => "'",
-      "\\\\" => "\\"
+      '\\\\' => '\\'
       # Add more escape sequences as needed
     }
     escape_regex = Regexp.union(escape_table.keys) # Unify all escape regex to one regex

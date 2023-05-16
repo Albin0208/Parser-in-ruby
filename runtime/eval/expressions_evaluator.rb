@@ -6,7 +6,7 @@ module Runtime
   # ExpressionsEvaluator defines a set of methods that can evaluate
   # different types of AST nodes representing expressions in a programming language.
   #
-  # The module includes methods for evaluating identifiers, 
+  # The module includes methods for evaluating identifiers,
   # binary expressions, unary expressions and more.
   module ExpressionsEvaluator
     private
@@ -44,10 +44,9 @@ module Runtime
     # @return [BooleanVal] The result of the logical OR operation.
     def eval_logical_or_expr(logic_or, env)
       lhs = evaluate(logic_or.left, env)
-      # Return early if lhs is true since only one of the statments have to be true
-      if lhs.value == true
-        return lhs
-      end
+      # Return early if lhs is true since only one of the statements have to be true
+      return lhs if lhs.value == true
+
       rhs = evaluate(logic_or.right, env)
 
       return Values::BooleanVal.new(rhs.value == true)
@@ -84,7 +83,9 @@ module Runtime
       lhs = evaluate(binop.left, env)
       rhs = evaluate(binop.right, env)
 
-      raise "Line:#{binop.line} Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}" unless lhs.is_a?(Values::RunTimeVal) && rhs.is_a?(Values::RunTimeVal)
+      unless lhs.is_a?(Values::RunTimeVal) && rhs.is_a?(Values::RunTimeVal)
+        raise "Line:#{binop.line} Error: Unsupported operand type for #{binop.op}: #{lhs.class} and #{rhs.class}"
+      end
 
       lhs.send(binop.op, rhs)
     end
@@ -98,13 +99,15 @@ module Runtime
     # @raise [RuntimeError] If the assignment target is not an identifier or container accessor
     def eval_assignment_expr(ast_node, env)
       case ast_node.assigne.type
-      when :ContainerAccessor 
+      when :ContainerAccessor
         return eval_assignment_to_container_access(ast_node, env)
       when :PropertyCallExpr
         # Evaluate the class value and check if it's a ClassVal
         class_value = evaluate(ast_node.assigne.expr, env)
-        raise "Line: #{ast_node.line}: Error: Can't assign to property of non-class object" unless class_value.instance_of?(Values::ClassVal)
-    
+        unless class_value.instance_of?(Values::ClassVal)
+          raise "Line: #{ast_node.line}: Error: Can't assign to property of non-class object"
+        end
+
         # Assign the value to the class instance environment
         value = evaluate(ast_node.value, env)
         return class_value.class_instance.instance_env.assign_var(ast_node.assigne.property_name, value, ast_node.line)
@@ -128,17 +131,20 @@ module Runtime
         access_nodes << access_nodes.last.identifier
       end
       # Grab the top container of the call chain
-      raise "Line:#{ast_node.line}: Error: Can't assign to a constant container" if env.is_constant?(access_nodes.last.identifier.symbol)
+      if env.is_constant?(access_nodes.last.identifier.symbol)
+        raise "Line:#{ast_node.line}: Error: Can't assign to a constant container"
+      end
+
       container = env.lookup_identifier(access_nodes.last.identifier.symbol, ast_node.line)
       access_nodes.shift # Remove the node where the assignments is done since it is done later
 
       # Reverse traverse through all the container accesses
-      access_nodes.reverse_each { |access| 
+      access_nodes.reverse_each { |access|
         access_key = evaluate(access.access_key, env)
         if container.is_a?(Values::ArrayVal)
           # Wrap around from the back if it is negative
           access_key = access_key % container.length.value if access_key.negative?
-        
+
           if access_key >= container.length.value
             raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
           end
@@ -146,10 +152,11 @@ module Runtime
         unless container.key_type == access_key.type
           raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
         end
+
         container = container.value[access_key.value]
       }
 
-      # Retrive the final access key
+      # Retrieve the final access key
       access_key = evaluate(ast_node.assigne.access_key, env)
       if container.is_a?(Values::HashVal)
         unless container.key_type == access_key.type
@@ -159,9 +166,12 @@ module Runtime
         unless access_key.type == :int
           raise "Line:#{ast_node.line}: Error: Array expected a index of type int but got #{access_key.type}"
         end
+
         # Wrap around from the back if it is negative
-        access_key = Values::NumberVal.new(access_key.value % container.length.value, :int) if access_key.value.negative?
-      
+        if access_key.value.negative?
+          access_key = Values::NumberVal.new(access_key.value % container.length.value, :int)
+        end
+
         if access_key.value >= container.length.value
           raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
         end
@@ -169,11 +179,11 @@ module Runtime
 
       # Evaluate the assigned value
       value = evaluate(ast_node.value, env)
-      if container.is_a?(Values::ArrayVal)
-        value_type = container.value_type.to_s.gsub('[]', '')
+      value_type = if container.is_a?(Values::ArrayVal)
+        container.value_type.to_s.gsub('[]', '')
       else
-        value_type = container.value_type
-      end
+        container.value_type
+                   end
 
       value = coerce_value_to_type(value_type, value, ast_node.line)
 
@@ -206,7 +216,7 @@ module Runtime
       unless available_methods.include?(ast_node.method_name.to_sym)
         raise "Line:#{ast_node.line}: Error: Method #{ast_node.method_name} is not defined in #{err_class_name}"
       end
-      
+
       # Grab the methods
       method = evaled_expr.method(ast_node.method_name)
       args = ast_node.params.map() { |param| evaluate(param, call_env) }
@@ -242,7 +252,7 @@ module Runtime
     def eval_call_expr(ast_node, call_env)
       function = call_env.lookup_identifier(ast_node.func_name.symbol, ast_node.line)
       if function.instance_of?(Symbol) && function == :native_func
-        param_results = ast_node.params.map() { |param| 
+        param_results = ast_node.params.map() { |param|
           evaled = evaluate(param, call_env)
           if !evaled.is_a?(Values::HashVal) && !evaled.is_a?(Values::ArrayVal) && evaled.instance_variable_defined?(:@value)
             evaled.value
@@ -253,7 +263,9 @@ module Runtime
         NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
         return nil
       end
-        raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function" unless function.instance_of?(Nodes::FuncDeclaration)
+        unless function.instance_of?(Nodes::FuncDeclaration)
+          raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function"
+        end
 
       return call_function(function, ast_node, call_env)
     end
@@ -279,7 +291,7 @@ module Runtime
 
       expected_return_type = function.type_specifier.to_sym
       return Values::NullVal.new() if expected_return_type == :void
-      
+
       # Check that the return value is the same type as the return type of the function
       if return_value.type != expected_return_type
         raise "Line: #{ast_node.line}: Error: function expected a return type of #{function.type_specifier} but got #{return_value.type}"
@@ -298,27 +310,26 @@ module Runtime
     def validate_params(function, call_params, call_env)
       unless function.params.length == call_params.length
         types = function.params.map(&:value_type).join(", ")
-        if function.is_a?(Nodes::Constructor)
-          raise "Error:"
-        end
+        raise "Error:" if function.is_a?(Nodes::Constructor)
+
         raise "Line: #{function.line}: Error: Wrong number of arguments passed to function '#{function.type_specifier} #{function.identifier}(#{types})'. Expected '#{function.params.length}' but got '#{call_params.length}'"
       end
 
-      function.params.zip(call_params) { |func_param, call_param| 
+      function.params.zip(call_params) { |func_param, call_param|
         # Grab the converter if it exits else convert to symbol
-        if func_param.is_a?(Nodes::HashDeclaration)
+        type = if func_param.is_a?(Nodes::HashDeclaration)
           # Build the hash type
-          type = "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+          "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
         else
-          type = func_param.value_type.to_sym
-        end
+          func_param.value_type.to_sym
+               end
         evaled_call_param = evaluate(call_param, call_env)
 
         unless evaled_call_param.type.to_s.downcase == type.to_s.downcase
           raise "Line: #{function.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
         end
       }
-      
+
       return true
     end
 
@@ -331,16 +342,16 @@ module Runtime
     # @param [Environment] env The environment for the current call of the function
     #
     def declare_params(function, call_params, call_env, env)
-      function.params.zip(call_params) { |func_param, call_param| 
+      function.params.zip(call_params) { |func_param, call_param|
         evaled_call_param = evaluate(call_param, call_env)
 
-        if func_param.is_a?(Nodes::HashDeclaration)
+        type = if func_param.is_a?(Nodes::HashDeclaration)
           # Build the hash type
-          type = "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
+          "Hash<#{func_param.key_type},#{func_param.value_type}>".to_sym
         else
-          type = func_param.value_type
-        end
-        
+          func_param.value_type
+               end
+
         # Convert int passed to float and float passed to int
         case func_param.value_type
         when 'int'
@@ -363,7 +374,7 @@ module Runtime
       key_values = ast_node.key_value_pairs
       value_hash = {}
 
-      key_values.map() { |pair| 
+      key_values.map() { |pair|
         key = evaluate(pair[:key], env)
         value = evaluate(pair[:value], env)
         # TODO check if correct for nested
@@ -373,8 +384,12 @@ module Runtime
 
         unless ast_node.value_type.is_a?(Array)
           # Check if the key type is correct
-          raise "Line: #{ast_node.line}: Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}" if key.type != ast_node.key_type
-          raise "Line: #{ast_node.line}: Error: Hash expected value of type #{value.type} but got #{ast_node.value_type.to_s.gsub(',', ', ')}" if value.type != ast_node.value_type
+          if key.type != ast_node.key_type
+            raise "Line: #{ast_node.line}: Error: Hash expected key of type #{key.type} but got #{ast_node.key_type}"
+          end
+          if value.type != ast_node.value_type
+            raise "Line: #{ast_node.line}: Error: Hash expected value of type #{value.type} but got #{ast_node.value_type.to_s.gsub(',', ', ')}"
+          end
         end
         value_hash[key.value] = value
       }
@@ -393,7 +408,7 @@ module Runtime
     #
     def eval_container_accessor(ast_node, env)
       container = evaluate(ast_node.identifier, env)
-  
+
       unless container.is_a?(Values::HashVal) || container.is_a?(Values::ArrayVal)
         raise "Line: #{ast_node.line}: Error: Invalid type for container accessor, #{container.class}"
       end
@@ -412,6 +427,7 @@ module Runtime
       value = container.value[access_key]
 
       raise "Line: #{ast_node.line}: Error: Key: #{access_key} does not exist in container" if value.nil?
+
       return value ? value : Values::NullVal.new()
     end
 
@@ -453,17 +469,17 @@ module Runtime
         rescue => e # Recover if the validate params fails
         end
       end
-      
+
       # Throw error if we have not found a constructor
       if matching_ctor.nil?
-        param_types = params.map() { |param| param.is_a?(Nodes::NumericLiteral) ? param.numeric_type : param.type }.join(', ') 
+        param_types = params.map() { |param| param.is_a?(Nodes::NumericLiteral) ? param.numeric_type : param.type }.join(', ')
         raise "Line:#{ast_node.line}: Error: no matching constructor for #{ast_node.class_name.symbol}::Constructor(#{param_types})"
       end
-      
+
       ctor_env = Environment.new(instance_env)
-      
+
       declare_params(matching_ctor, params, env, ctor_env) unless params.empty?
-    
+
       matching_ctor.body.each() { |stmt| evaluate(stmt, ctor_env) }
     end
 
@@ -483,7 +499,7 @@ module Runtime
       }
 
       type = "#{ast_node.value_type}[]"
-      
+
       return Values::ArrayVal.new(values, type)
     end
 
@@ -496,7 +512,7 @@ module Runtime
     # @raise [RuntimeError] If the value cannot be coerced to the specified type.
     def coerce_value_to_type(node_type, value, line)
       node_type = node_type.to_s
-    
+
       # Check that the type of the value matches the declared type,
       # or that it can be coerced to that type
       unless (value.type.to_s == node_type) ||
@@ -504,13 +520,13 @@ module Runtime
             (node_type == 'int' && value.type == :float)
         raise "Line:#{line}: Error: Type mismatch: expected #{node_type}, but got #{value.type}"
       end
-    
+
       if node_type == "int" && value.type == :float
         return value.to_int()
       elsif node_type == "float" && value.type == :int
         return value.to_float()
       end
-    
+
       return value
     end
   end
