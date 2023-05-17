@@ -39,6 +39,14 @@ class TestInterpreterHash < Test::Unit::TestCase
     assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
   end
 
+  def test_interpret_hash_access_with_wrong_key_type
+    input = "Hash<string, string> my_hash = Hash<string, string>{ 'a'='A' }
+             my_hash[2]"
+    ast = @parser.produce_ast(input)
+
+    assert_raise(RuntimeError) { @interpreter.evaluate(ast, @env) }
+  end
+
   def test_interpret_hash_assignment
     input = "Hash<string, int> my_hash = Hash<string, int>{ 'a'=1 }
              my_hash['b'] = 2"

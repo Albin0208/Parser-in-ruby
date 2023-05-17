@@ -1,13 +1,16 @@
 #int[] c = int[1]
 
+func int test() {
+    return 1
+}
 
-
-int[][] a = int[][] { int[]{1,2,3}, int[]{1,2,3} }
-
+int[][] a = int[][] { int[]{1,2,3}, int[]{2,2,3} }
+a[0] = int[]{3,2,1}
+print(a)
+a[0][test()] = 32
+print(a)
 print(a[0][1])
 
-a = int[][]{int[]{2}}
-a.append(int[]{1,2,3,4,5,6})
-print(a[0][0])
-a[0].append(300)
-print(a)
+Hash<string, string> my_hash = Hash<string, string>{ 'a'='A' }
+
+my_hash[2] = 'hej'

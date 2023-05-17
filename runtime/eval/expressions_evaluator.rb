@@ -141,17 +141,15 @@ module Runtime
         access_key = evaluate(access.access_key, env)
         if container.is_a?(Values::ArrayVal)
           # Wrap around from the back if it is negative
+          access_key = access_key.value
           access_key = access_key % container.length.value if access_key.negative?
-
+          
           if access_key >= container.length.value
             raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
           end
         end
-        unless container.key_type == access_key.type
-          raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
-        end
 
-        container = container.value[access_key.value]
+        container = container.value[access_key]
       }
 
       # Retrieve the final access key
@@ -178,7 +176,7 @@ module Runtime
       # Evaluate the assigned value
       value = evaluate(ast_node.value, env)
       value_type = if container.is_a?(Values::ArrayVal)
-                     container.value_type.to_s.gsub('[]', '')
+                     container.value_type.to_s.sub('[]', '')
                    else
                      container.value_type
                    end
