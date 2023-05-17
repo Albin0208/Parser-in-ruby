@@ -223,7 +223,7 @@ module Runtime
       end
 
       # Check if the method exists
-      available_methods = evaled_expr.class.instance_methods() - Object.class.methods()
+      available_methods = evaled_expr.class.instance_methods() - Object.class.methods() << :to_s # Add back the to_s method
       unless available_methods.include?(ast_node.method_name.to_sym)
         raise "Line:#{ast_node.line}: Error: Method #{ast_node.method_name} is not defined in #{err_class_name}"
       end

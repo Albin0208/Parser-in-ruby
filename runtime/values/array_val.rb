@@ -111,7 +111,7 @@ module Runtime
         }
         string.chomp!(', ')
         string << ']'
-        return string
+        return StringVal.new(string)
       end
     end
   end
