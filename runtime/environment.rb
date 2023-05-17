@@ -122,6 +122,7 @@ module Runtime
     def assign_var(varname, value, line)
       env = find_scope(varname)
 
+      raise "Line: #{line}: Error: \"#{varname}\" was not declared in any scope" if env.nil?
       raise "Line: #{line}: Cannot reassign constant variable \"#{varname}\"" if env.constants.include?(varname)
       raise "Line: #{line}: Cannot assign a value to a function \"#{varname}\"" if is_function?(varname, env)
 
@@ -158,6 +159,13 @@ module Runtime
       return env.identifiers[identifier]
     end
 
+    #
+    # Checks if the variable is a constant
+    #
+    # @param [String] identifier The name of the identifier
+    #
+    # @return [Boolean] If the var is constant or not
+    #
     def is_constant?(identifier)
       env = find_scope(identifier)
 
