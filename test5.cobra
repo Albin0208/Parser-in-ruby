@@ -1,40 +1,6 @@
-func int fib(int value){
-    if value <= 0{
-        return 0
-    }
-    elsif value == 1 || value == 2{
-        return 1
-    }
-    else{
-        return fib(value-1) + fib(value-2)
-    }
-}
-print(fib(0))     #0
-print(fib(4))     #2
-print(fib(27))    #6765
-
-class Person {
-  int age
-  string name
-  int birth_year
-
-  Constructor() {
-    age = 0
-    name = "Jane Doe"
-  }
-  Constructor(int a) {
-    age = a
-    name = "Jane Doe"
-  }
-  Constructor(int a, string name) {
-    age = a
-    String = "Jane Doe"
-  }
-  func void set_age(int a) {
-    age = a
-  }
-  func int get_age() {
-    return age
-  }
+int[] c = int[1]
+func Hash<string, string> t() {
+    return Hash<string, string>{ 'a'='A', 'b'='B' }
 }
 
+Hash<string, string> my_hash = Hash<string, string>{ 'a'='A', 'b'='B' }

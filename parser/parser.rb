@@ -169,6 +169,7 @@ class Parser
   # @return [HashDeclaration] The hash
   #
   def parse_hash_declaration(is_const)
+    expect(Utilities::TokenType::HASH)
     key_type, value_type = parse_hash_type_specifier()
 
     identifier = parse_identifier()
@@ -184,7 +185,7 @@ class Parser
 
     expect(Utilities::TokenType::ASSIGN)
 
-    expression = at().type == Utilities::TokenType::IDENTIFIER ? parse_expr() : parse_hash_literal()
+    expression = parse_expr()
 
     return Nodes::HashDeclaration.new(is_const, identifier.symbol, key_type.to_sym, value_type, identifier.line, expression)
   end
@@ -382,7 +383,7 @@ class Parser
   # @raise [NameError] if a constant is not initialized upon creation
   # @raise [SyntaxError] if the type of the assigned expression is not compatible with the declared type
   def parse_array_declaration(is_const)
-    type = expect(Utilities::TokenType::ARRAY_TYPE).value
+    type = expect(Utilities::TokenType::ARRAY_TYPE).value.to_s.gsub(/\s/, '').to_sym
 
     identifier = parse_identifier()
 
@@ -778,10 +779,13 @@ class Parser
       expr = Nodes::BooleanLiteral.new(eat().value == "true", @location)
     when Utilities::TokenType::STRING
       expr = Nodes::StringLiteral.new(expect(Utilities::TokenType::STRING).value.to_s, @location)
-    when Utilities::TokenType::HASH
-      expr = parse_hash_literal()
-    when Utilities::TokenType::TYPE_SPECIFIER, Utilities::TokenType::ARRAY_TYPE
-      expr = parse_array_literal()
+    when Utilities::TokenType::HASH, Utilities::TokenType::TYPE_SPECIFIER, Utilities::TokenType::ARRAY_TYPE
+      eat() if at().type == Utilities::TokenType::HASH # Eat the hash keyword, it is of no use in the parser
+      expr = if at().type == Utilities::TokenType::ARRAY_TYPE || next_token().type == Utilities::TokenType::LBRACKET
+                parse_array_literal()
+              else
+                parse_hash_literal()
+              end
     when Utilities::TokenType::LPAREN
       expect(Utilities::TokenType::LPAREN) # Eat opening paren
       expr = parse_expr()
@@ -830,20 +834,27 @@ class Parser
   # @return [ArrayLiteral] The array literal expression AST node.
   def parse_array_literal()
     if at().type == Utilities::TokenType::ARRAY_TYPE
-      type = expect(Utilities::TokenType::ARRAY_TYPE).value.to_s.gsub('[]', '')
-      value = []
-    else
-      type = expect(Utilities::TokenType::TYPE_SPECIFIER).value
-      expect(Utilities::TokenType::LBRACKET)
-      value = []
-      while at().type != Utilities::TokenType::RBRACKET
-        expr = parse_expr()
-        value << expr
-        expect(Utilities::TokenType::COMMA) if at().type == Utilities::TokenType::COMMA
-      end
-
-      expect(Utilities::TokenType::RBRACKET)
+      type = expect(Utilities::TokenType::ARRAY_TYPE).value.to_s.gsub(/[\[\]\s]/, '').to_sym
+      return Nodes::ArrayLiteral.new([], type, @location)
     end
+
+    # Check if it is a array of hashes
+    if at().type == Utilities::TokenType::HASH_TYPE
+      type = "Hash"
+      type << expect(Utilities::TokenType::HASH_TYPE).value.to_s.gsub(/\s/, '')
+    else
+      type = expect(Utilities::TokenType::TYPE_SPECIFIER).value.to_sym
+    end
+
+    expect(Utilities::TokenType::LBRACKET)
+    value = []
+    while at().type != Utilities::TokenType::RBRACKET
+      expr = parse_expr()
+      value << expr
+      expect(Utilities::TokenType::COMMA) if at().type == Utilities::TokenType::COMMA
+    end
+
+    expect(Utilities::TokenType::RBRACKET)
 
     return Nodes::ArrayLiteral.new(value, type, @location)
   end

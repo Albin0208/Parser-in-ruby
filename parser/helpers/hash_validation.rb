@@ -24,7 +24,7 @@ module HashValidation
   # @return [String & String] The key and value types
   #
   def parse_hash_type_specifier
-    expect(Utilities::TokenType::HASH)
+    # expect(Utilities::TokenType::HASH)
 
     hash_type = expect(Utilities::TokenType::HASH_TYPE).value.to_s
 
