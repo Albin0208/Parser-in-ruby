@@ -11,6 +11,9 @@ a[0][test()] = 32
 print(a)
 print(a[0][1])
 
-Hash<string, string> my_hash = Hash<string, string>{ 'a'='A' }
+Hash<string, Hash<string, int>> my_hash = Hash<string, Hash<string, int>>{ 'a'=Hash<string, int>{'a'=2} }
 
-my_hash[2] = 'hej'
+my_hash['a']['c'] = 3
+my_hash['c'] = Hash<string, int>{'a'=45}
+
+print(my_hash)

@@ -138,10 +138,10 @@ module Runtime
 
       # Reverse traverse through all the container accesses
       access_nodes.reverse_each { |access|
-        access_key = evaluate(access.access_key, env)
+        access_key = evaluate(access.access_key, env).value
         if container.is_a?(Values::ArrayVal)
           # Wrap around from the back if it is negative
-          access_key = access_key.value
+          # access_key = access_key.value
           access_key = access_key % container.length.value if access_key.negative?
           
           if access_key >= container.length.value
@@ -186,6 +186,17 @@ module Runtime
       # Assign the value to the container
       container.value[access_key.value] = value
       return value
+    end
+
+    def evaluate_container_access(container_access, env)
+      identifier = container_access.identifier
+      container = env.lookup_identifier(identifier.symbol, container_access.line)
+    
+      unless container.is_a?(Values::ArrayVal) || container.is_a?(Values::HashVal)
+        raise "Line:#{container_access.line}: Error: Invalid container type"
+      end
+    
+      return container
     end
 
     # Evaluate a method call expression by first evaluating the receiver expression and

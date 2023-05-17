@@ -208,7 +208,7 @@ class Parser
       key = parse_expr()
 
       # Check if key already has been defined
-      if key_in_hash?(key, keys)#keys.include?(key.value)
+      if key_in_hash?(key, keys)
         raise "Line:#{@location}: Error: Key: #{key} already exists in hash"
       end
 

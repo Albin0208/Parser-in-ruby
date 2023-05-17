@@ -10,7 +10,7 @@ module ExpressionValidation
   # @param [String] type What type we are trying to assign to
   def validate_assignment_type(expression, type)
     # We can't know what type will be given until runtime of it is a func call and so on
-    return unless %i[NumericLiteral String Bool HashLiteral].include?(expression.type)
+    return unless %i[NumericLiteral String Bool].include?(expression.type)
 
     unless expression.instance_variable_defined?(:@value)
       if expression.type != NODE_TYPES[:CallExpr]
