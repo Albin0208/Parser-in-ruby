@@ -833,28 +833,22 @@ class Parser
   #
   # @return [ArrayLiteral] The array literal expression AST node.
   def parse_array_literal()
-    if at().type == Utilities::TokenType::ARRAY_TYPE
-      type = expect(Utilities::TokenType::ARRAY_TYPE).value.to_s.gsub(/[\[\]\s]/, '').to_sym
+    type = expect(Utilities::TokenType::ARRAY_TYPE).value.to_s.gsub(/[\s]/, '').sub('[]', '').to_sym
+
+    unless at().type == Utilities::TokenType::LBRACE
       return Nodes::ArrayLiteral.new([], type, @location)
     end
 
-    # Check if it is a array of hashes
-    if at().type == Utilities::TokenType::HASH_TYPE
-      type = "Hash"
-      type << expect(Utilities::TokenType::HASH_TYPE).value.to_s.gsub(/\s/, '')
-    else
-      type = expect(Utilities::TokenType::TYPE_SPECIFIER).value.to_sym
-    end
+    expect(Utilities::TokenType::LBRACE)
 
-    expect(Utilities::TokenType::LBRACKET)
     value = []
-    while at().type != Utilities::TokenType::RBRACKET
+    while at().type != Utilities::TokenType::RBRACE
       expr = parse_expr()
       value << expr
       expect(Utilities::TokenType::COMMA) if at().type == Utilities::TokenType::COMMA
     end
 
-    expect(Utilities::TokenType::RBRACKET)
+    expect(Utilities::TokenType::RBRACE)
 
     return Nodes::ArrayLiteral.new(value, type, @location)
   end

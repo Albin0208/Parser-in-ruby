@@ -1,6 +1,13 @@
-int[] c = int[1]
-func Hash<string, string> t() {
-    return Hash<string, string>{ 'a'='A', 'b'='B' }
-}
+#int[] c = int[1]
 
-Hash<string, string> my_hash = Hash<string, string>{ 'a'='A', 'b'='B' }
+
+
+int[][] a = int[][] { int[]{1,2,3} }
+
+print(a[0][1])
+
+a = int[][]{int[]{2}}
+a.append(int[]{1,2,3,4,5,6})
+print(a[0][0])
+a[0].append(300)
+print(a)

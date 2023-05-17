@@ -9,7 +9,7 @@ class TestInterpreterArray < Test::Unit::TestCase
   end
 
   def test_interpret_array_declaration
-    input = "int[] a = int[1, 2, 3]"
+    input = "int[] a = int[]{1, 2, 3}"
     ast = @parser.produce_ast(input)
     result = @interpreter.evaluate(ast, @env)
 
@@ -23,7 +23,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_access
     input = "
-      int[] a = int[1, 2, 3]
+      int[] a = int[]{1, 2, 3}
       int b = a[1]
       b
     "
@@ -35,7 +35,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_assignment
     input = "
-      int[] a = int[1, 2, 3]
+      int[] a = int[]{1, 2, 3}
       a[1] = 5
       a[1]
     "
@@ -47,7 +47,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_append
     input = "
-      int[] a = int[]
+      int[] a = int[]{}
       a.append(10)
       a.append(2)
       a[0]
@@ -60,7 +60,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_pop
     input = "
-      int[] a = int[2, 10]
+      int[] a = int[]{2, 10}
       a.pop()
       a[0]
     "
@@ -72,7 +72,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_of_hashes
     input = "
-      Hash<string, int>[] a = Hash<string, int>[Hash<string, int>{'a'=2}]
+      Hash<string, int>[] a = Hash<string, int>[]{Hash<string, int>{'a'=2}}
       a[0]
     "
     ast = @parser.produce_ast(input)
@@ -85,7 +85,7 @@ class TestInterpreterArray < Test::Unit::TestCase
 
   def test_interpret_array_length
     input = "
-      int[] a = int[1, 2, 3]
+      int[] a = int[]{1, 2, 3}
       int length = a.length()
       length
     "
