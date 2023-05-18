@@ -4,3 +4,10 @@ print(Hash<string, int>{'a' = 2, 'c' = 3}.values())
 print('hello' + ' ' + "world")
 print("hello" * 3)
 print("Hello world".length())
+print(1.9.to_int())
+print(1.1 == 1)
+ 1.1 == 1 #=> false
+print(20 == 12.12) #=> false
+print(100 <= 100.0) #=> true
+print(20.12 % 9)
+print(-5 / -5)
