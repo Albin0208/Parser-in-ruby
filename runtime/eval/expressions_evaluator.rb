@@ -132,46 +132,15 @@ module Runtime
       if env.is_constant?(access_nodes.last.identifier.symbol)
         raise "Line:#{ast_node.line}: Error: Can't assign to a constant container"
       end
-
+      
       container = env.lookup_identifier(access_nodes.last.identifier.symbol, ast_node.line)
       access_nodes.shift # Remove the node where the assignments is done since it is done later
 
-      # Reverse traverse through all the container accesses
-      access_nodes.reverse_each { |access|
-        access_key = evaluate(access.access_key, env).value
-        if container.is_a?(Values::ArrayVal)
-          # Wrap around from the back if it is negative
-          # access_key = access_key.value
-          access_key = access_key % container.length.value if access_key.negative?
-          
-          if access_key >= container.length.value
-            raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
-          end
-        end
-
-        container = container.value[access_key]
-      }
+      container = traverse_container_access(access_nodes, container, env, ast_node.line) 
 
       # Retrieve the final access key
       access_key = evaluate(ast_node.assigne.access_key, env)
-      if container.is_a?(Values::HashVal)
-        unless container.key_type == access_key.type
-          raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
-        end
-      else # We have an array
-        unless access_key.type == :int
-          raise "Line:#{ast_node.line}: Error: Array expected a index of type int but got #{access_key.type}"
-        end
-
-        # Wrap around from the back if it is negative
-        if access_key.value.negative?
-          access_key = Values::NumberVal.new(access_key.value % container.length.value, :int)
-        end
-
-        if access_key.value >= container.length.value
-          raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
-        end
-      end
+      validate_access_key(ast_node, container, access_key)
 
       # Evaluate the assigned value
       value = evaluate(ast_node.value, env)
@@ -188,15 +157,56 @@ module Runtime
       return value
     end
 
-    def evaluate_container_access(container_access, env)
-      identifier = container_access.identifier
-      container = env.lookup_identifier(identifier.symbol, container_access.line)
-    
-      unless container.is_a?(Values::ArrayVal) || container.is_a?(Values::HashVal)
-        raise "Line:#{container_access.line}: Error: Invalid container type"
-      end
-    
+    # Traverses the container accesses in reverse order and retrieves the final container.
+    #
+    # @param access_nodes [Array<ContainerAccessor>] The array of container access nodes in reverse order.
+    # @param container [HashVal, ArrayVal] The initial container object.
+    # @param env [Environment] The environment object.
+    # @param line [Integer] The line number for error reporting.
+    # @return [HashVal, ArrayVal] The final container object after traversing the container accesses.
+    def traverse_container_access(access_nodes, container, env, line)
+      # Reverse traverse through all the container accesses
+      access_nodes.reverse_each { |access|
+        access_key = evaluate(access.access_key, env).value
+        if container.is_a?(Values::ArrayVal)
+          # Wrap around from the back if it is negative
+          # access_key = access_key.value
+          access_key = access_key % container.length.value if access_key.negative?
+          
+          if access_key >= container.length.value
+            raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+          end
+        end
+
+        container = container.value[access_key]
+      }
       return container
+    end
+
+    # Validates the access key based on the container type.
+    #
+    # @param ast_node [ASTNode] The AST node being evaluated.
+    # @param container [Object] The container object being accessed.
+    # @param access_key [Object] The access key being validated.
+    # @raise [RuntimeError] If the access key is invalid for the container.
+    def validate_access_key(ast_node, container, access_key)
+      if container.is_a?(Values::HashVal)
+        unless container.key_type == access_key.type
+          raise "Line: #{ast_node.line}: Error: Invalid key type, expected #{container.key_type} but got #{access_key.type}"
+        end
+      else
+        unless access_key.type == :int
+          raise "Line:#{ast_node.line}: Error: Array expected an index of type int but got #{access_key.type}"
+        end
+        
+        if access_key.value.negative?
+          access_key = Values::NumberVal.new(access_key.value % container.length.value, :int)
+        end
+        
+        if access_key.value >= container.length.value
+          raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+        end
+      end
     end
 
     # Evaluate a method call expression by first evaluating the receiver expression and
