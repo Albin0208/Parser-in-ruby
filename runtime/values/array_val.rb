@@ -4,7 +4,7 @@ module Runtime
     # @example Creating an empty array
     #   int[] a                 #=> []
     #   string[] a = string[]{} #=> []
-    # @example Creating an with values array
+    # @example Creating an array with values
     #   int[] a = int[]{1, 2, 3}        #=> [1, 2, 3]
     #   string[] a = string[]{"one", "two", "three"} #=> ["one", "two", "three"]
     class ArrayVal < RunTimeVal
