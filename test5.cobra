@@ -1,3 +1,6 @@
 
 print(Hash<string, int>{"a" = 2, "b" = 3} == Hash<string, int>{"b" = 2, "a" = 2})
 print(Hash<string, int>{'a' = 2, 'c' = 3}.values())
+print('hello' + ' ' + "world")
+print("hello" * 3)
+print("Hello world".length())
