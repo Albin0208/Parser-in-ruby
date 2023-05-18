@@ -5,8 +5,6 @@ require_relative 'runtime/environment'
 #
 # The entrypoint in to the language
 #
-# @return [<Type>] <description>
-#
 def main
   debugging = ARGV[0] == '-debug'
   
