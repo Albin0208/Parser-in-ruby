@@ -1,7 +1,7 @@
+Hash<string, Hash<string, int>> acc = Hash<string, Hash<string, int>> {'a'=Hash<string, int>{'a' = 2.0, 'b' = 4}}
 class Test {
   int var = 1
   int c = 2
-  Hash<string, int> acc = Hash<string, int> {'a' = 2.0, 'b' = 4}
 
   Constructor() {
     c = 3
@@ -62,3 +62,5 @@ print(a.set(4))
 print(a.var)
 
 print(a.test(ass))
+
+print(acc)

@@ -154,7 +154,7 @@ module Runtime
 
       # Assign the value to the container
       container.value[access_key.value] = value
-      return value
+      return Values::NullVal.new()
     end
 
     # Traverses the container accesses in reverse order and retrieves the final container.
@@ -399,7 +399,6 @@ module Runtime
       key_values.map() { |pair|
         key = evaluate(pair[:key], env)
         value = evaluate(pair[:value], env)
-        # TODO: check if correct for nested
 
         key = coerce_value_to_type(ast_node.key_type, key, ast_node.line)
         value = coerce_value_to_type(ast_node.value_type, value, ast_node.line)
