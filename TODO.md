@@ -35,7 +35,7 @@
 - [x] Property access for objects (Probably best to implement classes first)
 - [x] Classes
     - [ ] Inheritance
-- [ ] Array of Hashes not working
+- [x] Array of Hashes not working
 
 - [x] Add yarddoc generation for just the language parts, such as all the values and how to use them
 
@@ -63,7 +63,7 @@
 ## Interpreter tests
 - [x] Test that string evaluates correctly
 - [x] Test Elsif
-- [ ] Test that new environments are correct and that it can access vars in parents but not in other scopes
+- [x] Test that new environments are correct and that it can access vars in parents but not in other scopes
 
 ### Test arithmetic operations:
 - [x] Addition: 2+3
