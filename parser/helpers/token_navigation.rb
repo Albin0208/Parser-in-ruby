@@ -28,7 +28,7 @@ module TokenNavigation
   def eat
     @logger.debug("Eating token: #{at()}")
     token = @tokens.shift()
-    @location = token.position
+    @location = token.line
     return token
   end
 
