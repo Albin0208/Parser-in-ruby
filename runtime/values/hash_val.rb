@@ -90,6 +90,15 @@ module Runtime
 				Values::NumberVal.new(@value.length(), :int)
 			end
 
+			#
+			# Clears all the values in the hash
+			#
+			# @return [HashVal] The empty hash
+			#
+			# @example
+			# 	Hash<string, int> a = Hash<string, int>{'a' = 2, 'c' = 3} #=> {a = 2, c = 3}
+			#	a.clear()
+			#	a 		#=> {}
 			def clear()
 				@value.clear()
 				return self
