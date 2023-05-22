@@ -97,8 +97,8 @@ module Runtime
 			#
 			# @example
 			# 	Hash<string, int> a = Hash<string, int>{'a' = 2, 'c' = 3} #=> {a = 2, c = 3}
-			#	a.clear()
-			#	a 		#=> {}
+			#		a.clear()
+			#		a 		#=> {}
 			def clear()
 				@value.clear()
 				return self
