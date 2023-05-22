@@ -77,15 +77,17 @@ module Runtime
       # Removes the element at the specified index.
       #
       # @param [NumberVal] index The index of the element to be removed.
-      # @return [RunTimeVal] The removed element.
+      # @return [RunTimeVal, NullVal] The removed element or null if no item was removed
       # @example
       #   int[] a = int[]{1, 2, 3}
       #   a.remove_at(1) #=> 2
       #   a       #=> [1, 3]
+      #   a.remove_at(10) #=> null
+      #   a       #=> [1, 3]
       def remove_at(index)
         raise "Error: Can't remove element at index of non-int type" unless index.is_a?(NumberVal) && index.type == :int
-
-        return @value.delete_at(index.value)
+        val = @value.delete_at(index.value)
+        return val.nil? ? Values::NullVal.new() : val
       end
 
       # Returns the length of the array.

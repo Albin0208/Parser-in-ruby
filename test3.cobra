@@ -83,3 +83,5 @@ print(acc)
 acc.clear()
 acc['a'] = Hash<string, int>{'a' = 2}
 print(acc)
+
+print(abc1.remove_at(10))
