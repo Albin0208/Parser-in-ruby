@@ -64,3 +64,8 @@ print(a.var)
 print(a.test(ass))
 
 print(acc)
+
+print(a.get_type())
+
+int[] abc1 = int[]{1, 2, 3}
+print(abc1)

@@ -107,7 +107,7 @@ module Runtime
       def to_s
         string = '['
         @value.each() { |val| 
-          string << "#{val}, "
+          string << "#{val.to_s.value}, "
         }
         string.chomp!(', ')
         string << ']'

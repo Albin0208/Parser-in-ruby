@@ -217,6 +217,20 @@ module Runtime
       def to_float()
         Values::NumberVal.new(@value.to_f, :float)
       end
+
+      #
+      # Round the number to a number num deciamls
+      #
+      # @param [Integer] num How many decimals the number should contain
+      #
+      # @return [NumberVal] The rounded number
+      #
+      # @example
+      #   3.123454.round(2) #=> 3.12
+      #   3.123454.round() #=> 3
+      def round(num = NumberVal.new(0, :int))
+        Values::NumberVal.new(@value.round(num.value), num.value == 0 ? :int : :float)
+      end
     end
   end
 end

@@ -35,7 +35,7 @@ module Runtime
       # @example
       #   "hello" * 3 #=> "hellohellohello"
       def *(other)
-        raise "Error: Can't multiply withn non-integer value. Expected int but got #{other.type}" unless other.is_a?(NumberVal) && other.type == :int
+        raise "Error: Can't multiply with non-integer value. Expected int but got #{other.type}" unless other.is_a?(NumberVal) && other.type == :int
 
         Values::StringVal.new(@value * other.value)
       end

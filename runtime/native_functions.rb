@@ -15,7 +15,7 @@ module Runtime
 			case name
 			when 'print'
 				puts if args.empty?
-				args.each() { |arg| puts arg.to_s }
+				args.each() { |arg| puts arg.to_s.is_a?(String) ? arg.to_s : arg.to_s.value }
 			end
 		end
 	end

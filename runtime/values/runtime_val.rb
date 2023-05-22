@@ -12,7 +12,7 @@ module Runtime
     # @abstract
     #
     class RunTimeVal
-      attr_accessor :value
+      attr_accessor :value, :type
 
       #
       # Initializes a new runtime value.
@@ -162,16 +162,18 @@ module Runtime
       # @return [String] The string representation of the object
       #
       def to_s
-        @value.to_s
+        Values::StringVal.new(@value.to_s)
       end
 
       #
       # Get the type of the object
       #
-      # @return [Symbol] The type of the object
+      # @return [StringVal] The class of the object
       #
-      def type
-        return @type
+      # @example
+      #   1.get_type() #=> 'int'
+      def get_type
+        Values::StringVal.new(@type.to_s)
       end
     end
   end
