@@ -76,5 +76,10 @@ print()
 string s1 = "Hello my friend"
 print(s1.length())
 print(s1.to_array().length())
-s1 += 'hej"
+s1 += 'hej'
 print(s1)
+
+print(acc)
+acc.clear()
+acc['a'] = Hash<string, int>{'a' = 2}
+print(acc)

@@ -90,6 +90,11 @@ module Runtime
 				Values::NumberVal.new(@value.length(), :int)
 			end
 
+			def clear()
+				@value.clear()
+				return self
+			end
+
 			#
 			# Convert the HashVal object to a string.
 			#
