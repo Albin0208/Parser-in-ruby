@@ -339,7 +339,8 @@ class Parser
     end
 
     expect(Utilities::TokenType::RETURN)
-    expr = parse_expr()
+
+    expr = at().line > @location ? Nodes::NullLiteral.new(@location) : parse_expr()
 
     return Nodes::ReturnStmt.new(expr, @location)
   end

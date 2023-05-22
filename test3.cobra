@@ -85,3 +85,15 @@ acc['a'] = Hash<string, int>{'a' = 2}
 print(acc)
 
 print(abc1.remove_at(10))
+
+func void print_values(int[] values) {
+    for val in values {
+        print(val)
+        if val > 10 {
+            return
+        }
+    }
+}
+
+abc1.append(11).append(2)
+print_values(abc1)
