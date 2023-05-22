@@ -68,15 +68,15 @@ class Parser
     when Utilities::TokenType::RETURN
       return parse_return()
     when Utilities::TokenType::BREAK
-      raise "Line:#{at().line}: Error: Break cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().position.line_nr}: Error: Break cannot be used outside of loops" unless @parsing_loop
 
       expect(Utilities::TokenType::BREAK)
-      return Nodes::BreakStmt.new(at().line)
+      return Nodes::BreakStmt.new(at().position)
     when Utilities::TokenType::CONTINUE
-      raise "Line:#{at().line}: Error: Continue cannot be used outside of loops" unless @parsing_loop
+      raise "Line:#{at().position.line_nr}: Error: Continue cannot be used outside of loops" unless @parsing_loop
 
       expect(Utilities::TokenType::CONTINUE)
-      return Nodes::ContinueStmt.new(at().line)
+      return Nodes::ContinueStmt.new(at().position)
     else
       return parse_expr()
     end
@@ -113,7 +113,7 @@ class Parser
       when :Constructor
         # Check if the same constructor already has been declared
         if constructor_already_exists?(constructors, stmt)
-          raise "Line:#{stmt.line}: Error: Constructor already declared with the same parameters"
+          raise "Line:#{stmt.line.line_nr}: Error: Constructor already declared with the same parameters"
         end
 
         constructors << stmt
@@ -796,7 +796,7 @@ class Parser
     when Utilities::TokenType::NEW
       expr = parse_class_instance()
     else
-      raise InvalidTokenError, "Line:#{@location}: Unexpected token found: #{at().value}"
+      raise InvalidTokenError, "Line:#{@location.line_nr}: Unexpected token found: #{at().value}"
     end
 
     while at().type == Utilities::TokenType::DOT

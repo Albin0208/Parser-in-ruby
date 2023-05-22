@@ -81,6 +81,19 @@ module Runtime
       def length
         Values::NumberVal.new(@value.length, :int)
       end
+
+      #
+      # Converts the string to a array where each char is an entry in the array
+      #
+      # @return [<Type>] <description>
+      #
+      # @example
+      #   "hej".to_array() #=> ['h', 'e', 'j']
+      #   "hello world".to_array() #=> ['h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd']
+      def to_array
+        arr = @value.chars.map() { |c| Values::StringVal.new(c)}
+        Values::ArrayVal.new(arr, :string)
+      end
     end
   end
 end

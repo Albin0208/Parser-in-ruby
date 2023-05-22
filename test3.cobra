@@ -69,3 +69,12 @@ print(a.get_type())
 
 int[] abc1 = int[]{1, 2, 3}
 print(abc1)
+
+print()
+print()
+
+string s1 = "Hello my friend"
+print(s1.length())
+print(s1.to_array().length())
+s1 += 'hej"
+print(s1)

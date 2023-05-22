@@ -3,6 +3,7 @@ require 'logger'
 require_relative 'token'
 require_relative '../errors/errors'
 require_relative '../utilities/token_type'
+require_relative '../utilities/position'
 
 # Create an array of tuples so order doesn't matter then convert to hash
 TOKEN_TYPES = [
@@ -101,7 +102,7 @@ class Lexer
 
     raise_unmatched_paren_error(stack.last) unless stack.empty?
 
-    @tokens << Token.new(Utilities::TokenType::EOF, '', @line, @column) # Add a end of file token to be used by the parser
+    @tokens << Token.new(Utilities::TokenType::EOF, '', Utilities::Position.new(@line, @column, @current_line)) # Add a end of file token to be used by the parser
     return @tokens
   end
 
@@ -113,12 +114,12 @@ class Lexer
   # @param [Token] token The paren token that misses a open or close paren
   #
   def raise_unmatched_paren_error(token)
-    line_num = token.line
+    line_num = token.position.line_nr
     tmp_line = @string.each_line.to_a[line_num - 1] # Get the line where the error was
 
     # We have an unmatched parenthesis
     error_type = token.type == Utilities::TokenType::LPAREN ? 'opening' : 'closing'
-    raise UnmatchedParenthesisError, "Unmatched #{error_type} parenthesis at line #{line_num}, column #{token.column} in #{tmp_line}"
+    raise UnmatchedParenthesisError, "Unmatched #{error_type} parenthesis at line #{line_num}, column #{token.position.column} in #{tmp_line}"
   end
 
   # Get the next token
@@ -185,7 +186,7 @@ class Lexer
                 previous_token.type == Utilities::TokenType::LPAREN ||
                 previous_token.type == Utilities::TokenType::BINARYOPERATOR ||
                 match == :! ||
-                previous_token.line < @line
+                previous_token.position.line_nr < @line
                # This is a unary operator
                Utilities::TokenType::UNARYOPERATOR
              else
@@ -194,7 +195,7 @@ class Lexer
              end
     end
 
-    token = Token.new(type, match, @line, @column)
+    token = Token.new(type, match, Utilities::Position.new(@line, @column, @current_line))
     @logger.debug("#{message}: #{token.value}")
     advance(token.value.to_s.length)
     return token
