@@ -2,4 +2,38 @@
 string ab = 1.2.to_s()
 print(ab)
 
-print(1.type().type())
+print(1.type())
+
+#string a = input()
+#print(a)
+string[] abc = string[]{  "short",
+  "medium length",
+  "a bit longer string",
+  "this is a quite long string with many characters",
+  "short again",
+  "another medium length element"}
+abc.append('hej')
+abc.append('hej')
+
+
+
+func bool compare(int a, int b) {
+    return a > b
+}
+
+func bool compare_string(string a, string b) {
+    return a.length() > b.length()
+}
+
+int[] i_array = int[]{4, 6, 1, 6, 2}
+
+print(i_array.sort(compare))
+print(abc.sort(compare_string))
+
+
+
+int[] aasas = int[]{4, 2, 5, 1, 6, 2}
+print(aasas.sort(compare))
+
+int a = input().to_int()
+print(a)

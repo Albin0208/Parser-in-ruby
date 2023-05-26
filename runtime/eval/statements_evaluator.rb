@@ -31,15 +31,6 @@ module Runtime
     def eval_var_declaration(ast_node, env)
       value = ast_node.value ? evaluate(ast_node.value, env) : Values::NullVal.new
 
-      unless value.instance_of?(Values::NullVal)
-        # Convert to correct data type for int and float calculations
-        value = case ast_node.value_type
-                when 'int' then Values::NumberVal.new(value.value.to_i, :int)
-                when 'float' then Values::NumberVal.new(value.value.to_f, :float)
-                else value
-                end
-      end
-
       env.declare_var(ast_node.identifier, value, ast_node.value_type, ast_node.line, ast_node.constant)
       return value
     end

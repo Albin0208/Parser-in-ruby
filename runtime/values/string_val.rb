@@ -94,6 +94,43 @@ module Runtime
         arr = @value.chars.map() { |c| Values::StringVal.new(c)}
         Values::ArrayVal.new(arr, :string)
       end
+
+      #
+      # Converts this NumberVal to an IntegerVal.
+      # Always rounds down to the nearest integer
+      # 1.9 would then be rounded to 1 and not 2
+      #
+      # @return [NumberVal] a new NumberVal with the same value, but with the type :int
+      #
+      # @example
+      #   '1.34'.to_int() #=> 1
+      #   '1.9'.to_int() #=> 1
+      #   '21.384763'.to_int() #=> 21
+      #
+      # @example Example of invalid conversion
+      #   "hej".to_int() #=> Conversion error
+      def to_int()
+        converted_val = @value.to_i
+        raise "Error: Can't convert string '#{@value}' to a int" unless converted_val.to_s == @value
+        Values::NumberVal.new(converted_val, :int)
+      end
+
+      #
+      # Converts this NumberVal to a FloatVal.
+      #
+      # @return [NumberVal] a new NumberVal with the same value, but with the type :float
+      #
+      # @example
+      #   "3".to_float() #=> 3.0
+      #   "300".to_float() #=> 300.0
+      #
+      # @example Example of invalid conversion
+      #   "hej".to_int() #=> Conversion error
+      def to_float()
+        converted_val = @value.to_f
+        raise "Error: Can't convert string '#{@value}' to a float" unless converted_val.to_s == @value
+        Values::NumberVal.new(converted_val, :float)
+      end
     end
   end
 end
