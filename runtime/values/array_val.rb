@@ -116,15 +116,45 @@ module Runtime
         return StringVal.new(string)
       end
 
-      # Sorts the values in the array using the provided function as the comparison criterion.
+      # Sorts the values in the array using the provided function as the comparison conditon.
       #
-      # @param [Function] function The function to be used for comparison.
+      # @param [Nodes::FuncDeclaration] function The user-defined function used as the comparison conditon. This function is required to take two parameters and return a boolean See example below.
       # @return [ArrayVal] The sorted array.
+      #
+      # @example Example of function to sort ints in descending order
+      #   func bool compare_ints(int a, int b) {
+      #     return a > b
+      #   }
+      #
+      # @example Sorting the array with the previous functions as the comparetor
+      #   int[] a = int[]{4, 2, 5, 1, 6, 2}
+      #
+      #   # Use the function defined in the previous example
+      #   a.sort(compare_ints) #=> [6, 5, 4, 2, 2, 1]
+      # @note The `interpreter`, `env`, and `call_node` parameters are automatically passed
+      #   and not provided by the user. They represent the interpreter instance, environment,
+      #   and the call node representing the function call, respectively.
+      # @note If the wrong number of parameters are passed to the sort function it only counts 
+      #   the function as only parameter so a error message could say that it got 2 parameters
+      #   but expected 1.
       def sort(interpreter, env, call_node, function)
         self.value = sort_helper(interpreter, env, call_node, self.value, function)
         return self
       end
 
+      private
+
+      #
+      # Implements the mergesort algorithm to sort the values in the array using the provided comparison function.
+      #
+      # @param [Interpreter] interpreter The Interpreter object
+      # @param [Environment] env The current environment
+      # @param [Nodes::MethodCallExpr] call_node The call node for the function
+      # @param [Array] array The array of all the values to be sorted
+      # @param [Nodes::FuncDeclaration] cmp_func The user-defined function used for the comparison
+      #
+      # @return [Array] The sorted array
+      #
       def sort_helper(interpreter, env, call_node, array, cmp_func)
         return array if array.length() <= 1 # Only one value, no need to sort
       
@@ -142,7 +172,6 @@ module Runtime
         end
         return sorted_array.concat(left).concat(right)
       end
-      
     end
   end
 end

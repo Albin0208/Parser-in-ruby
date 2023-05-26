@@ -18,7 +18,7 @@ abc.append('hej')
 
 
 func bool compare(int a, int b) {
-    return a < b
+    return a > b
 }
 
 func bool compare_string(string a, string b) {
@@ -30,8 +30,7 @@ int[] i_array = int[]{4, 6, 1, 6, 2}
 print(i_array.sort(compare))
 print(abc.sort(compare_string))
 
-int cd = input()
-print(input().get_type())
-cd = input()
-print(cd.get_type())
 
+
+int[] aasas = int[]{4, 2, 5, 1, 6, 2}
+print(aasas.sort(compare))
