@@ -116,6 +116,63 @@ module Runtime
         string << ']'
         return StringVal.new(string)
       end
+
+      # Sorts the values in the array using the provided function as the comparison conditon.
+      #
+      # @param [Nodes::FuncDeclaration] function The user-defined function used as the comparison conditon. This function is required to take two parameters and return a boolean See example below.
+      # @return [ArrayVal] The sorted array.
+      #
+      # @example Example of function to sort ints in descending order
+      #   func bool compare_ints(int a, int b) {
+      #     return a > b
+      #   }
+      #
+      # @example Sorting the array with the previous functions as the comparetor
+      #   int[] a = int[]{4, 2, 5, 1, 6, 2}
+      #
+      #   # Use the function defined in the previous example
+      #   a.sort(compare_ints) #=> [6, 5, 4, 2, 2, 1]
+      # @note The `interpreter`, `env`, and `call_node` parameters are automatically passed
+      #   and not provided by the user. They represent the interpreter instance, environment,
+      #   and the call node representing the function call, respectively.
+      # @note If the wrong number of parameters are passed to the sort function it only counts 
+      #   the function as only parameter so a error message could say that it got 2 parameters
+      #   but expected 1.
+      def sort(interpreter, env, call_node, function)
+        self.value = sort_helper(interpreter, env, call_node, self.value, function)
+        return self
+      end
+
+      private
+
+      #
+      # Implements the mergesort algorithm to sort the values in the array using the provided comparison function.
+      #
+      # @param [Interpreter] interpreter The Interpreter object
+      # @param [Environment] env The current environment
+      # @param [Nodes::MethodCallExpr] call_node The call node for the function
+      # @param [Array] array The array of all the values to be sorted
+      # @param [Nodes::FuncDeclaration] cmp_func The user-defined function used for the comparison
+      #
+      # @return [Array] The sorted array
+      #
+      def sort_helper(interpreter, env, call_node, array, cmp_func)
+        return array if array.length() <= 1 # Only one value, no need to sort
+      
+        mid = array.length() / 2 # Get the middle of the array
+        left = sort_helper(interpreter, env, call_node, array[0...mid], cmp_func)
+        right = sort_helper(interpreter, env, call_node, array[mid..-1], cmp_func)
+      
+        sorted_array = []
+        
+        while !left.empty? && !right.empty?
+          comparison_node = Nodes::CallExpr.new(cmp_func.identifier, [left.first, right.first], call_node.line)
+          condition = interpreter.call_function(cmp_func, comparison_node, env)
+
+          sorted_array << (condition.value ? left.shift : right.shift)
+        end
+        return sorted_array.concat(left).concat(right)
+      end
     end
   end
 end

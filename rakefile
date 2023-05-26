@@ -16,5 +16,5 @@ end
 desc "Generate language documentation"
 YARD::Rake::YardocTask.new(:doc) do |t|
   t.files   = ['./runtime/values/*.rb']   # optional
-  t.options = ['--private'] # optional
+  t.options = ['--no-private'] # optional
 end

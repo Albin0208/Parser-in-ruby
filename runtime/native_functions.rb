@@ -3,7 +3,7 @@ module Runtime
 	# The class which contains all the Native functions in the program
 	#
 	class NativeFunctions
-		FUNCTIONS = ['print']
+		FUNCTIONS = ['print', 'input']
 
 		#
 		# Dispatches the args to the called function
@@ -16,6 +16,10 @@ module Runtime
 			when 'print'
 				puts if args.empty?
 				args.each() { |arg| puts arg.to_s.is_a?(String) ? arg.to_s : arg.to_s.value }
+			when 'input'
+				print('>> ')
+				text = $stdin.gets.chomp
+				return Values::StringVal.new(text)
 			end
 		end
 	end
