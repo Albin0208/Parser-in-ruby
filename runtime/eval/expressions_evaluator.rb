@@ -281,8 +281,8 @@ module Runtime
             evaled
           end
         }
-        NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
-        return nil
+        return NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
+        # return nil
       end
       unless function.instance_of?(Nodes::FuncDeclaration)
         raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function"
