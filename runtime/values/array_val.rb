@@ -2,7 +2,8 @@ module Runtime
   module Values
     # Represents a Array value in the language
     # @example Creating an empty array
-    #   int[] a                 #=> []
+    #   # Has to be assigned before use
+    #   int[] a                 #=> null
     #   string[] a = string[]{} #=> []
     # @example Creating an array with values
     #   int[] a = int[]{1, 2, 3}        #=> [1, 2, 3]
