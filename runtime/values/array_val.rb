@@ -115,6 +115,34 @@ module Runtime
         string << ']'
         return StringVal.new(string)
       end
+
+      # Sorts the values in the array using the provided function as the comparison criterion.
+      #
+      # @param [Function] function The function to be used for comparison.
+      # @return [ArrayVal] The sorted array.
+      def sort(interpreter, env, call_node, function)
+        self.value = sort_helper(interpreter, env, call_node, self.value, function)
+        return self
+      end
+
+      def sort_helper(interpreter, env, call_node, array, cmp_func)
+        return array if array.length() <= 1 # Only one value, no need to sort
+      
+        mid = array.length() / 2 # Get the middle of the array
+        left = sort_helper(interpreter, env, call_node, array[0...mid], cmp_func)
+        right = sort_helper(interpreter, env, call_node, array[mid..-1], cmp_func)
+      
+        sorted_array = []
+        
+        while !left.empty? && !right.empty?
+          comparison_node = Nodes::CallExpr.new(cmp_func.identifier, [left.first, right.first], call_node.line)
+          condition = interpreter.call_function(cmp_func, comparison_node, env)
+
+          sorted_array << (condition.value ? left.shift : right.shift)
+        end
+        return sorted_array.concat(left).concat(right)
+      end
+      
     end
   end
 end

@@ -56,13 +56,19 @@ module Runtime
     # @return [String, Int, Float, Boolean] The value assigned to the var
     #
     def declare_var(varname, value, value_type, line, is_constant = false)
-      # Check if the var is already declared in the current scope
+      # Check if the variable is already declared in the current scope
       if find_scope(varname)
         raise "Line: #{line}: Cannot declare variable '#{varname}' since it is already defined in this scope"
       end
 
-      if value.type.to_sym != :null && value.type.to_sym != value_type.to_sym
-        raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{value_type}\"."
+      if value.type != :null
+        if value.type == :int && value_type == 'int'
+          value = Values::NumberVal.new(value.value.to_i, :int)
+        elsif value.type == :float && value_type == 'float'
+          value = Values::NumberVal.new(value.value.to_f, :float)
+        elsif value.type.to_sym != value_type.to_sym
+          raise "Line: #{line}: Cannot assign a value of type \"#{value.type}\" to a variable of type \"#{value_type}\"."
+        end
       end
 
       @identifiers[varname] = value
