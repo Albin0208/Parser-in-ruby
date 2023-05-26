@@ -34,3 +34,6 @@ print(abc.sort(compare_string))
 
 int[] aasas = int[]{4, 2, 5, 1, 6, 2}
 print(aasas.sort(compare))
+
+int a = input().to_int()
+print(a)
