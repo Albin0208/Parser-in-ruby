@@ -4,7 +4,7 @@ module Runtime
   #
 	module FunctionCallEvaluator
 		private
-		# Evaluate a method call expression by first evaluating the receiver expression and
+    # Evaluate a method call expression by first evaluating the receiver expression and
     # then looking up the method in the class hierarchy or the receiver's metaclass.
     #
     # @param ast_node [Nodes::MethodCallExpr] the AST node representing the method call expression
@@ -36,7 +36,14 @@ module Runtime
       # Grab the methods
       method = evaled_expr.method(ast_node.method_name)
       args = ast_node.params.map() { |param| evaluate(param, call_env) }
+      
+      if evaled_expr.is_a?(Values::ArrayVal) && ast_node.method_name == 'sort'
+        raise "Line: #{ast_node.line}: Error: Method expected #{method.arity - 3} parameters but got #{args.length}" if args.length != method.arity - 3
+        return method.call(self, call_env, ast_node, args.first) # Send the interpreter to the sort function
+      end
 
+      raise "Line: #{ast_node.line}: Error: Method expected #{method.arity} parameters but got #{args.length}" if args.length != method.arity
+      
       return method.call(*args)
     end
 
@@ -76,8 +83,7 @@ module Runtime
             evaled
           end
         }
-        NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
-        return nil
+        return NativeFunctions.dispatch(ast_node.func_name.symbol, param_results)
       end
       unless function.instance_of?(Nodes::FuncDeclaration)
         raise "Line: #{ast_node.line}: Error: #{ast_node.func_name.symbol} is not a function"

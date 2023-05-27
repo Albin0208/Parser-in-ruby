@@ -51,8 +51,9 @@ module Runtime
                else
                  func_param.value_type.to_sym
                end
-        evaled_call_param = evaluate(call_param, call_env)
 
+        evaled_call_param = call_param.is_a?(Values::RunTimeVal) ? call_param : evaluate(call_param, call_env)
+        
         unless evaled_call_param.type.to_s.downcase == type.to_s.downcase
           raise "Line: #{function.line}: Error: Expected parameter '#{func_param.identifier}' to be of type '#{type}', but got '#{evaled_call_param.type}'"
         end
@@ -60,6 +61,7 @@ module Runtime
 
       return true
     end
+
 
     #
     # Declares all params passed to a function
@@ -71,7 +73,7 @@ module Runtime
     #
     def declare_params(function, call_params, call_env, env)
       function.params.zip(call_params) { |func_param, call_param|
-        evaled_call_param = evaluate(call_param, call_env)
+        evaled_call_param = call_param.is_a?(Values::RunTimeVal) ? call_param : evaluate(call_param, call_env)
 
         type = if func_param.is_a?(Nodes::HashDeclaration)
                  # Build the hash type
@@ -93,7 +95,8 @@ module Runtime
       }
     end
 
-		    # Calls a function with the given arguments.
+
+    # Calls a function with the given arguments.
     #
     # @param [Nodes::FuncDeclaration] function The function to call.
     # @param [Nodes::CallExpr] ast_node The function call AST node.

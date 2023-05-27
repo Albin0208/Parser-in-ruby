@@ -23,10 +23,10 @@ module Runtime
 			if container.is_a?(Values::ArrayVal)
 			# Wrap around from the back if it is negative
 			access_key = access_key % container.length.value if access_key.negative?
-	
-			if access_key >= container.length.value
-				raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
-			end
+		
+				if access_key >= container.length.value
+					raise "Line:#{ast_node.line}: Error: index #{access_key} out of bounds for array of length #{container.length.value}"
+				end
 			end
 	
 			value = container.value[access_key]

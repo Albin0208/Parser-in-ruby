@@ -110,9 +110,11 @@ module Runtime
       # @example Example of invalid conversion
       #   "hej".to_int() #=> Conversion error
       def to_int()
-        converted_val = @value.to_i
-        raise "Error: Can't convert string '#{@value}' to a int" unless converted_val.to_s == @value
-        Values::NumberVal.new(converted_val, :int)
+        if @value =~ /^-?\d+(\.\d+)?$/
+          converted_val = @value.to_i
+          return Values::NumberVal.new(converted_val, :int)
+        end
+          raise "Error: Can't convert string '#{@value}' to an int"
       end
 
       #
@@ -127,9 +129,11 @@ module Runtime
       # @example Example of invalid conversion
       #   "hej".to_int() #=> Conversion error
       def to_float()
-        converted_val = @value.to_f
-        raise "Error: Can't convert string '#{@value}' to a float" unless converted_val.to_s == @value
-        Values::NumberVal.new(converted_val, :float)
+        if @value =~ /^-?\d+(\.\d+)?$/
+          converted_val = @value.to_f
+          return Values::NumberVal.new(converted_val, :float)
+        end
+          raise "Error: Can't convert string '#{@value}' to an float"
       end
     end
   end

@@ -14,26 +14,33 @@ module Runtime
 
       # Check if the conditions of the statement is evaled to true
       if eval_condition(ast_node.conditions, env)
-        # Set up new env for if so vars die after if is done
-        if_env = Runtime::Environment.new(env)
-        # Eval the body of the if
-        ast_node.body.each { |stmt| last_eval = evaluate(stmt, if_env) }
-        return last_eval
+        return eval_conditionals_body(ast_node.body, env)
       end
+
       ast_node.elsif_stmts&.each do |elsif_stmt|
         if eval_condition(elsif_stmt.conditions, env)
-          # Set up new env for if so vars die after if is done
-          elsif_env = Runtime::Environment.new(env)
-          elsif_stmt.body.each { |stmt| last_eval = evaluate(stmt, elsif_env) }
-          return last_eval
+          return eval_conditionals_body(elsif_stmt.body, env)
         end
       end
       unless ast_node.else_body.nil?
-        # Set up new env for if so vars die after if is done
-        else_env = Runtime::Environment.new(env)
-        # Eval the body of the else
-        ast_node.else_body.each { |stmt| last_eval = evaluate(stmt, else_env) }
+        return eval_conditionals_body(ast_node.else_body, env)
       end
+
+      return last_eval
+    end
+
+    #
+    # Evaluates the body of a conditional statement
+    #
+    # @param [Array] body A array of all the statments in the body
+    # @param [Environment] env The current environment
+    #
+    # @return [RunTimeVal] The result of the body
+    #
+    def eval_conditionals_body(body, env)
+      last_eval = Values::NullVal.new()
+      body_env = Runtime::Environment.new(env)
+      body.each() { |stmt| last_eval = evaluate(stmt, body_env) }
 
       return last_eval
     end
@@ -62,9 +69,8 @@ module Runtime
     def eval_while_stmt(ast_node, env)
       last_eval = Values::NullVal.new
       while eval_condition(ast_node.conditions, env)
-        while_env = Runtime::Environment.new(env) # Setup a new environment for the while loop
         begin
-          ast_node.body.each { |stmt| last_eval = evaluate(stmt, while_env) }
+          last_eval = eval_conditionals_body(ast_node.body, env)
         rescue BreakSignal
           break
         rescue ContinueSignal
@@ -88,9 +94,8 @@ module Runtime
       cond_env = Runtime::Environment.new(env)
       evaluate(ast_node.var_dec, cond_env)
       while eval_condition(ast_node.condition, cond_env)
-        for_env = Runtime::Environment.new(cond_env) # Setup a new environment for the while loop
         begin
-          ast_node.body.each { |stmt| last_eval = evaluate(stmt, for_env) }
+          last_eval = eval_conditionals_body(ast_node.body, cond_env)
           evaluate(ast_node.expr, cond_env)
         rescue BreakSignal
           break
