@@ -54,8 +54,9 @@ class Parser
   def parse_stmt
     case at().type
     when Utilities::TokenType::CONST, Utilities::TokenType::TYPE_SPECIFIER, Utilities::TokenType::HASH, Utilities::TokenType::IDENTIFIER, Utilities::TokenType::ARRAY_TYPE
-      return parse_assignment_stmt() if at().type == Utilities::TokenType::IDENTIFIER && next_token().type != Utilities::TokenType::IDENTIFIER
-
+      if at().type == Utilities::TokenType::IDENTIFIER && next_token().type != Utilities::TokenType::IDENTIFIER
+        return parse_assignment_stmt()
+      end
       return parse_var_declaration()
     when Utilities::TokenType::IF
       return parse_if_statement()
@@ -69,12 +70,10 @@ class Parser
       return parse_return()
     when Utilities::TokenType::BREAK
       raise "Line:#{at().line}: Error: Break cannot be used outside of loops" unless @parsing_loop
-
       expect(Utilities::TokenType::BREAK)
       return Nodes::BreakStmt.new(at().line)
     when Utilities::TokenType::CONTINUE
       raise "Line:#{at().line}: Error: Continue cannot be used outside of loops" unless @parsing_loop
-
       expect(Utilities::TokenType::CONTINUE)
       return Nodes::ContinueStmt.new(at().line)
     else
@@ -323,7 +322,6 @@ class Parser
   #
   def parse_identifier
     return Nodes::Identifier.new(expect(Utilities::TokenType::IDENTIFIER).value, @location)
-
   end
 
   #
@@ -522,9 +520,10 @@ class Parser
     # Check if we have an assignment token
     if at().type == Utilities::TokenType::ASSIGN
       token = expect(Utilities::TokenType::ASSIGN).value
-      value = parse_expr()
-      value = Nodes::BinaryExpr.new(left, token[0], value, @location) if token.length == 2
-      return Nodes::AssignmentStmt.new(value, left, value.line)
+      assign_value = parse_expr()
+      # Handle compound assignment operators (e.g., +=, -=, *=)
+      assign_value = Nodes::BinaryExpr.new(left, token[0], assign_value, @location) if token.length == 2
+      return Nodes::AssignmentStmt.new(assign_value, left, assign_value.line)
     end
 
     return left
@@ -763,13 +762,7 @@ class Parser
     expr = nil
     case at().type
     when Utilities::TokenType::IDENTIFIER
-      expr = if next_token().type == Utilities::TokenType::LPAREN
-               parse_func_call()
-             elsif next_token().type == Utilities::TokenType::LBRACKET
-               parse_accessor()
-             else
-               parse_identifier()
-             end
+      expr = parse_different_identifiers()
     when Utilities::TokenType::INTEGER
       expr = Nodes::NumericLiteral.new(expect(Utilities::TokenType::INTEGER).value.to_i, :int, @location)
     when Utilities::TokenType::FLOAT
@@ -779,12 +772,7 @@ class Parser
     when Utilities::TokenType::STRING
       expr = Nodes::StringLiteral.new(expect(Utilities::TokenType::STRING).value.to_s, @location)
     when Utilities::TokenType::HASH, Utilities::TokenType::TYPE_SPECIFIER, Utilities::TokenType::ARRAY_TYPE
-      eat() if at().type == Utilities::TokenType::HASH # Eat the hash keyword, it is of no use in the parser
-      expr = if at().type == Utilities::TokenType::ARRAY_TYPE || next_token().type == Utilities::TokenType::LBRACKET
-                parse_array_literal()
-              else
-                parse_hash_literal()
-              end
+      expr = parse_containers()
     when Utilities::TokenType::LPAREN
       expect(Utilities::TokenType::LPAREN) # Eat opening paren
       expr = parse_expr()
@@ -802,14 +790,43 @@ class Parser
       expect(Utilities::TokenType::DOT)
       expr = parse_method_and_property_call(expr)
 
-      next unless at().type == Utilities::TokenType::BINARYOPERATOR
-
-      op = eat().value
-      right = parse_expr()
-      expr = Nodes::BinaryExpr.new(expr, op, right, @location)
+      if at().type == Utilities::TokenType::BINARYOPERATOR
+        op = eat().value
+        right = parse_expr()
+        expr = Nodes::BinaryExpr.new(expr, op, right, @location)
+      end
     end
 
     return expr
+  end
+
+  #
+  # Parses the differnent identifiers that can occur
+  #
+  # @return [Nodes::Identifier, Nodes::ContainerAccessor, Nodes::CallExpr] The matched identifier
+  #
+  def parse_different_identifiers
+    if next_token().type == Utilities::TokenType::LPAREN
+      return parse_func_call()
+    end
+    if next_token().type == Utilities::TokenType::LBRACKET
+      return parse_accessor()
+    end
+    return parse_identifier()
+  end
+
+  #
+  # Parses hash- or array container literals
+  #
+  # @return [Nodes::ArrayLiteral, Nodes::HashLiteral] The container literal found
+  #
+  def parse_containers
+    eat() if at().type == Utilities::TokenType::HASH # Eat the hash keyword, it is of no use in the parser
+    if at().type == Utilities::TokenType::ARRAY_TYPE || next_token().type == Utilities::TokenType::LBRACKET
+      return parse_array_literal()
+    end
+
+    return parse_hash_literal()
   end
 
   #
