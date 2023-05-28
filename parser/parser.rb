@@ -104,18 +104,18 @@ class Parser
                parse_stmt()
              end
 
-      # Check if the stmt is a func- or varDeclaration
+      # Check the type of the statement
       case stmt.type
       when :FuncDeclaration
         member_functions << stmt
       when :VarDeclaration, :HashDeclaration
         member_variables << stmt
       when :Constructor
-        # Check if the same constructor already has been declared
+        # Check if the same constructor has already been declared
         if constructor_already_exists?(constructors, stmt)
           raise "Line:#{stmt.line}: Error: Constructor already declared with the same parameters"
         end
-
+  
         constructors << stmt
       end
     end
@@ -180,7 +180,7 @@ class Parser
       end
 
       @logger.error('Found Uninitialized constant')
-      raise NameError, "Line:#{identifier.line}: Error: Uninitialized Constant. Constants must be initialize upon creation"
+      raise NameError, "Line:#{identifier.line}: Error: Uninitialized Constant. Constants must be initialized upon creation"
     end
 
     expect(Utilities::TokenType::ASSIGN)
@@ -229,8 +229,6 @@ class Parser
     return Nodes::HashLiteral.new(key_value_pairs, key_type.to_sym, value_type, @location)
   end
 
-
-
   #
   # Parse loops
   #
@@ -263,7 +261,7 @@ class Parser
     for_start_location = @location
     var_dec = parse_var_declaration()
     if var_dec.value.nil?
-      raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' has to be initialized in for-loop"
+      raise "Line:#{@location}: Error: Variable '#{var_dec.identifier}' must be initialized in the for-loop"
     end
 
     expect(Utilities::TokenType::COMMA)
@@ -272,7 +270,7 @@ class Parser
     expr = parse_stmt()
     # Don't allow for every stmt, only assign-statement and expressions
     unless expr.is_a?(Nodes::Expr) || expr.is_a?(Nodes::AssignmentStmt)
-      raise "Line:#{@location}: Error: Wrong type of expression given"
+      raise "Line:#{@location}: Error: Wrong type of expression given. Expected a assign statement"
     end
 
     expect(Utilities::TokenType::LBRACE)
@@ -366,7 +364,7 @@ class Parser
     if at().type != Utilities::TokenType::ASSIGN
       return Nodes::VarDeclaration.new(is_const, identifier, type_specifier, @location, nil) unless is_const
 
-      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialize upon creation"
+      raise NameError, "Line:#{@location}: Error: Uninitialized Constant. Constants must be initialized upon creation"
     end
 
     expect(Utilities::TokenType::ASSIGN)
