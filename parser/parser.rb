@@ -99,7 +99,7 @@ class Parser
     # Parse all class members
     while at().type != Utilities::TokenType::RBRACE
       stmt = if at().type == Utilities::TokenType::CONSTRUCTOR
-               parse_constuctor()
+               parse_constructor()
              else
                parse_stmt()
              end
@@ -148,7 +148,7 @@ class Parser
   # Parses a constructor declaration.
   #
   # @return [Constructor] The parsed constructor.
-  def parse_constuctor
+  def parse_constructor
     expect(Utilities::TokenType::CONSTRUCTOR)
     expect(Utilities::TokenType::LPAREN)
     line = @location
