@@ -24,31 +24,30 @@ module HashValidation
   # @return [String & String] The key and value types
   #
   def parse_hash_type_specifier
-    # expect(Utilities::TokenType::HASH)
-
     hash_type = expect(Utilities::TokenType::HASH_TYPE).value.to_s
-
     hash_type = hash_type.gsub(/[<>\s]|(Hash)/, '').split(',')
     hash_type = parse_nested_hash(hash_type)
     value_type = hash_type[1]
+
     if value_type.is_a?(Array)
-      pretty_type = ''
-      flatt_type = value_type.flatten
-      flatt_type.flatten.each_with_index() { |type, index| 
-        pretty_type << if index < flatt_type.flatten.length - 1
-                         "Hash<#{type},"
-                       else
-                         type.to_s
-                       end
-      }
-      pretty_type << '>' * (flatt_type.flatten.length - 1)
-      value_type = pretty_type
+      # Flatten the array
+      value_type.flatten!
+      # Map over each type with index and join the result 
+      value_type = value_type.map.with_index do |type, index|
+        # If not the last type, add "Hash<type>," to the pretty_type
+        # Otherwise, convert the type to string
+        index < value_type.length - 1 ? "Hash<#{type}" : type.to_s
+      end.join(',')
+  
+      # Add closing angle brackets based on the number of nested types
+      value_type << '>' * value_type.count('<')
     end
 
     return hash_type[0], value_type.to_sym
   end
 
   # Recursively parses a hash type specifier, splitting it into an array of nested key types.
+  #
   # @param hash_type [Array] the hash type specifier to parse
   # @return [Symbol, Array] the parsed hash type specifier
   def parse_nested_hash(hash_type)

@@ -109,8 +109,8 @@ module Runtime
       #   a.to_s() #=> "[1, 2, 3]"
       def to_s
         string = '['
-        @value.each() { |val| 
-          string << "#{val.to_s.value}, "
+        @value.each() { |val|
+          string << "#{val.is_a?(String) ? val: val.to_s.value}, "
         }
         string.chomp!(', ')
         string << ']'
