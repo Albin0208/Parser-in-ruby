@@ -1,12 +1,106 @@
-Hash<string, Hash<string, Hash<string, Hash<string, Hash<string, int>>>>> acc = Hash<string, Hash<string, Hash<string, Hash<string, Hash<string, int>>>>> {
-  'a' = Hash<string, Hash<string, Hash<string, Hash<string, int>>>> {
-    'a' = Hash<string, Hash<string, Hash<string, int>>> {
-      'a' = Hash<string, Hash<string, int>> {
-        'a' = Hash<string, int> {
-          'a' = 2
-        }
-      }
+Hash<string, Hash<string, Hash<string, int>>> acc = Hash<string, Hash<string, Hash<string, int>>> {
+  'a' = Hash<string, Hash<string, int>> {
+    'a' = Hash<string, int> {
+      'a' = 2,
+      'b' = 4
     }
   }
 }
-print(acc.keys())
+class Test {
+  int var = 1
+  int c = 2
+
+  Constructor() {
+    c = 3
+  }
+
+  Constructor(int ac) {
+    c = ac
+  }
+
+  Constructor(int ac, int ca) {
+    c = ac
+  }
+  Constructor(int ac, string ca) {
+    c = 54
+    int test = 2
+  }
+
+
+
+  func int test(int ass) {
+    return ass
+  }
+
+  func void hello() {
+    print("Hello world")
+  }
+
+  func void set(int y) {
+    if y > 3 {
+      return 3
+    }
+    var = y
+  }
+
+  func Hash<string, int> get_hash() {
+    return Hash<string, int> {'a' = 2, 'b' = 4}
+  }
+
+
+}
+
+func void array_test(int[] class_var) {
+  #print(class_var == as)
+  class_var.append(2)
+}
+
+func void bool_test(bool class_var) {
+  #print(class_var == as)
+  class_var = false
+}
+
+
+Test a = new Test(1, 20)
+
+int var = 2
+int ass = 2
+print(a.set(4))
+print(a.var)
+
+print(a.test(ass))
+
+print(acc)
+
+print(a.get_type())
+
+int[] abc1 = int[]{1, 2, 3}
+print(abc1)
+
+print()
+print()
+
+string s1 = "Hello my friend"
+print(s1.length())
+print(s1.to_array().length())
+s1 += 'hej'
+print(s1)
+
+print(acc)
+acc.clear()
+acc['a'] = Hash<string, int>{'a' = 2}
+print(acc)
+
+print(abc1.remove_at(10))
+
+func void print_values(int[] values) {
+    for val in values {
+        print(val)
+        if val > 10 {
+            return
+        }
+    }
+}
+
+abc1.append(11).append(2)
+print_values(abc1)
